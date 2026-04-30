@@ -1,0 +1,122 @@
+/* =============================================================================
+   site.css — page-level layout and workspace patches
+   Owns nav, footer, route-shell scaffolding, and any local overrides on
+   the vendored design system. Token surface stays in colors_and_type.css;
+   component surface stays in components.css.
+   ============================================================================= */
+
+/* --- Reset-ish basics layered on top of design system base ----------------- */
+*, *::before, *::after { box-sizing: border-box; }
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; }
+
+/* Skip link — visible on focus, hidden offscreen otherwise. */
+.tli-skip {
+  position: absolute;
+  left: -9999px;
+  top: var(--sp-3);
+  background: var(--brand);
+  color: var(--ink-inverse);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-2);
+  text-decoration: none;
+  z-index: 100;
+}
+.tli-skip:focus { left: var(--sp-3); }
+
+/* Reduced-motion — disable transitions and animations globally. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Layout shell ---------------------------------------------------------- */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: var(--container-base);
+  margin: 0 auto;
+  padding: var(--sp-12) var(--gutter) var(--sp-20);
+}
+@media (max-width: 720px) {
+  main { padding: var(--sp-10) var(--gutter-sm) var(--sp-16); }
+}
+
+/* --- Nav ------------------------------------------------------------------- */
+.tli-nav {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+.tli-nav__inner {
+  max-width: var(--container-base);
+  margin: 0 auto;
+  padding: var(--sp-4) var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  justify-content: space-between;
+}
+.tli-nav__brand {
+  font: var(--fw-semibold) var(--fs-20)/1 var(--font-sans);
+  letter-spacing: var(--tracking-snug);
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+}
+.tli-nav__brand-dot { color: var(--brand); }
+.tli-nav__lang {
+  display: inline-flex;
+  gap: var(--sp-1);
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.tli-nav__lang a {
+  text-decoration: none;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-2);
+}
+.tli-nav__lang a[aria-current="true"] {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.tli-nav__lang a:hover { color: var(--ink); }
+
+/* --- Footer ---------------------------------------------------------------- */
+.tli-footer {
+  border-top: 1px solid var(--rule);
+  background: var(--paper-2);
+  padding: var(--sp-10) var(--gutter);
+  margin-top: var(--sp-20);
+}
+.tli-footer__inner {
+  max-width: var(--container-base);
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-6);
+  justify-content: space-between;
+  font: var(--fw-regular) var(--fs-13)/var(--lh-normal) var(--font-sans);
+  color: var(--ink-3);
+}
+.tli-footer__inner a { color: var(--ink-2); text-decoration: none; }
+.tli-footer__inner a:hover { color: var(--ink); text-decoration: underline; }
+
+/* --- Visible focus ring (accessibility, design-system aligned) ------------- */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: var(--r-2);
+}

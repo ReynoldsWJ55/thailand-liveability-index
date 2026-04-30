@@ -1,0 +1,50 @@
+---
+import '../styles/colors_and_type.css';
+import '../styles/components.css';
+import '../styles/site.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: 'en' | 'th';
+  /** Canonical path including locale, e.g. '/en/' or '/en/ayutthaya/'. */
+  canonicalPath: string;
+  ogImage?: string;
+}
+const { title, description, locale, canonicalPath, ogImage } = Astro.props;
+const siteUrl = 'https://thailandliveabilityindex.com';
+const pathInLocale = canonicalPath.replace(/^\/(en|th)/, '') || '/';
+const enHref = `${siteUrl}/en${pathInLocale}`;
+const thHref = `${siteUrl}/th${pathInLocale}`;
+---
+<!doctype html>
+<html lang={locale}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={`${siteUrl}${canonicalPath}`} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={`${siteUrl}${canonicalPath}`} />
+  <meta property="og:type" content="website" />
+  {ogImage && <meta property="og:image" content={`${siteUrl}${ogImage}`} />}
+
+  <link rel="alternate" hreflang="en" href={enHref} />
+  <link rel="alternate" hreflang="th" href={thHref} />
+  <link rel="alternate" hreflang="x-default" href={enHref} />
+</head>
+<body>
+  <a class="tli-skip" href="#main">Skip to main content</a>
+  <Nav locale={locale} pathInLocale={pathInLocale} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer locale={locale} />
+</body>
+</html>

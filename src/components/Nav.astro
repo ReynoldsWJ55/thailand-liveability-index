@@ -1,0 +1,21 @@
+---
+interface Props {
+  locale: 'en' | 'th';
+  /** The current path WITHOUT the leading locale prefix, e.g. '/' or '/methodology/'. */
+  pathInLocale?: string;
+}
+const { locale, pathInLocale = '/' } = Astro.props;
+const enHref = `/en${pathInLocale}`;
+const thHref = `/th${pathInLocale}`;
+---
+<header class="tli-nav">
+  <div class="tli-nav__inner">
+    <a class="tli-nav__brand" href={`/${locale}/`} aria-label="Thailand Liveability Index — home">
+      TLI<span class="tli-nav__brand-dot">.</span>
+    </a>
+    <nav class="tli-nav__lang" aria-label="Language">
+      <a href={enHref} aria-current={locale === 'en' ? 'true' : 'false'}>EN</a>
+      <a href={thHref} aria-current={locale === 'th' ? 'true' : 'false'}>TH</a>
+    </nav>
+  </div>
+</header>
