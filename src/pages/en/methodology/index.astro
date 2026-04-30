@@ -1,0 +1,166 @@
+---
+import Site from '../../../layouts/Site.astro';
+import ProvenanceChip from '../../../components/ProvenanceChip.astro';
+import Lucide from '../../../components/Lucide.astro';
+
+const lastUpdated = 'April 2026';
+---
+<Site
+  title="Methodology · Thailand Liveability Index"
+  description="How TLI is built — the seven categories, the composite math, why some provinces score 0, and how weighting works."
+  locale="en"
+  canonicalPath="/en/methodology/"
+>
+  <article class="methodology">
+    <header class="methodology__head">
+      <p class="tli-eyebrow">Methodology · v1.0</p>
+      <h1 class="methodology__title">How TLI is built</h1>
+      <p class="methodology__lede">
+        A composite 0–100 score across seven independent categories. Equal-weighted by default,
+        aggregated by <em>geometric mean</em> with a non-substitutability lock — so a province that
+        truly scores 0 in any one category is honestly floored at 0 overall, not averaged away.
+      </p>
+      <div class="methodology__meta">
+        <ProvenanceChip variant="fresh" icon="calendar">AS OF {lastUpdated.toUpperCase()}</ProvenanceChip>
+        <ProvenanceChip icon="badge-check">v1.0 · LOCKED</ProvenanceChip>
+        <ProvenanceChip icon="book-open">CC BY 4.0</ProvenanceChip>
+      </div>
+    </header>
+
+    <section class="methodology__section" id="categories">
+      <h2 class="methodology__h2">The seven categories</h2>
+      <p>
+        TLI scores each of Thailand's 77 provinces on seven independent dimensions:
+        <strong>climate &amp; environment</strong>, <strong>cost of living</strong>,
+        <strong>safety &amp; security</strong>, <strong>healthcare</strong>,
+        <strong>connectivity &amp; transport</strong>, <strong>culture &amp; community</strong>,
+        and <strong>economy &amp; opportunity</strong>. Each category is itself a composite of two
+        to four indicators drawn from open Thai government data (NSO, PCD, MoPH, BoT, RTP, Department
+        of Highways, Fine Arts Department, OpenAQ, NASA POWER).
+      </p>
+      <p>
+        Categories were selected to mirror the indicator framework Higgs, Badland, Simons, Knibbs,
+        and Giles-Corti (2019) validated for Melbourne, adapted for a low-to-middle-income country
+        context per Alderton et al. (2019). The full indicator set, sources, and goalposts for each
+        category are documented in the
+        <a href="/en/about/" class="methodology__link">indicator dictionary</a>.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="composite">
+      <h2 class="methodology__h2">How the composite is built</h2>
+      <p>
+        Every indicator is min-max normalised to a 0–100 score against fixed goalposts (HDI precedent,
+        UNDP 2020). Indicator scores are averaged within each category to produce a category score.
+        The seven category scores are then combined into the composite using a <em>geometric mean</em>
+        rather than an arithmetic mean.
+      </p>
+      <p>
+        The geometric-mean choice follows the Planetary-pressures-adjusted HDI precedent (UNDP, 2020).
+        It encodes a substantive value: <em>categories are not substitutable</em>. A high score on
+        coffee-scene cultural amenity should not be allowed to compensate for poor air quality.
+        Arithmetic-mean aggregation would permit that substitution; geometric-mean aggregation does
+        not. Mathematically, the geometric mean is dominated by its lowest input — which is exactly
+        the point.
+      </p>
+      <pre class="methodology__formula">
+composite = (climate · cost · safety · healthcare · connectivity · culture · economy)<sup>1/7</sup></pre>
+      <p>
+        The composite is rounded to an integer 0–100. We display whole numbers because the precision
+        of a decimal place is not meaningful at this aggregation level — claiming a difference between
+        72.3 and 72.7 would be false precision.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="floor">
+      <h2 class="methodology__h2">Why some provinces score 0</h2>
+      <p>
+        Four provinces — Pattani, Yala, Narathiwat, and Nong Bua Lam Phu — currently floor at 0 in
+        the composite. This is correct methodological behaviour, not a bug.
+      </p>
+      <p>
+        The geometric mean is dominated by its lowest input: if any single category scores 0, the
+        product becomes 0, and the composite is floored at 0. The Deep South three (Pattani, Yala,
+        Narathiwat) score 0 in <em>Safety &amp; Security</em> because of real ACLED-recorded conflict
+        fatalities far above the indicator's lower goalpost. Nong Bua Lam Phu floors via
+        <em>Healthcare</em>, where its registered-physician count per 100,000 residents is at the
+        floor and hospital-bed density is below goalpost.
+      </p>
+      <p>
+        The math reflects the data. We do not flatter these provinces by averaging their other,
+        often respectable, category scores into a misleading mid-range composite. The full category
+        breakdown remains visible on each province page — the floor is a composite-level statement,
+        not a verdict on every dimension of the place.
+      </p>
+      <p class="methodology__pullquote">
+        "Honest over clean. The product is more credible because it doesn't pretend to know things
+        it doesn't."
+      </p>
+    </section>
+
+    <section class="methodology__section" id="weights">
+      <h2 class="methodology__h2">Category weighting</h2>
+      <p>
+        The default composite is <strong>equal-weighted</strong> across the seven categories. The
+        OECD/JRC Handbook on Constructing Composite Indicators (2008) treats weighting as a value
+        judgment that should be transparent, and notes that equal weighting is the most defensible
+        default in the absence of a theoretical or empirical basis for differential weights.
+      </p>
+      <p>
+        Equal weighting itself encodes a value judgment — that climate matters as much as economy,
+        and culture as much as safety. Different users will reasonably disagree. The site will
+        eventually surface a re-weighting interface so visitors can apply their own weights and see
+        how the ranking shifts. The default we publish remains equal-weighted, so the canonical TLI
+        score is the same number every visitor sees on first load.
+      </p>
+      <p>
+        The weighting decision pairs with the geometric-mean aggregation: under any non-zero weights,
+        the non-substitutability property holds.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="provinces-vs-zones">
+      <h2 class="methodology__h2">Provinces, not cities or zones</h2>
+      <p>
+        TLI's unit of measurement is the Thai province. There are 77, fixed by administrative
+        definition. Pattaya is not a province (it's part of Chonburi); Koh Samui is not a province
+        (it's part of Surat Thani). On TLI, you find Pattaya by searching for Chonburi.
+      </p>
+      <p>
+        Some provinces are heterogeneous enough that a province-level score conceals real differences
+        — Bangkok's 50 khets, Krabi's beaches versus its inland, Phuket's east versus west. A
+        future iteration of TLI will surface destination-level overlays for these provinces. The
+        canonical score, today and in v1.0, is provincial.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="changes">
+      <h2 class="methodology__h2">Changelog</h2>
+      <dl class="methodology__changelog">
+        <dt>v1.0 — April 2026</dt>
+        <dd>
+          Initial publication. Seven categories, ~22 indicators wired (19 active for the public
+          composite, 3 in development), equal-weighted geometric mean across categories. All 77
+          provinces produce a composite or floor at 0; coverage labels per category surface on
+          every province page.
+        </dd>
+      </dl>
+    </section>
+
+    <footer class="methodology__refs">
+      <h2 class="methodology__h2">Foundational sources</h2>
+      <ul class="methodology__refs-list">
+        <li>Alderton, A., et al. (2019). Reducing inequities in early childhood mental health: how might the neighbourhood built environment help close the gap? <em>BMC Pediatrics</em>.</li>
+        <li>Carr, L., Dunsiger, S., &amp; Marcus, B. (2010). Walk Score as a global estimate of neighbourhood walkability. <em>American Journal of Preventive Medicine</em>.</li>
+        <li>Higgs, C., Badland, H., Simons, K., Knibbs, L., &amp; Giles-Corti, B. (2019). The urban liveability index: developing a policy-relevant urban liveability composite measure and evaluating associations with transport mode choice. <em>International Journal of Health Geographics</em>.</li>
+        <li>Organisation for Economic Co-operation and Development. (2008). <em>Handbook on Constructing Composite Indicators: Methodology and User Guide</em>.</li>
+        <li>Pivo, G., &amp; Fisher, J. (2011). The walkability premium in commercial real estate investments. <em>Real Estate Economics</em>.</li>
+        <li>United Nations Development Programme. (2020). <em>Human Development Report 2020: The Next Frontier — Human Development and the Anthropocene</em>.</li>
+      </ul>
+      <p class="methodology__refs-note">
+        <Lucide name="external-link" size={12} class="tli-citations__icon" />
+        Full methodology v1.0 (academic version with complete APA 7 citations, normalisation goalposts per indicator, and reproducibility receipts) is published separately under CC BY 4.0.
+      </p>
+    </footer>
+  </article>
+</Site>
