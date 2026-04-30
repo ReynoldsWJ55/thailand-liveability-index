@@ -1,0 +1,91 @@
+---
+/**
+ * Province-page hero. Mirrors kit/standalone-province.html structure:
+ * a 2-column grid (name + lede on the left, score panel on the right).
+ *
+ * Floored provinces render with hatch overlay, brick stripe, and the
+ * FLOORED band label instead of a band word — implements the
+ * "honest over clean" principle visibly at the headline scale.
+ */
+import { bandClass, bandLabel } from '../lib/score-band';
+import { CHROME, regionLabel, categoryLabel } from '../data/lookups';
+import type { Province, Locale } from '../data/types';
+import ProvenanceChip from './ProvenanceChip.astro';
+
+interface Props {
+  province: Province;
+  locale: Locale;
+  /** Latest as_of across all categories — drives the AS OF chip. */
+  asOf: string;
+}
+const { province, locale, asOf } = Astro.props;
+const C = CHROME[locale];
+
+const name = locale === 'th' ? province.name_th : province.name_en;
+const altName = locale === 'th' ? province.name_en : province.name_th;
+const region = regionLabel(province.region, locale);
+const residents = C.residents(province.population);
+const eyebrow = `${C.province} · ${region.toUpperCase()} · ${residents.toUpperCase()}`;
+
+const floored = province.floored;
+const display = floored ? '0' : (province.composite ?? 0);
+const heroBandCls = bandClass(province.composite, floored);
+const heroBandWord = bandLabel(province.composite, floored, locale);
+
+const flooredCategoryLabel = floored && province.floored_by
+  ? categoryLabel(province.floored_by, locale)
+  : null;
+
+// Plain, data-derived lede. Hand-authored editorial ledes land in PR 5+.
+const cats = Object.values(province.categories);
+const sortedByScore = [...cats].sort((a, b) => b.score - a.score);
+const strongest = sortedByScore[0];
+const weakest = sortedByScore[sortedByScore.length - 1];
+
+let lede: string;
+if (floored && flooredCategoryLabel) {
+  lede = locale === 'th'
+    ? `คะแนนรวมติดเพดานที่ 0 เพราะหมวด${flooredCategoryLabel}แตะระดับ 0 ภายใต้กฎไม่อนุญาตให้ทดแทนกัน หมวดอื่นยังมีค่าจริงและแสดงด้านล่าง`
+    : `Composite floors at 0 because ${flooredCategoryLabel} reaches 0 — non-substitutability locks the geometric mean to its lowest input. Other categories carry real values and are shown below.`;
+} else if (strongest && weakest) {
+  const sLabel = categoryLabel(strongest.id, locale);
+  const wLabel = categoryLabel(weakest.id, locale);
+  lede = locale === 'th'
+    ? `คะแนนรวม ${province.composite} จาก 100 หมวดเด่น: ${sLabel} (${strongest.score}) หมวดอ่อน: ${wLabel} (${weakest.score})`
+    : `Composite ${province.composite} of 100. Strongest: ${sLabel} (${strongest.score}). Weakest: ${wLabel} (${weakest.score}).`;
+} else {
+  lede = '';
+}
+
+const heroPanelClass = ['hero-score', heroBandCls, floored ? 'hero-score--floored' : ''].filter(Boolean).join(' ');
+---
+<section class="hero" aria-labelledby="province-name">
+  <div>
+    <p class="tli-eyebrow">{eyebrow}</p>
+    <h1 class="hero__name" id="province-name" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {name}
+    </h1>
+    <p class="hero__name-th" {...locale === 'th' ? {} : { lang: 'th' }}>
+      {altName}
+    </p>
+    {lede && <p class="hero__lede" {...locale === 'th' ? { lang: 'th' } : {}}>{lede}</p>}
+  </div>
+  <div class={heroPanelClass}>
+    <span class="hero-score__eyebrow">{C.composite.toUpperCase()} · {asOf}</span>
+    <div class="hero-score__num">
+      {display}<small>/100</small>
+    </div>
+    <span class="hero-score__band">
+      {heroBandWord}{!floored && ` · ${C.rankOf77(province.rank)}`}
+    </span>
+    <div class="hero-score__meta">
+      <ProvenanceChip variant="fresh">{C.asOf} {asOf}</ProvenanceChip>
+      <ProvenanceChip>{C.fullCoverage(province.category_count_full, 7)}</ProvenanceChip>
+      {floored && flooredCategoryLabel && (
+        <ProvenanceChip variant="missing">
+          {C.flooredBy(flooredCategoryLabel)}
+        </ProvenanceChip>
+      )}
+    </div>
+  </div>
+</section>

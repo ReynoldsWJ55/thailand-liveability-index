@@ -1,0 +1,67 @@
+---
+/**
+ * Inline a Lucide icon as raw SVG. Static imports keep the bundle tight and
+ * sidestep Vite's dynamic-import-with-template-literal quirks (no surprise
+ * dev/build divergence). To add a new icon: add a static import below and
+ * register it in ICONS.
+ *
+ * Mode: ALWAYS inline at build time. No client JS, no fetch, no flash.
+ */
+import cloudSun from 'lucide-static/icons/cloud-sun.svg?raw';
+import wallet from 'lucide-static/icons/wallet.svg?raw';
+import shield from 'lucide-static/icons/shield.svg?raw';
+import cross from 'lucide-static/icons/cross.svg?raw';
+import route from 'lucide-static/icons/route.svg?raw';
+import usersRound from 'lucide-static/icons/users-round.svg?raw';
+import trendingUp from 'lucide-static/icons/trending-up.svg?raw';
+import externalLink from 'lucide-static/icons/external-link.svg?raw';
+import calendar from 'lucide-static/icons/calendar.svg?raw';
+import bookOpen from 'lucide-static/icons/book-open.svg?raw';
+import cornerDownRight from 'lucide-static/icons/corner-down-right.svg?raw';
+import badgeCheck from 'lucide-static/icons/badge-check.svg?raw';
+import clockAlert from 'lucide-static/icons/clock-alert.svg?raw';
+
+const ICONS: Record<string, string> = {
+  // 7 category icons
+  'cloud-sun': cloudSun,
+  wallet,
+  shield,
+  cross,
+  route,
+  'users-round': usersRound,
+  'trending-up': trendingUp,
+  // 6 UI icons
+  'external-link': externalLink,
+  calendar,
+  'book-open': bookOpen,
+  'corner-down-right': cornerDownRight,
+  'badge-check': badgeCheck,
+  'clock-alert': clockAlert,
+};
+
+interface Props {
+  name: keyof typeof ICONS | string;
+  size?: number;
+  /** Stroke width override; defaults to the design-system 1.5px. */
+  stroke?: number;
+  class?: string;
+  /** Decorative by default — set a label if the icon stands alone semantically. */
+  label?: string;
+}
+const { name, size = 16, stroke, class: className = '', label } = Astro.props;
+const svg = ICONS[name];
+if (!svg) {
+  throw new Error(
+    `Lucide icon "${name}" is not registered. Add a static import in src/components/Lucide.astro.`,
+  );
+}
+const ariaProps: { role?: 'img'; 'aria-label'?: string; 'aria-hidden'?: 'true' } = label
+  ? { role: 'img', 'aria-label': label }
+  : { 'aria-hidden': 'true' };
+---
+<span
+  class:list={['tli-icon', className]}
+  style={`width: ${size}px; height: ${size}px; display: inline-flex; ${stroke ? `--tli-icon-stroke: ${stroke};` : ''}`}
+  {...ariaProps}
+  set:html={svg}
+></span>

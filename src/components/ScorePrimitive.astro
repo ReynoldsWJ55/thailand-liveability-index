@@ -1,0 +1,39 @@
+---
+/**
+ * Score primitive — the central UI element. PR 3 implements the `chip` scale
+ * (used inside indicator tables); the `hero` and `card` panels are kept inline
+ * in their host components so they can carry surrounding meta cleanly. The
+ * `embed` scale is widget-only and lands when the embed widget ships.
+ *
+ * Hatch pattern at chip scale is automatic via `.tli-score-chip::before` from
+ * components.css — no extra wiring needed here.
+ */
+import { bandClass, bandLabel } from '../lib/score-band';
+import type { Locale } from '../data/types';
+
+interface Props {
+  score: number | null;
+  scale: 'chip';
+  floored?: boolean;
+  bandLabelVisible?: boolean;
+  locale?: Locale;
+  class?: string;
+}
+const {
+  score,
+  scale: _scale,
+  floored = false,
+  bandLabelVisible = true,
+  locale = 'en',
+  class: extra = '',
+} = Astro.props;
+
+const display =
+  score === null || floored ? '0' : String(Math.round(score));
+const bandCls = bandClass(score, floored);
+const label = bandLabel(score, floored, locale).toLowerCase();
+---
+<span class:list={['tli-score-chip', bandCls, extra]}>
+  <span class="tli-score-chip__num">{display}</span>
+  {bandLabelVisible && <span class="tli-score-chip__band">{label}</span>}
+</span>
