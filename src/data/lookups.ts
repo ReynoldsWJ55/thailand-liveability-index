@@ -25,20 +25,6 @@ export const CATEGORIES: Record<CategoryId, CategoryMeta> = {
     icon: 'cloud-sun',
     cssClass: 'cat-climate',
   },
-  cost: {
-    id: 'cost',
-    label_en: 'Cost of Living',
-    label_th: 'ค่าครองชีพ',
-    icon: 'wallet',
-    cssClass: 'cat-cost',
-  },
-  safety: {
-    id: 'safety',
-    label_en: 'Safety & Security',
-    label_th: 'ความปลอดภัย',
-    icon: 'shield',
-    cssClass: 'cat-safety',
-  },
   healthcare: {
     id: 'healthcare',
     label_en: 'Healthcare',
@@ -49,35 +35,49 @@ export const CATEGORIES: Record<CategoryId, CategoryMeta> = {
   connectivity: {
     id: 'connectivity',
     label_en: 'Connectivity & Transport',
-    label_th: 'การคมนาคม',
+    label_th: 'การคมนาคมและการเชื่อมต่อ',
     icon: 'route',
     cssClass: 'cat-connectivity',
   },
-  culture: {
-    id: 'culture',
-    label_en: 'Culture & Community',
-    label_th: 'วัฒนธรรมและชุมชน',
-    icon: 'users-round',
-    cssClass: 'cat-culture',
-  },
   economy: {
     id: 'economy',
-    label_en: 'Economy & Opportunity',
-    label_th: 'เศรษฐกิจและโอกาส',
+    label_en: 'Cost & Economy',
+    label_th: 'ค่าครองชีพและเศรษฐกิจ',
     icon: 'trending-up',
     cssClass: 'cat-economy',
   },
+  safety: {
+    id: 'safety',
+    label_en: 'Safety & Governance',
+    label_th: 'ความปลอดภัยและธรรมาภิบาล',
+    icon: 'shield',
+    cssClass: 'cat-safety',
+  },
+  culture: {
+    id: 'culture',
+    label_en: 'Lifestyle & Culture',
+    label_th: 'วิถีชีวิตและวัฒนธรรม',
+    icon: 'users-round',
+    cssClass: 'cat-culture',
+  },
+  demographics: {
+    id: 'demographics',
+    label_en: 'Demographics & Scale',
+    label_th: 'ประชากรและขนาดเมือง',
+    icon: 'users',
+    cssClass: 'cat-demographics',
+  },
 };
 
-/** Canonical render order across the site. */
+/** Canonical render order across the site (matches Phase 2 aggregator order). */
 export const CATEGORY_ORDER: CategoryId[] = [
   'climate',
-  'cost',
-  'safety',
   'healthcare',
   'connectivity',
-  'culture',
   'economy',
+  'safety',
+  'culture',
+  'demographics',
 ];
 
 export function categoryLabel(id: CategoryId, locale: Locale): string {
@@ -85,15 +85,27 @@ export function categoryLabel(id: CategoryId, locale: Locale): string {
 }
 
 const REGION_LABELS_TH: Record<Region, string> = {
-  North: 'ภาคเหนือ',
-  Northeast: 'ภาคตะวันออกเฉียงเหนือ',
+  'Bangkok and Vicinities': 'กรุงเทพและปริมณฑล',
   Central: 'ภาคกลาง',
-  East: 'ภาคตะวันออก',
-  South: 'ภาคใต้',
+  Eastern: 'ภาคตะวันออก',
+  Western: 'ภาคตะวันตก',
+  Northern: 'ภาคเหนือ',
+  Northeastern: 'ภาคตะวันออกเฉียงเหนือ',
+  Southern: 'ภาคใต้',
+};
+
+const REGION_LABELS_EN_SHORT: Record<Region, string> = {
+  'Bangkok and Vicinities': 'Bangkok & Vicinities',
+  Central: 'Central Thailand',
+  Eastern: 'Eastern Thailand',
+  Western: 'Western Thailand',
+  Northern: 'Northern Thailand',
+  Northeastern: 'Northeastern Thailand',
+  Southern: 'Southern Thailand',
 };
 
 export function regionLabel(region: Region, locale: Locale): string {
-  return locale === 'th' ? REGION_LABELS_TH[region] : `${region} Thailand`;
+  return locale === 'th' ? REGION_LABELS_TH[region] : REGION_LABELS_EN_SHORT[region];
 }
 
 /** Page-chrome labels — kept here so they're easy to revise in one place. */
@@ -154,6 +166,8 @@ export interface ChromeLabels {
   citationsCompositeMethod: string;
   citationsScale: string;
   howCompositeBuilt: string;
+  /** Shown when a category card has zero indicators in this build (R2 wiring lands category scores first; per-indicator detail follows). */
+  indicatorsComingSoon: string;
 }
 
 export const CHROME: Record<Locale, ChromeLabels> = {
@@ -213,6 +227,7 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsCompositeMethod: 'Composite · geometric mean of 7 categories',
     citationsScale: 'Scale · 0–100 (normalized)',
     howCompositeBuilt: 'How the composite is built →',
+    indicatorsComingSoon: 'Indicator-level detail lands in a follow-up release.',
   },
   th: {
     province: 'จังหวัด',
@@ -270,5 +285,6 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsCompositeMethod: 'คะแนนรวม · ค่าเฉลี่ยเรขาคณิตของ 7 หมวด',
     citationsScale: 'ช่วง · 0–100 (ปรับมาตรฐาน)',
     howCompositeBuilt: 'การคำนวณคะแนนรวม →',
+    indicatorsComingSoon: 'รายละเอียดระดับตัวชี้วัดจะมาในรุ่นถัดไป',
   },
 };

@@ -32,12 +32,12 @@ const lastUpdated = 'April 2026';
       <h2 class="methodology__h2">The seven categories</h2>
       <p>
         TLI scores each of Thailand's 77 provinces on seven independent dimensions:
-        <strong>climate &amp; environment</strong>, <strong>cost of living</strong>,
-        <strong>safety &amp; security</strong>, <strong>healthcare</strong>,
-        <strong>connectivity &amp; transport</strong>, <strong>culture &amp; community</strong>,
-        and <strong>economy &amp; opportunity</strong>. Each category is itself a composite of two
-        to four indicators drawn from open Thai government data (NSO, PCD, MoPH, BoT, RTP, Department
-        of Highways, Fine Arts Department, OpenAQ, NASA POWER).
+        <strong>climate &amp; environment</strong>, <strong>healthcare</strong>,
+        <strong>connectivity &amp; transport</strong>, <strong>cost &amp; economy</strong>,
+        <strong>safety &amp; governance</strong>, <strong>lifestyle &amp; culture</strong>,
+        and <strong>demographics &amp; scale</strong>. Each category is itself a composite of one
+        to eight indicators drawn from open Thai government data (NSO, PCD, MoPH, BoT, ACLED,
+        Department of Highways, Fine Arts Department, TAT, OpenAQ, NASA POWER, Hansen GFC).
       </p>
       <p>
         Categories were selected to mirror the indicator framework Higgs, Badland, Simons, Knibbs,
@@ -65,7 +65,7 @@ const lastUpdated = 'April 2026';
         the point.
       </p>
       <pre class="methodology__formula">
-composite = (climate · cost · safety · healthcare · connectivity · culture · economy)<sup>1/7</sup></pre>
+composite = (climate · healthcare · connectivity · economy · safety · culture · demographics)<sup>1/7</sup></pre>
       <p>
         The composite is rounded to an integer 0–100. We display whole numbers because the precision
         of a decimal place is not meaningful at this aggregation level — claiming a difference between
@@ -82,7 +82,7 @@ composite = (climate · cost · safety · healthcare · connectivity · culture 
       <p>
         The geometric mean is dominated by its lowest input: if any single category scores 0, the
         product becomes 0, and the composite is floored at 0. The Deep South three (Pattani, Yala,
-        Narathiwat) score 0 in <em>Safety &amp; Security</em> because of real ACLED-recorded conflict
+        Narathiwat) score 0 in <em>Safety &amp; Governance</em> because of real ACLED-recorded conflict
         fatalities far above the indicator's lower goalpost. Nong Bua Lam Phu floors via
         <em>Healthcare</em>, where its registered-physician count per 100,000 residents is at the
         floor and hospital-bed density is below goalpost.
