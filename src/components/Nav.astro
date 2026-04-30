@@ -1,4 +1,9 @@
 ---
+import scoresData from '../data/scores.json';
+import type { ScoresFile } from '../data/types';
+import { regionLabel } from '../data/lookups';
+import Lucide from './Lucide.astro';
+
 interface Props {
   locale: 'en' | 'th';
   /** The current path WITHOUT the leading locale prefix, e.g. '/' or '/methodology/'. */
@@ -7,15 +12,281 @@ interface Props {
 const { locale, pathInLocale = '/' } = Astro.props;
 const enHref = `/en${pathInLocale}`;
 const thHref = `/th${pathInLocale}`;
+
+// Province search index — inlined into the page so the combobox is fully
+// client-side without a fetch. ~50 bytes per province; fine even at 77.
+// We index id, EN name, TH name, and a normalized region label per locale
+// so the matcher can hit any of those.
+const data = scoresData as ScoresFile;
+const provinceIndex = data.provinces.map((p) => ({
+  id: p.id,
+  name_en: p.name_en,
+  name_th: p.name_th,
+  region: regionLabel(p.region, locale),
+  score: p.floored ? 0 : (p.composite ?? 0),
+  floored: p.floored,
+}));
+const indexJson = JSON.stringify(provinceIndex);
+
+const placeholder = locale === 'th' ? 'ค้นหาจังหวัด…' : 'Find a province…';
+const clearLabel = locale === 'th' ? 'ล้าง' : 'Clear';
+const searchLabel = locale === 'th' ? 'ค้นหาจังหวัด' : 'Find a province';
+const noResults = locale === 'th' ? 'ไม่พบจังหวัด' : 'No provinces match';
+const totalLabel = locale === 'th' ? `${data.provinces.length} จังหวัด` : `${data.provinces.length} provinces`;
 ---
 <header class="tli-nav">
   <div class="tli-nav__inner">
     <a class="tli-nav__brand" href={`/${locale}/`} aria-label="Thailand Liveability Index — home">
       TLI<span class="tli-nav__brand-dot">.</span>
     </a>
+
+    <form
+      class="tli-nav__search"
+      role="search"
+      data-component="province-search"
+      data-locale={locale}
+      autocomplete="off"
+      onsubmit="return false;"
+    >
+      <Lucide name="search" size={14} class="tli-nav__search-icon" />
+      <input
+        id="tli-province-search"
+        class="tli-nav__search-input"
+        type="search"
+        placeholder={placeholder}
+        autocomplete="off"
+        spellcheck="false"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="tli-province-suggestions"
+        aria-autocomplete="list"
+        aria-label={searchLabel}
+        {...locale === 'th' ? { lang: 'th' } : {}}
+      />
+      <button
+        type="button"
+        class="tli-nav__search-clear"
+        aria-label={clearLabel}
+        hidden
+      >
+        <Lucide name="x" size={12} />
+      </button>
+      <ul
+        id="tli-province-suggestions"
+        class="tli-nav__search-list"
+        role="listbox"
+        aria-label={searchLabel}
+        hidden
+      ></ul>
+      <span class="tli-nav__search-status" aria-live="polite" aria-atomic="true"></span>
+      <script type="application/json" data-province-index set:html={indexJson} />
+      <span data-no-results-text hidden>{noResults}</span>
+      <span data-total-text hidden>{totalLabel}</span>
+    </form>
+
     <nav class="tli-nav__lang" aria-label="Language">
       <a href={enHref} aria-current={locale === 'en' ? 'true' : 'false'}>EN</a>
       <a href={thHref} aria-current={locale === 'th' ? 'true' : 'false'}>TH</a>
     </nav>
   </div>
 </header>
+
+<script>
+  // Province search — vanilla combobox.
+  // Pattern: WAI-ARIA combobox with manual focus management and arrow-key
+  // navigation. Suggestions render up to 8 matches ranked by:
+  //   1. exact name match (EN or TH)
+  //   2. starts-with match (locale-preferred)
+  //   3. word-start match (e.g. "ayut" → "Phra Nakhon Si Ayutthaya")
+  //   4. contains match
+  //   5. region-name match (lowest weight)
+  // No external lib — fast enough for 77 entries.
+  type Province = {
+    id: string;
+    name_en: string;
+    name_th: string;
+    region: string;
+    score: number;
+    floored: boolean;
+  };
+
+  document.querySelectorAll<HTMLFormElement>('[data-component="province-search"]').forEach((root) => {
+    const locale = (root.dataset.locale as 'en' | 'th') ?? 'en';
+    const input = root.querySelector<HTMLInputElement>('.tli-nav__search-input');
+    const list = root.querySelector<HTMLUListElement>('.tli-nav__search-list');
+    const clearBtn = root.querySelector<HTMLButtonElement>('.tli-nav__search-clear');
+    const status = root.querySelector<HTMLElement>('.tli-nav__search-status');
+    const indexEl = root.querySelector<HTMLScriptElement>('[data-province-index]');
+    const noResultsText = root.querySelector<HTMLElement>('[data-no-results-text]')?.textContent ?? 'No matches';
+    if (!input || !list || !indexEl) return;
+
+    const provinces: Province[] = JSON.parse(indexEl.textContent ?? '[]');
+    let activeIndex = -1;
+    let currentMatches: Province[] = [];
+
+    function score(p: Province, q: string): number {
+      const ql = q.toLowerCase();
+      const en = p.name_en.toLowerCase();
+      const th = p.name_th;
+      const region = p.region.toLowerCase();
+      // Exact match either locale
+      if (en === ql || th === q) return 100;
+      // Starts-with — preferred locale first
+      const primary = locale === 'th' ? th : en;
+      const secondary = locale === 'th' ? en : th;
+      if (primary.startsWith(locale === 'th' ? q : ql)) return 90;
+      if (secondary.toLowerCase().startsWith(ql) || secondary.startsWith(q)) return 80;
+      // Word-start — match starts of any whitespace-delimited word
+      const enWords = en.split(/\s+/);
+      if (enWords.some((w) => w.startsWith(ql))) return 70;
+      // Contains
+      if (en.includes(ql)) return 50;
+      if (th.includes(q)) return 50;
+      // Region (low weight, only if nothing else)
+      if (region.includes(ql)) return 20;
+      return 0;
+    }
+
+    function rank(q: string): Province[] {
+      if (!q.trim()) return [];
+      const matches = provinces
+        .map((p) => ({ p, s: score(p, q.trim()) }))
+        .filter((m) => m.s > 0)
+        .sort((a, b) => b.s - a.s || a.p.name_en.localeCompare(b.p.name_en))
+        .slice(0, 8)
+        .map((m) => m.p);
+      return matches;
+    }
+
+    function bandClassFor(p: Province): string {
+      if (p.floored) return 'score-0';
+      if (p.score >= 80) return 'score-4';
+      if (p.score >= 60) return 'score-3';
+      if (p.score >= 40) return 'score-2';
+      if (p.score >= 20) return 'score-1';
+      return 'score-0';
+    }
+
+    function render(matches: Province[]) {
+      currentMatches = matches;
+      activeIndex = -1;
+      input!.setAttribute('aria-expanded', matches.length > 0 ? 'true' : 'false');
+      if (matches.length === 0) {
+        if (input!.value.trim()) {
+          list!.hidden = false;
+          list!.innerHTML = `<li class="tli-nav__search-empty" role="presentation">${noResultsText}</li>`;
+        } else {
+          list!.hidden = true;
+          list!.innerHTML = '';
+        }
+        return;
+      }
+      list!.hidden = false;
+      list!.innerHTML = matches
+        .map((p, i) => {
+          const name = locale === 'th' ? p.name_th : p.name_en;
+          const sub = locale === 'th' ? p.name_en : p.name_th;
+          const band = bandClassFor(p);
+          const scoreDisplay = p.floored ? '0' : String(p.score);
+          return `<li
+            class="tli-nav__search-item"
+            role="option"
+            id="tli-province-suggestion-${i}"
+            data-id="${p.id}"
+            aria-selected="false"
+          >
+            <span class="tli-nav__search-item-name">${name}</span>
+            <span class="tli-nav__search-item-sub">${sub} · ${p.region}</span>
+            <span class="tli-nav__search-item-score tli-num ${band}">${scoreDisplay}</span>
+          </li>`;
+        })
+        .join('');
+      // Click to navigate
+      list!.querySelectorAll<HTMLLIElement>('[role="option"]').forEach((li) => {
+        li.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          go(li.dataset.id);
+        });
+        li.addEventListener('mouseenter', () => {
+          const i = Array.from(list!.children).indexOf(li);
+          setActive(i);
+        });
+      });
+    }
+
+    function setActive(i: number) {
+      const items = list!.querySelectorAll<HTMLLIElement>('[role="option"]');
+      items.forEach((el, idx) => {
+        const active = idx === i;
+        el.setAttribute('aria-selected', active ? 'true' : 'false');
+        el.classList.toggle('is-active', active);
+      });
+      activeIndex = i;
+      if (i >= 0 && items[i]) {
+        input!.setAttribute('aria-activedescendant', items[i].id);
+      } else {
+        input!.removeAttribute('aria-activedescendant');
+      }
+    }
+
+    function go(id: string | undefined) {
+      if (!id) return;
+      window.location.href = `/${locale}/${id}/`;
+    }
+
+    function close() {
+      list!.hidden = true;
+      list!.innerHTML = '';
+      input!.setAttribute('aria-expanded', 'false');
+      input!.removeAttribute('aria-activedescendant');
+      activeIndex = -1;
+      currentMatches = [];
+    }
+
+    input.addEventListener('input', () => {
+      const q = input.value;
+      clearBtn!.hidden = q.length === 0;
+      render(rank(q));
+      if (status) status.textContent = currentMatches.length === 0 && q.trim() ? noResultsText : '';
+    });
+
+    input.addEventListener('keydown', (e) => {
+      const items = list!.querySelectorAll<HTMLLIElement>('[role="option"]');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (items.length === 0) return;
+        setActive((activeIndex + 1) % items.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (items.length === 0) return;
+        setActive(activeIndex <= 0 ? items.length - 1 : activeIndex - 1);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const target = activeIndex >= 0 ? currentMatches[activeIndex] : currentMatches[0];
+        if (target) go(target.id);
+      } else if (e.key === 'Escape') {
+        if (input.value) {
+          input.value = '';
+          clearBtn!.hidden = true;
+        }
+        close();
+      }
+    });
+
+    clearBtn!.addEventListener('click', () => {
+      input.value = '';
+      clearBtn!.hidden = true;
+      close();
+      input.focus();
+    });
+
+    input.addEventListener('blur', () => {
+      // Delay so click on a suggestion can fire first
+      setTimeout(() => close(), 120);
+    });
+
+    input.addEventListener('focus', () => {
+      if (input.value.trim()) render(rank(input.value));
+    });
+  });
+</script>

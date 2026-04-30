@@ -94,6 +94,126 @@ main {
 }
 .tli-nav__lang a:hover { color: var(--ink); }
 
+/* --- Nav search (combobox) ----------------------------------------------- */
+.tli-nav__inner { gap: var(--sp-4); }
+.tli-nav__search {
+  position: relative;
+  flex: 1 1 auto;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  background: var(--paper-2);
+  transition: border-color 120ms linear, background 120ms linear, box-shadow 120ms linear;
+}
+.tli-nav__search:focus-within {
+  border-color: var(--brand);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--brand);
+}
+.tli-nav__search-icon { color: var(--ink-3); }
+.tli-nav__search:focus-within .tli-nav__search-icon { color: var(--brand); }
+.tli-nav__search-input {
+  border: 0;
+  background: transparent;
+  outline: 0;
+  flex: 1;
+  font: var(--fw-regular) var(--fs-14)/1.2 var(--font-sans);
+  color: var(--ink);
+  min-width: 0;
+}
+.tli-nav__search-input::placeholder { color: var(--ink-4, var(--ink-3)); }
+.tli-nav__search-input::-webkit-search-cancel-button { display: none; }
+.tli-nav__search-clear {
+  border: 0;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tli-nav__search-clear:hover { color: var(--ink); }
+.tli-nav__search-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tli-nav__search-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  box-shadow: var(--shadow-2);
+  z-index: 60;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.tli-nav__search-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: var(--sp-3);
+  padding: 8px 10px;
+  border-radius: var(--r-1);
+  cursor: pointer;
+  font: var(--fw-regular) var(--fs-13)/1.3 var(--font-sans);
+  color: var(--ink);
+}
+.tli-nav__search-item:hover,
+.tli-nav__search-item.is-active {
+  background: var(--paper-2);
+}
+.tli-nav__search-item-name {
+  grid-column: 1;
+  grid-row: 1;
+  font-weight: var(--fw-semibold);
+  color: var(--ink);
+}
+.tli-nav__search-item-sub {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: var(--fs-12);
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+  margin-top: 1px;
+}
+.tli-nav__search-item-score {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center;
+  font: var(--fw-medium) var(--fs-18)/1 var(--font-mono);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.tli-nav__search-item-score.score-0 { color: var(--score-0); }
+.tli-nav__search-item-score.score-1 { color: var(--score-1); }
+.tli-nav__search-item-score.score-2 { color: var(--score-2); }
+.tli-nav__search-item-score.score-3 { color: var(--score-3); }
+.tli-nav__search-item-score.score-4 { color: var(--score-4); }
+.tli-nav__search-empty {
+  padding: var(--sp-3) var(--sp-4);
+  font: var(--fw-regular) var(--fs-13)/1.4 var(--font-sans);
+  color: var(--ink-3);
+}
+
 /* --- Footer ---------------------------------------------------------------- */
 .tli-footer {
   border-top: 1px solid var(--rule);
@@ -1270,3 +1390,143 @@ main {
   min-width: 160px;
 }
 .about-category__indicator-label { color: var(--ink); }
+
+/* =============================================================================
+   MOBILE BREAKPOINTS — pulls the page together below ~720px.
+   Mobile-first defaults are already in place above; these overrides handle
+   the typography that's too big at narrow widths and the layouts that need
+   to stack/reposition.
+   ============================================================================= */
+
+/* Below 720px — tablet / large phone */
+@media (max-width: 720px) {
+  /* Home hero — clamp the title so 40px doesn't blow past the viewport */
+  .home-hero {
+    margin: calc(-1 * var(--sp-10)) calc(-1 * var(--gutter-sm)) var(--sp-10);
+    padding: var(--sp-10) var(--gutter-sm);
+  }
+  .home-hero__title {
+    font-size: clamp(28px, 7.5vw, 40px);
+  }
+  .home-hero__lede {
+    font-size: var(--fs-15);
+  }
+
+  /* Methodology + About titles — same treatment */
+  .methodology__title {
+    font-size: clamp(28px, 7.5vw, 40px);
+  }
+  .methodology__lede {
+    font-size: var(--fs-16);
+  }
+
+  /* Province-page hero name — 64px is too big on phones */
+  .hero__name {
+    font-size: clamp(32px, 9vw, 56px);
+  }
+
+  /* Home sections — tighter vertical rhythm */
+  .home-section {
+    margin: var(--sp-10) 0;
+    padding-bottom: var(--sp-8);
+  }
+  .home-section__title {
+    font-size: var(--fs-20);
+  }
+
+  /* Section heads — stack the trailing chip below the title block */
+  .home-section__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+
+  /* Citation rows wrap freely */
+  .home-citations {
+    gap: var(--sp-2) var(--sp-4);
+  }
+}
+
+/* Below 620px — small phones, narrow tablets */
+@media (max-width: 620px) {
+  /* Map: inline legend gets too cramped overlaying the canvas at <620px.
+     Move it below the SVG so both have room. */
+  .tli-map__canvas {
+    padding: var(--sp-3);
+  }
+  .tli-map__legend {
+    position: static;
+    margin-top: var(--sp-3);
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Score panel on province page — drop the eyebrow/meta padding */
+  .hero-score {
+    padding: var(--sp-5) var(--sp-5);
+  }
+  .hero-score__num {
+    font-size: 64px;
+  }
+
+  /* Tile grid — 1 column at narrow widths */
+  .tli-grid {
+    grid-template-columns: 1fr;
+  }
+  .tli-grid--curated {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Below 520px — phone */
+@media (max-width: 520px) {
+  /* Nav: stack the search to a second row, brand + lang stay on top */
+  .tli-nav__inner {
+    flex-wrap: wrap;
+    row-gap: var(--sp-3);
+  }
+  .tli-nav__search {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .tli-nav__brand { flex: 1 1 auto; }
+
+  /* Home hero — even tighter title */
+  .home-hero__title { font-size: clamp(26px, 8vw, 34px); }
+  .methodology__title { font-size: clamp(26px, 8vw, 34px); }
+
+  /* Methodology body type a touch smaller for narrow phones */
+  .methodology p { font-size: var(--fs-15); }
+
+  /* Footer columns stack to single column */
+  .tli-foot__grid { grid-template-columns: 1fr; }
+
+  /* Drop cap on methodology — float can overflow on narrow widths */
+  .methodology__section:first-of-type p:first-of-type::first-letter {
+    font-size: 3em;
+    margin: 4px 6px 0 0;
+  }
+}
+
+/* Below 380px — small phones (iPhone SE, etc.) */
+@media (max-width: 380px) {
+  /* Tile rank+name+score grid recompresses */
+  .tli-tile__body {
+    padding: 9px 10px 10px;
+  }
+  .tli-tile__score {
+    font-size: var(--fs-24);
+  }
+  .tli-tile__name {
+    font-size: var(--fs-13);
+  }
+
+  /* About-stats grid — 2 cols even at narrow widths to avoid 1-col stat list */
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Reduce-motion handling already global in line ~28; these breakpoints
+   inherit that automatically. No additional overrides needed. */
