@@ -1,0 +1,217 @@
+---
+/**
+ * Yasothon — the inaugural Layer 2 editorial piece.
+ *
+ * Layout: 680px editorial column (Plex Serif body, drop cap on opening
+ * paragraph) + a sticky score sidebar that surfaces the algorithmic
+ * numbers without ever being overwritten by editorial framing.
+ *
+ * The editorial copy below is a TEMPLATE structure. Will replaces these
+ * paragraphs with real field notes after the 8-10 May 2026 trip.
+ * Algorithmic content (composite, category scores, rank, indicators)
+ * pulls from scores.json — same source as /en/yasothon/.
+ */
+import Site from '../../../../layouts/Site.astro';
+import ProvenanceChip from '../../../../components/ProvenanceChip.astro';
+import ScorePrimitive from '../../../../components/ScorePrimitive.astro';
+import Lucide from '../../../../components/Lucide.astro';
+import scoresData from '../../../../data/scores.json';
+import type { ScoresFile } from '../../../../data/types';
+import { CATEGORIES, CATEGORY_ORDER, regionLabel } from '../../../../data/lookups';
+
+const data = scoresData as ScoresFile;
+const province = data.provinces.find((p) => p.id === 'yasothon');
+
+if (!province) {
+  // Build-time fail-loud — Yasothon should always be in the dataset.
+  throw new Error('Yasothon not found in scores.json. Cannot render editorial.');
+}
+
+const region = regionLabel(province.region, 'en');
+const cats = CATEGORY_ORDER.map((id) => ({
+  id,
+  meta: CATEGORIES[id],
+  score: province.categories[id].score,
+  indicatorCount: province.categories[id].indicator_count,
+}));
+
+const strongest = [...cats].sort((a, b) => b.score - a.score)[0];
+const weakest = [...cats].sort((a, b) => a.score - b.score)[0];
+---
+<Site
+  title="Yasothon, on the data and in person · Thailand Liveability Index"
+  description={`Layer 2 editorial — Yasothon's TLI composite is ${province.composite}, rank ${province.rank} of 77. Field notes from May 2026 alongside the algorithmic score.`}
+  locale="en"
+  canonicalPath="/en/editorial/yasothon/"
+  ogImage="/og/yasothon.png"
+>
+  <article class="editorial">
+    <header class="editorial__head">
+      <p class="tli-eyebrow">Layer 2 Editorial · Province Field Notes</p>
+      <h1 class="editorial__title">Yasothon, on the data and in person</h1>
+      <p class="editorial__byline">
+        By <strong>Will Reynolds</strong> · <time datetime="2026-05-10">10 May 2026</time>
+      </p>
+      <p class="editorial__lede">
+        Yasothon ranks <strong>{province.rank} of 77</strong> on the TLI composite —
+        composite <span class="tli-num">{province.composite}</span> of 100. The number
+        sits in the bottom third of the distribution, but the categories underneath it
+        tell a more interesting story than the headline. This is what three days on
+        the ground there did and didn't change about how I read the data.
+      </p>
+      <div class="editorial__meta">
+        <ProvenanceChip variant="fresh" icon="calendar">FIELD VISIT 8–10 MAY 2026</ProvenanceChip>
+        <ProvenanceChip icon="badge-check">NAMED BYLINE · NOT FACTORED INTO SCORES</ProvenanceChip>
+      </div>
+    </header>
+
+    <div class="editorial__body">
+      <div class="editorial__prose">
+        <section class="editorial__section">
+          <p class="editorial__draft-note">
+            <strong>This is a template.</strong> The body below is the structural
+            scaffolding for the field-notes piece — section flow, voice register,
+            and the algorithmic spine the editorial sits beside. Real prose
+            replaces these paragraphs after the May trip. The score panel and
+            citation row use real data and ship as-is.
+          </p>
+
+          <p class="editorial__lead-para">
+            <span class="editorial__dropcap">Y</span>asothon is one of the smaller
+            provinces in the Northeast — under 530,000 residents, the second-smallest
+            in Isan after Nong Bua Lam Phu. Its TLI composite of <span class="tli-num">{province.composite}</span> sits in the bottom
+            third of the distribution. The number is doing what it should: it is the
+            geometric mean of seven independent inputs, two of which are weak enough
+            to drag the composite down even where other categories are credible.
+            Walking through the markets and the rocket-festival district doesn't change
+            what the math says. It changes what the math feels like, and what it
+            doesn't capture.
+          </p>
+
+          <p>
+            The strongest signal in the data is safety. Yasothon scores
+            <span class="tli-num">{strongest.score}</span> in <em>{strongest.meta.label_en}</em> — driven
+            by ACLED's near-zero conflict-fatality rate and a low events-per-capita number
+            in the 5-year window. This is not "feels safe" tourist intuition; it's the
+            same instrument that floors Pattani at 0. It is consistent with what walking
+            around at night in Yasothon Town tells you. The data and the place agree.
+          </p>
+        </section>
+
+        <h2 class="editorial__h2">What the weakest categories are actually measuring</h2>
+        <section class="editorial__section">
+          <p>
+            The weakest signal is <em>{weakest.meta.label_en}</em> at <span class="tli-num">{weakest.score}</span>.
+            That number's underlying indicator on the algorithmic page is the one to
+            look at — not as an indictment of the place, but as a lens on what TLI is
+            and isn't measuring.
+          </p>
+          <p>
+            <em>[Field-notes paragraph: what does the weakest category actually look
+            like in the place — markets, employment patterns, what people said when
+            asked about cost-of-living. Honest framing: the indicator is a real
+            measure of what it measures, and the methodology page documents what it
+            doesn't.]</em>
+          </p>
+        </section>
+
+        <h2 class="editorial__h2">Where the algorithmic score is right, and where it leaves things out</h2>
+        <section class="editorial__section">
+          <p>
+            <em>[Field-notes paragraph: places where the data and the place agree
+            (e.g. economy is genuinely thin), places where the data omits real
+            texture (e.g. food culture, festival economy that TAT events-per-100k
+            picks up only crudely), places where the indicator framework isn't yet
+            granular enough to surface what's there.]</em>
+          </p>
+          <figure class="editorial__figure">
+            <div class="editorial__photo-placeholder">
+              <span>PHOTOGRAPH · DAYLIT · DOCUMENTARY</span>
+              <span class="editorial__photo-meta">Caption + as-of date · CC BY 4.0 attribution</span>
+            </div>
+            <figcaption>
+              Field photograph from 8–10 May 2026.
+            </figcaption>
+          </figure>
+        </section>
+
+        <h2 class="editorial__h2">The methodology has a known limitation here</h2>
+        <section class="editorial__section">
+          <p>
+            <em>[Field-notes paragraph: the limitation TLI v1.0 most clearly shows
+            in Yasothon — possibly that "Cost &amp; Economy" combines two genuinely
+            distinct things into one indicator slot, and that GPP-per-capita
+            doesn't capture informal economy depth. Honest about what would need
+            to change in v1.1 and what stays in v1.0.]</em>
+          </p>
+        </section>
+
+        <h2 class="editorial__h2">What an honest reader should take away</h2>
+        <section class="editorial__section">
+          <p>
+            <em>[Closing paragraph: synthesis. The composite is correct in its math;
+            it isn't dishonest about what it measures; the place has texture that no
+            seven-category index will ever fully capture; the editorial layer exists
+            specifically to make this gap visible without softening the algorithmic
+            score.]</em>
+          </p>
+        </section>
+
+        <footer class="editorial__refs">
+          <p class="editorial__refs-note">
+            <Lucide name="badge-check" size={12} class="tli-citations__icon" />
+            This editorial sits <strong>beside</strong> the algorithmic score, not
+            above it. The composite, category scores, and indicators surface in their
+            own provenance-chained UI on the
+            <a href={`/en/${province.id}/`} class="editorial__link">province page</a>
+            and on the home page. No editorial framing here factors back into the
+            scores; that is a load-bearing methodological commitment.
+          </p>
+        </footer>
+      </div>
+
+      <aside class="editorial__sidebar" aria-label="Algorithmic score panel">
+        <div class="editorial__sidebar-inner">
+          <p class="tli-eyebrow editorial__sidebar-eyebrow">Algorithmic score</p>
+          <h2 class="editorial__sidebar-title">{province.name_en}</h2>
+          <p class="editorial__sidebar-meta">
+            <span lang="th">{province.name_th}</span> · {region} · {province.population.toLocaleString('en-US')}
+          </p>
+
+          <div class="editorial__sidebar-composite">
+            <ScorePrimitive
+              score={province.composite ?? 0}
+              scale="hero"
+              floored={province.floored}
+              locale="en"
+            />
+            <p class="editorial__sidebar-rank">
+              Rank <strong>{province.rank}</strong> of 77
+            </p>
+          </div>
+
+          <h3 class="editorial__sidebar-h3">By category</h3>
+          <ul class="editorial__sidebar-cats">
+            {cats.map((c) => (
+              <li class="editorial__sidebar-cat">
+                <span class="editorial__sidebar-cat-row">
+                  <span class:list={['tli-cat-dot', c.meta.cssClass]} aria-hidden="true"></span>
+                  <span class="editorial__sidebar-cat-label">{c.meta.label_en}</span>
+                  <span class="editorial__sidebar-cat-score tli-num">{c.score}</span>
+                </span>
+                <span class="editorial__sidebar-cat-meta">
+                  {c.indicatorCount} indicator{c.indicatorCount === 1 ? '' : 's'}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <a href={`/en/${province.id}/`} class="editorial__sidebar-link">
+            Full province page
+            <Lucide name="external-link" size={11} class="tli-link__icon" />
+          </a>
+        </div>
+      </aside>
+    </div>
+  </article>
+</Site>
