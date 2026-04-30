@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
 name: Cloudflare Pages deploy
 
 # Builds and deploys both branches via wrangler:

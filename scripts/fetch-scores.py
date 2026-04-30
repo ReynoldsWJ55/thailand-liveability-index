@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
 """
 Fetch the latest TLI scores and emit src/data/scores.json conforming to
 src/data/types.ts.

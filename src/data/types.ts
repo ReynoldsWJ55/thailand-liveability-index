@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
 /**
  * Public type contract for the TLI scores file.
  *

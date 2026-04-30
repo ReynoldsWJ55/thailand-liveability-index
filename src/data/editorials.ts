@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
 /**
  * Editorial registry — which provinces have a Layer 2 editorial piece.
  *

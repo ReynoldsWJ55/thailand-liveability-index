@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
 /**
  * Score-band logic. Bands are inclusive at the lower edge:
  *   0:  0–19  POOR    .score-0  (brick)

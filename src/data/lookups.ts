@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
 /**
  * Lookups for category metadata and locale-aware chrome labels.
  *

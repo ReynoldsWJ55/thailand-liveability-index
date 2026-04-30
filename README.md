@@ -64,7 +64,7 @@ Future work after MVP may include premium services (real-time API access, data f
 
 ## Repository status
 
-This repository is currently a placeholder. Code, methodology, and data schemas land here as the MVP approaches launch. To follow progress, watch this repo on GitHub. The canonical site at [thailandliveabilityindex.com](https://thailandliveabilityindex.com) is reserved and will go live at MVP launch.
+This repository contains the public site source for [thailandliveabilityindex.com](https://thailandliveabilityindex.com) — the site shell, design system, page templates, and a sample scores file. The methodology document, scoring code, and full data-sources manifest publish here at MVP launch (late August / early September 2026); until then, that material lives in a private working repository while it stabilizes. The canonical site is reserved and goes live at MVP launch. To follow progress, watch this repo on GitHub.
 
 ## License and trademark
 

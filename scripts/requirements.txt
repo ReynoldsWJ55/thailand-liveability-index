@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
 # Python dependencies for the R2 fetch step in scripts/fetch-scores.py.
 # Used by:
 #   - GitHub Actions (the pages-deploy workflow installs these before running fetch-scores.py)

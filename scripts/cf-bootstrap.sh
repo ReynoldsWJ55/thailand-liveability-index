@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
 #
 # Cloudflare Pages bootstrap — one-time setup, runs locally on the
 # operator's machine. Drives the project creation, custom-domain binding,

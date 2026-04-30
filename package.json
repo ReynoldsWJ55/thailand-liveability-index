@@ -3,8 +3,33 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Thailand Liveability Index — public site source.",
-  "license": "MIT",
+  "description": "Thailand Liveability Index — public site source. A standalone, methodology-first liveability index for Thailand's 77 provinces with a sub-provincial zone overlay.",
+  "keywords": [
+    "thailand",
+    "liveability",
+    "livability",
+    "liveability-index",
+    "provinces",
+    "score",
+    "open-methodology",
+    "open-data",
+    "walkability",
+    "air-quality",
+    "tli"
+  ],
+  "author": {
+    "name": "Will Reynolds",
+    "email": "info@thailandliveabilityindex.com"
+  },
+  "license": "(MIT AND CC-BY-4.0)",
+  "homepage": "https://thailandliveabilityindex.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ReynoldsWJ55/thailand-liveability-index.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ReynoldsWJ55/thailand-liveability-index/issues"
+  },
   "engines": {
     "node": ">=22"
   },

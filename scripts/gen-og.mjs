@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
 /**
  * Generate OG (Open Graph) images at build time.
  *

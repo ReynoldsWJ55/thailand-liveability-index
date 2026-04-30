@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
 #
 # Soft-launch flip — change CF Pages production branch.
 #
