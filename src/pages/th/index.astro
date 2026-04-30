@@ -1,5 +1,11 @@
 ---
 import Site from '../../layouts/Site.astro';
+import scoresData from '../../data/scores.json';
+import type { ScoresFile } from '../../data/types';
+
+const data = scoresData as ScoresFile;
+const provinces = [...data.provinces].sort((a, b) => a.rank - b.rank);
+const generatedDate = data.generated_at.slice(0, 10);
 ---
 <Site
   title="ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย"
@@ -7,10 +13,37 @@ import Site from '../../layouts/Site.astro';
   locale="th"
   canonicalPath="/th/"
 >
-  <p class="tli-eyebrow" lang="th">โครงสร้างเริ่มต้น · ขั้นที่ 1</p>
+  <p class="tli-eyebrow" lang="th">โครงสร้างเริ่มต้น · ขั้นที่ 2 · เชื่อมต่อข้อมูลแล้ว</p>
   <h1 class="tli-h1" lang="th">ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย</h1>
   <p class="tli-lede" lang="th">
     คะแนนคุณภาพการอยู่อาศัยแบบรวมสำหรับทั้ง 77 จังหวัดของประเทศไทย — เจ็ดหมวดหมู่
     ระเบียบวิธีโปร่งใส แหล่งที่มาของข้อมูลครบถ้วน
   </p>
+
+  <p class="tli-caption" style="margin-top: var(--sp-6);">
+    <span lang="th">สร้างข้อมูลเมื่อ</span> <span class="tli-num">{generatedDate}</span> ·
+    <span lang="th">ระเบียบวิธี</span> <span class="tli-num">{data.methodology_version}</span> ·
+    <span lang="th">แหล่ง</span> <span class="tli-mono">{data.source_manifest}</span>
+  </p>
+
+  <h2 class="tli-h3" lang="th" style="margin-top: var(--sp-12); margin-bottom: var(--sp-3);">
+    จังหวัดตัวอย่าง
+    <span class="tli-eyebrow" style="margin-left: var(--sp-2);">{provinces.length} <span lang="th">จาก</span> 77</span>
+  </h2>
+
+  <ul class="tli-province-list">
+    {provinces.map((p) => (
+      <li class="tli-province-row">
+        <span class="tli-province-row__rank tli-num">{p.rank}</span>
+        <span class={`tli-province-row__score tli-num${p.floored ? ' is-floored' : ''}`}>
+          {p.floored ? 'FL' : p.composite}
+        </span>
+        <span class="tli-province-row__name" lang="th">{p.name_th}</span>
+        <span class="tli-province-row__region tli-eyebrow">{p.region}</span>
+        {p.floored && (
+          <span class="tli-prov tli-prov-missing" lang="th">ติดเพดาน · {p.floored_by?.toUpperCase()}</span>
+        )}
+      </li>
+    ))}
+  </ul>
 </Site>

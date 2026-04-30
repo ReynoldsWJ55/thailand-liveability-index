@@ -120,3 +120,42 @@ main {
   outline-offset: 2px;
   border-radius: var(--r-2);
 }
+
+/* --- Province list (iter-2 sample dump) -----------------------------------
+   Page-level styling for the sample province list rendered on /en/ and /th/.
+   PR 4 replaces this with the real ProvinceGrid component; the styles below
+   are intentionally bare so the data is the focal point.                       */
+.tli-province-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+.tli-province-row {
+  display: grid;
+  grid-template-columns: 2.5rem 3rem 1fr auto auto;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.tli-province-row__rank {
+  color: var(--ink-3);
+  font-size: var(--fs-13);
+  text-align: right;
+}
+.tli-province-row__score {
+  font-size: var(--fs-20);
+  font-weight: var(--fw-medium);
+  color: var(--ink);
+  text-align: right;
+}
+.tli-province-row__score.is-floored {
+  color: var(--score-0);
+  font-size: var(--fs-14);
+  letter-spacing: var(--tracking-wider);
+}
+.tli-province-row__name {
+  font-weight: var(--fw-medium);
+}
+.tli-province-row__region { color: var(--ink-3); }

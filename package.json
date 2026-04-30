@@ -9,7 +9,10 @@
     "node": ">=22"
   },
   "scripts": {
+    "fetch-scores": "python3 scripts/fetch-scores.py",
+    "predev": "npm run fetch-scores",
     "dev": "astro dev",
+    "prebuild": "npm run fetch-scores",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
