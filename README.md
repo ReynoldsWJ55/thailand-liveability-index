@@ -65,7 +65,12 @@ Future work after MVP may include premium services (real-time API access, data f
 
 This repository is currently a placeholder. Code, methodology, and data schemas land here as the MVP approaches launch. To follow progress, watch this repo on GitHub.
 
-## License
+## License and trademark
 
-- Code: MIT (see [`LICENSE`](LICENSE))
-- Methodology and data outputs: CC BY 4.0 (see [`DATA-LICENSE`](DATA-LICENSE))
+Three layers, on purpose:
+
+- **Code**: MIT (see [`LICENSE`](LICENSE)). Anyone may use, modify, and redistribute the source code, including in commercial products.
+- **Methodology and data outputs**: CC BY 4.0 (see [`DATA-LICENSE`](DATA-LICENSE)). Anyone may use, adapt, and republish the methodology and aggregated scores, including commercially, with attribution.
+- **Names and marks**: "Thailand Liveability Index", "TLI", and associated visual marks are trademarks of the project maintainer. They are **not** covered by the MIT or CC BY 4.0 licenses. See [`TRADEMARK.md`](TRADEMARK.md) for the boundary — what's open, what's protected, what counts as an acceptable or unacceptable use of the name.
+
+The methodology and data are openly licensed so the index can be cited, embedded, and built on. The brand is held closed so users can trust that "TLI" identifies the official source.
