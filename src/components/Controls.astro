@@ -29,11 +29,13 @@ const C = CHROME[locale];
 
 const regions: { id: 'all' | Region; label: string }[] = [
   { id: 'all', label: C.filterAll },
-  { id: 'North', label: locale === 'th' ? 'เหนือ' : 'North' },
-  { id: 'Northeast', label: locale === 'th' ? 'อีสาน' : 'Northeast' },
+  { id: 'Bangkok and Vicinities', label: locale === 'th' ? 'กรุงเทพฯ' : 'Bangkok' },
   { id: 'Central', label: locale === 'th' ? 'กลาง' : 'Central' },
-  { id: 'East', label: locale === 'th' ? 'ตะวันออก' : 'East' },
-  { id: 'South', label: locale === 'th' ? 'ใต้' : 'South' },
+  { id: 'Eastern', label: locale === 'th' ? 'ตะวันออก' : 'East' },
+  { id: 'Western', label: locale === 'th' ? 'ตะวันตก' : 'West' },
+  { id: 'Northern', label: locale === 'th' ? 'เหนือ' : 'North' },
+  { id: 'Northeastern', label: locale === 'th' ? 'อีสาน' : 'Northeast' },
+  { id: 'Southern', label: locale === 'th' ? 'ใต้' : 'South' },
 ];
 
 const tiers = [

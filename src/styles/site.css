@@ -280,6 +280,15 @@ main {
 }
 .tli-province-row__region { color: var(--ink-3); }
 
+/* --- Category dot — Demographics & Scale --------------------------------
+   Workspace patch — the design system defines six cat-* dot colors plus
+   --cat-cost (which we no longer surface as a top-level category since
+   Phase 2 combines Cost & Economy into a single category). We repurpose
+   the --cat-cost token for the new "Demographics & Scale" category. The
+   underlying color (#C28B47, warm amber) reads cleanly against the rest
+   of the palette and isn't claimed by any other category dot. */
+.cat-demographics { background: var(--cat-cost); display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+
 /* --- Lucide inline SVG sizing -------------------------------------------- */
 .tli-icon { vertical-align: middle; line-height: 0; flex-shrink: 0; }
 .tli-icon svg { width: 100%; height: 100%; stroke-width: 1.5; }

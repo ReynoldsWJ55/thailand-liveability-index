@@ -5,10 +5,10 @@
   "provinces": [
     {
       "id": "samut-sakhon",
-      "iso_code": "TH740000",
+      "iso_code": "TH-74",
       "name_en": "Samut Sakhon",
       "name_th": "สมุทรสาคร",
-      "region": "Central",
+      "region": "Bangkok and Vicinities",
       "population": 590000,
       "composite": 78,
       "rank": 1,
@@ -28,7 +28,7 @@
               "id": "pcd-pm25-annual",
               "label_en": "PM2.5 annual average",
               "label_th": "ค่าเฉลี่ย PM2.5 ทั้งปี",
-              "value": 18.0,
+              "value": 35.0,
               "unit": "µg/m³",
               "raw_score": 70,
               "source": "Pollution Control Department",
@@ -38,65 +38,23 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 75,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 5500,
-              "unit": "THB/month",
-              "raw_score": 75,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 85,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 1.0,
-              "unit": "per 100k",
-              "raw_score": 85,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
           "score": 80,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 2.5,
+              "value": 3.2,
               "unit": "beds/1k pop",
               "raw_score": 80,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -105,19 +63,61 @@
           "id": "connectivity",
           "score": 82,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 92,
+              "value": 77,
               "unit": "%",
               "raw_score": 82,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "economy": {
+          "id": "economy",
+          "score": 80,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 400000,
+              "unit": "THB/person",
+              "raw_score": 80,
+              "source": "National Statistical Office",
+              "source_url": "https://www.nso.go.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 85,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 0.75,
+              "unit": "per 100k",
+              "raw_score": 85,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -126,40 +126,40 @@
           "id": "culture",
           "score": 70,
           "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 8,
-              "unit": "sites",
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 21,
+              "unit": "events/100k",
               "raw_score": 70,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
-        "economy": {
-          "id": "economy",
-          "score": 88,
+        "demographics": {
+          "id": "demographics",
+          "score": 95,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 32000,
-              "unit": "THB/month",
-              "raw_score": 88,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 1190,
+              "unit": "persons/km²",
+              "raw_score": 95,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -168,7 +168,7 @@
     },
     {
       "id": "ayutthaya",
-      "iso_code": "TH140000",
+      "iso_code": "TH-14",
       "name_en": "Phra Nakhon Si Ayutthaya",
       "name_th": "พระนครศรีอยุธยา",
       "region": "Central",
@@ -191,7 +191,7 @@
               "id": "pcd-pm25-annual",
               "label_en": "PM2.5 annual average",
               "label_th": "ค่าเฉลี่ย PM2.5 ทั้งปี",
-              "value": 24.0,
+              "value": 40.0,
               "unit": "µg/m³",
               "raw_score": 60,
               "source": "Pollution Control Department",
@@ -201,65 +201,23 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 80,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 5000,
-              "unit": "THB/month",
-              "raw_score": 80,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 82,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 1.2,
-              "unit": "per 100k",
-              "raw_score": 82,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
           "score": 78,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 2.2,
+              "value": 3.1,
               "unit": "beds/1k pop",
               "raw_score": 78,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -268,61 +226,103 @@
           "id": "connectivity",
           "score": 85,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 95,
+              "value": 80,
               "unit": "%",
               "raw_score": 85,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "culture": {
-          "id": "culture",
-          "score": 95,
-          "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
-          "indicators": [
-            {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites (incl. UNESCO)",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน (รวม UNESCO)",
-              "value": 35,
-              "unit": "sites",
-              "raw_score": 95,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
         "economy": {
           "id": "economy",
-          "score": 75,
+          "score": 78,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 24000,
-              "unit": "THB/month",
-              "raw_score": 75,
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 392000,
+              "unit": "THB/person",
+              "raw_score": 78,
               "source": "National Statistical Office",
               "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 82,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 0.9,
+              "unit": "per 100k",
+              "raw_score": 82,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "culture": {
+          "id": "culture",
+          "score": 88,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 26,
+              "unit": "events/100k",
+              "raw_score": 88,
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "demographics": {
+          "id": "demographics",
+          "score": 75,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 950,
+              "unit": "persons/km²",
+              "raw_score": 75,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -331,10 +331,10 @@
     },
     {
       "id": "chonburi",
-      "iso_code": "TH200000",
+      "iso_code": "TH-20",
       "name_en": "Chonburi",
       "name_th": "ชลบุรี",
-      "region": "East",
+      "region": "Eastern",
       "population": 1660000,
       "composite": 65,
       "rank": 10,
@@ -364,65 +364,23 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 65,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 10250,
-              "unit": "THB/month",
-              "raw_score": 65,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 75,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 1.25,
-              "unit": "per 100k",
-              "raw_score": 75,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
           "score": 70,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 2.1,
+              "value": 2.8,
               "unit": "beds/1k pop",
               "raw_score": 70,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -431,19 +389,61 @@
           "id": "connectivity",
           "score": 88,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 88,
+              "value": 83,
               "unit": "%",
               "raw_score": 88,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "economy": {
+          "id": "economy",
+          "score": 88,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 432000,
+              "unit": "THB/person",
+              "raw_score": 88,
+              "source": "National Statistical Office",
+              "source_url": "https://www.nso.go.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 75,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 1.25,
+              "unit": "per 100k",
+              "raw_score": 75,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -452,40 +452,40 @@
           "id": "culture",
           "score": 65,
           "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 9,
-              "unit": "sites",
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 19,
+              "unit": "events/100k",
               "raw_score": 65,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
-        "economy": {
-          "id": "economy",
+        "demographics": {
+          "id": "demographics",
           "score": 90,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 33000,
-              "unit": "THB/month",
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 1130,
+              "unit": "persons/km²",
               "raw_score": 90,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -494,17 +494,17 @@
     },
     {
       "id": "phuket",
-      "iso_code": "TH830000",
+      "iso_code": "TH-83",
       "name_en": "Phuket",
       "name_th": "ภูเก็ต",
-      "region": "South",
+      "region": "Southern",
       "population": 416000,
       "composite": 64,
       "rank": 11,
       "floored": false,
       "floored_by": null,
       "coverage_tier": 1,
-      "category_count_full": 7,
+      "category_count_full": 6,
       "categories": {
         "climate": {
           "id": "climate",
@@ -527,65 +527,23 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 50,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 12500,
-              "unit": "THB/month",
-              "raw_score": 50,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 78,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 1.1,
-              "unit": "per 100k",
-              "raw_score": 78,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
           "score": 75,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 2.2,
+              "value": 3.0,
               "unit": "beds/1k pop",
               "raw_score": 75,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -594,19 +552,61 @@
           "id": "connectivity",
           "score": 80,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 80,
+              "value": 76,
               "unit": "%",
               "raw_score": 80,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "economy": {
+          "id": "economy",
+          "score": 72,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 368000,
+              "unit": "THB/person",
+              "raw_score": 72,
+              "source": "National Statistical Office",
+              "source_url": "https://www.nso.go.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 78,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 1.1,
+              "unit": "per 100k",
+              "raw_score": 78,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -619,36 +619,36 @@
           "freshest_as_of": "2023-04-01",
           "indicators": [
             {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 12,
-              "unit": "sites",
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 24,
+              "unit": "events/100k",
               "raw_score": 82,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
               "as_of": "2023-04-01",
               "quality_flag": "stale"
             }
           ]
         },
-        "economy": {
-          "id": "economy",
-          "score": 70,
+        "demographics": {
+          "id": "demographics",
+          "score": 68,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 29000,
-              "unit": "THB/month",
-              "raw_score": 70,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 866,
+              "unit": "persons/km²",
+              "raw_score": 68,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -657,11 +657,11 @@
     },
     {
       "id": "chiang-mai",
-      "iso_code": "TH500000",
+      "iso_code": "TH-50",
       "name_en": "Chiang Mai",
       "name_th": "เชียงใหม่",
-      "region": "North",
-      "population": 1800000,
+      "region": "Northern",
+      "population": 1750000,
       "composite": 62,
       "rank": 24,
       "floored": false,
@@ -671,7 +671,7 @@
       "categories": {
         "climate": {
           "id": "climate",
-          "score": 30,
+          "score": 35,
           "indicator_count": 1,
           "oldest_as_of": "2025-12-01",
           "freshest_as_of": "2025-12-01",
@@ -680,9 +680,9 @@
               "id": "pcd-pm25-annual",
               "label_en": "PM2.5 annual average",
               "label_th": "ค่าเฉลี่ย PM2.5 ทั้งปี",
-              "value": 65.0,
+              "value": 52.5,
               "unit": "µg/m³",
-              "raw_score": 30,
+              "raw_score": 35,
               "source": "Pollution Control Department",
               "source_url": "https://air4thai.pcd.go.th/",
               "as_of": "2025-12-01",
@@ -690,108 +690,45 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 80,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 4500,
-              "unit": "THB/month",
-              "raw_score": 80,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 75,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 2.5,
-              "unit": "per 100k",
-              "raw_score": 75,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
-          "score": 70,
+          "score": 72,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 2.0,
+              "value": 2.9,
               "unit": "beds/1k pop",
-              "raw_score": 70,
+              "raw_score": 72,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
         "connectivity": {
           "id": "connectivity",
-          "score": 65,
+          "score": 70,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 75,
+              "value": 66,
               "unit": "%",
-              "raw_score": 65,
+              "raw_score": 70,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
-            }
-          ]
-        },
-        "culture": {
-          "id": "culture",
-          "score": 90,
-          "indicator_count": 1,
-          "oldest_as_of": "2023-04-15",
-          "freshest_as_of": "2023-04-15",
-          "indicators": [
-            {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 28,
-              "unit": "sites",
-              "raw_score": 90,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2023-04-15",
-              "quality_flag": "stale"
             }
           ]
         },
@@ -799,19 +736,82 @@
           "id": "economy",
           "score": 65,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 18000,
-              "unit": "THB/month",
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 340000,
+              "unit": "THB/person",
               "raw_score": 65,
               "source": "National Statistical Office",
               "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 80,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 1.0,
+              "unit": "per 100k",
+              "raw_score": 80,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "culture": {
+          "id": "culture",
+          "score": 92,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 27,
+              "unit": "events/100k",
+              "raw_score": 92,
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "demographics": {
+          "id": "demographics",
+          "score": 55,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 710,
+              "unit": "persons/km²",
+              "raw_score": 55,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -820,10 +820,10 @@
     },
     {
       "id": "surat-thani",
-      "iso_code": "TH840000",
+      "iso_code": "TH-84",
       "name_en": "Surat Thani",
       "name_th": "สุราษฎร์ธานี",
-      "region": "South",
+      "region": "Southern",
       "population": 1060000,
       "composite": 58,
       "rank": 28,
@@ -853,65 +853,23 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 70,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 9500,
-              "unit": "THB/month",
-              "raw_score": 70,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 75,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 1.25,
-              "unit": "per 100k",
-              "raw_score": 75,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
           "score": 60,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 1.8,
+              "value": 2.4,
               "unit": "beds/1k pop",
               "raw_score": 60,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -920,19 +878,61 @@
           "id": "connectivity",
           "score": 60,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 60,
+              "value": 57,
               "unit": "%",
               "raw_score": 60,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "economy": {
+          "id": "economy",
+          "score": 65,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 340000,
+              "unit": "THB/person",
+              "raw_score": 65,
+              "source": "National Statistical Office",
+              "source_url": "https://www.nso.go.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 75,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 1.25,
+              "unit": "per 100k",
+              "raw_score": 75,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -941,40 +941,40 @@
           "id": "culture",
           "score": 65,
           "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 9,
-              "unit": "sites",
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 19,
+              "unit": "events/100k",
               "raw_score": 65,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
-        "economy": {
-          "id": "economy",
-          "score": 60,
+        "demographics": {
+          "id": "demographics",
+          "score": 50,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 27000,
-              "unit": "THB/month",
-              "raw_score": 60,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 650,
+              "unit": "persons/km²",
+              "raw_score": 50,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -983,11 +983,11 @@
     },
     {
       "id": "bangkok",
-      "iso_code": "TH100000",
+      "iso_code": "TH-10",
       "name_en": "Bangkok",
       "name_th": "กรุงเทพมหานคร",
-      "region": "Central",
-      "population": 5500000,
+      "region": "Bangkok and Vicinities",
+      "population": 5420000,
       "composite": 58,
       "rank": 35,
       "floored": false,
@@ -997,7 +997,7 @@
       "categories": {
         "climate": {
           "id": "climate",
-          "score": 25,
+          "score": 40,
           "indicator_count": 1,
           "oldest_as_of": "2025-12-01",
           "freshest_as_of": "2025-12-01",
@@ -1006,9 +1006,9 @@
               "id": "pcd-pm25-annual",
               "label_en": "PM2.5 annual average",
               "label_th": "ค่าเฉลี่ย PM2.5 ทั้งปี",
-              "value": 32.0,
+              "value": 50.0,
               "unit": "µg/m³",
-              "raw_score": 25,
+              "raw_score": 40,
               "source": "Pollution Control Department",
               "source_url": "https://air4thai.pcd.go.th/",
               "as_of": "2025-12-01",
@@ -1016,128 +1016,128 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 40,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 18000,
-              "unit": "THB/month",
-              "raw_score": 40,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 65,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-30",
-          "freshest_as_of": "2025-06-30",
-          "indicators": [
-            {
-              "id": "rtp-homicide-100k",
-              "label_en": "Homicide rate (per 100k)",
-              "label_th": "อัตราการฆาตกรรม (ต่อ 100,000 คน)",
-              "value": 3.5,
-              "unit": "per 100k",
-              "raw_score": 65,
-              "source": "Royal Thai Police",
-              "source_url": "https://www.royalthaipolice.go.th/",
-              "as_of": "2025-06-30",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
-          "score": 75,
+          "score": 58,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 3.5,
+              "value": 2.3,
               "unit": "beds/1k pop",
-              "raw_score": 75,
+              "raw_score": 58,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
         "connectivity": {
           "id": "connectivity",
-          "score": 92,
+          "score": 100,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 99,
+              "value": 95,
               "unit": "%",
-              "raw_score": 92,
+              "raw_score": 100,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "culture": {
-          "id": "culture",
-          "score": 88,
-          "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
-          "indicators": [
-            {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 25,
-              "unit": "sites",
-              "raw_score": 88,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
         "economy": {
           "id": "economy",
-          "score": 85,
+          "score": 100,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 38000,
-              "unit": "THB/month",
-              "raw_score": 85,
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 480000,
+              "unit": "THB/person",
+              "raw_score": 100,
               "source": "National Statistical Office",
               "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 70,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 1.5,
+              "unit": "per 100k",
+              "raw_score": 70,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "culture": {
+          "id": "culture",
+          "score": 25,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 7,
+              "unit": "events/100k",
+              "raw_score": 25,
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "demographics": {
+          "id": "demographics",
+          "score": 100,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 1250,
+              "unit": "persons/km²",
+              "raw_score": 100,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
@@ -1146,21 +1146,21 @@
     },
     {
       "id": "pattani",
-      "iso_code": "TH940000",
+      "iso_code": "TH-94",
       "name_en": "Pattani",
       "name_th": "ปัตตานี",
-      "region": "South",
+      "region": "Southern",
       "population": 720000,
       "composite": 0,
       "rank": 77,
       "floored": true,
       "floored_by": "safety",
       "coverage_tier": 1,
-      "category_count_full": 7,
+      "category_count_full": 6,
       "categories": {
         "climate": {
           "id": "climate",
-          "score": 65,
+          "score": 70,
           "indicator_count": 1,
           "oldest_as_of": "2025-12-01",
           "freshest_as_of": "2025-12-01",
@@ -1169,9 +1169,9 @@
               "id": "pcd-pm25-annual",
               "label_en": "PM2.5 annual average",
               "label_th": "ค่าเฉลี่ย PM2.5 ทั้งปี",
-              "value": 19.0,
+              "value": 35.0,
               "unit": "µg/m³",
-              "raw_score": 65,
+              "raw_score": 70,
               "source": "Pollution Control Department",
               "source_url": "https://air4thai.pcd.go.th/",
               "as_of": "2025-12-01",
@@ -1179,66 +1179,24 @@
             }
           ]
         },
-        "cost": {
-          "id": "cost",
-          "score": 78,
-          "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
-          "indicators": [
-            {
-              "id": "nso-rent-median",
-              "label_en": "Median apartment rent",
-              "label_th": "ค่าเช่าอพาร์ตเมนต์มัธยฐาน",
-              "value": 4000,
-              "unit": "THB/month",
-              "raw_score": 78,
-              "source": "National Statistical Office",
-              "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "safety": {
-          "id": "safety",
-          "score": 0,
-          "indicator_count": 1,
-          "oldest_as_of": "2026-03-01",
-          "freshest_as_of": "2026-03-01",
-          "indicators": [
-            {
-              "id": "acled-fatalities-12mo",
-              "label_en": "Conflict-related fatalities (trailing 12 months)",
-              "label_th": "ผู้เสียชีวิตจากความขัดแย้ง (12 เดือนย้อนหลัง)",
-              "value": 41,
-              "unit": "fatalities",
-              "raw_score": 0,
-              "source": "ACLED",
-              "source_url": "https://acleddata.com/",
-              "as_of": "2026-03-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
         "healthcare": {
           "id": "healthcare",
-          "score": 60,
+          "score": 50,
           "indicator_count": 1,
-          "oldest_as_of": "2025-09-01",
-          "freshest_as_of": "2025-09-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "moph-beds-per-1k",
               "label_en": "Hospital beds per 1,000 residents",
               "label_th": "เตียงโรงพยาบาลต่อประชากร 1,000 คน",
-              "value": 1.8,
+              "value": 2.0,
               "unit": "beds/1k pop",
-              "raw_score": 60,
+              "raw_score": 50,
               "source": "Ministry of Public Health",
               "source_url": "https://www.moph.go.th/",
-              "as_of": "2025-09-01",
-              "quality_flag": "inherited",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh",
               "inherited_from": "yala"
             }
           ]
@@ -1247,61 +1205,103 @@
           "id": "connectivity",
           "score": 55,
           "indicator_count": 1,
-          "oldest_as_of": "2025-03-01",
-          "freshest_as_of": "2025-03-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
               "id": "doh-highway-access",
               "label_en": "Population within 5 km of a primary highway",
               "label_th": "ประชากรที่อยู่ภายในระยะ 5 กม. จากทางหลวงสายหลัก",
-              "value": 60,
+              "value": 52,
               "unit": "%",
               "raw_score": 55,
               "source": "Department of Highways",
               "source_url": "https://www.doh.go.th/",
-              "as_of": "2025-03-01",
-              "quality_flag": "fresh"
-            }
-          ]
-        },
-        "culture": {
-          "id": "culture",
-          "score": 70,
-          "indicator_count": 1,
-          "oldest_as_of": "2024-12-01",
-          "freshest_as_of": "2024-12-01",
-          "indicators": [
-            {
-              "id": "fad-heritage-sites",
-              "label_en": "Listed heritage sites",
-              "label_th": "แหล่งมรดกที่ขึ้นทะเบียน",
-              "value": 12,
-              "unit": "sites",
-              "raw_score": 70,
-              "source": "Fine Arts Department",
-              "source_url": "https://www.finearts.go.th/",
-              "as_of": "2024-12-01",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]
         },
         "economy": {
           "id": "economy",
-          "score": 50,
+          "score": 35,
           "indicator_count": 1,
-          "oldest_as_of": "2025-06-01",
-          "freshest_as_of": "2025-06-01",
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
           "indicators": [
             {
-              "id": "nso-income-median",
-              "label_en": "Median household income",
-              "label_th": "รายได้ครัวเรือนมัธยฐาน",
-              "value": 16000,
-              "unit": "THB/month",
-              "raw_score": 50,
+              "id": "nso-gpp-per-capita",
+              "label_en": "Gross provincial product per capita",
+              "label_th": "ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว",
+              "value": 220000,
+              "unit": "THB/person",
+              "raw_score": 35,
               "source": "National Statistical Office",
               "source_url": "https://www.nso.go.th/",
-              "as_of": "2025-06-01",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "safety": {
+          "id": "safety",
+          "score": 0,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "acled-fatalities-100k-5yr",
+              "label_en": "ACLED fatalities per 100k (5-year)",
+              "label_th": "ผู้เสียชีวิต ACLED ต่อ 100,000 คน (5 ปี)",
+              "value": 5.0,
+              "unit": "per 100k",
+              "raw_score": 0,
+              "source": "ACLED",
+              "source_url": "https://acleddata.com/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "culture": {
+          "id": "culture",
+          "score": 60,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "tat-events-100k",
+              "label_en": "TAT events per 100k residents",
+              "label_th": "อีเวนต์ ททท. ต่อประชากร 100,000 คน",
+              "value": 18,
+              "unit": "events/100k",
+              "raw_score": 60,
+              "source": "Tourism Authority of Thailand",
+              "source_url": "https://www.tat.or.th/",
+              "as_of": "2025-12-01",
+              "quality_flag": "fresh"
+            }
+          ]
+        },
+        "demographics": {
+          "id": "demographics",
+          "score": 40,
+          "indicator_count": 1,
+          "oldest_as_of": "2025-12-01",
+          "freshest_as_of": "2025-12-01",
+          "indicators": [
+            {
+              "id": "dopa-population-density",
+              "label_en": "Population density",
+              "label_th": "ความหนาแน่นประชากร",
+              "value": 530,
+              "unit": "persons/km²",
+              "raw_score": 40,
+              "source": "DOPA",
+              "source_url": "https://stat.bora.dopa.go.th/",
+              "as_of": "2025-12-01",
               "quality_flag": "fresh"
             }
           ]

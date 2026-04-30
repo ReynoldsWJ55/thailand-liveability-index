@@ -12,16 +12,39 @@
  * non-trivial. Don't sneak optional fields in via component logic.
  */
 
-export type Region = 'North' | 'Northeast' | 'Central' | 'East' | 'South';
+/**
+ * NSO 7-region administrative grouping (per NSO Yearbook 2025 Table 1.23,
+ * which is the partition the Phase 2 aggregator uses).
+ */
+export type Region =
+  | 'Bangkok and Vicinities'
+  | 'Central'
+  | 'Eastern'
+  | 'Western'
+  | 'Northern'
+  | 'Northeastern'
+  | 'Southern';
 
+/**
+ * The 7 categories the Phase 2 aggregator emits in `scores.parquet`.
+ * Slugs are the front-end keys; full display labels live in `lookups.ts`.
+ *
+ *   climate       <- Environment & Climate
+ *   healthcare    <- Healthcare
+ *   connectivity  <- Connectivity & Transport
+ *   economy       <- Cost & Economy            (combined per Phase 2)
+ *   safety        <- Safety & Governance
+ *   culture       <- Lifestyle & Culture
+ *   demographics  <- Demographics & Scale
+ */
 export type CategoryId =
   | 'climate'
-  | 'cost'
-  | 'safety'
   | 'healthcare'
   | 'connectivity'
+  | 'economy'
+  | 'safety'
   | 'culture'
-  | 'economy';
+  | 'demographics';
 
 export type Locale = 'en' | 'th';
 
@@ -60,7 +83,7 @@ export interface CategoryScore {
 export interface Province {
   /** URL slug, e.g. 'ayutthaya', 'bangkok'. Latin-only, lowercase. */
   id: string;
-  /** TIS-1099 administrative code, e.g. 'TH140000'. */
+  /** ISO 3166-2 administrative code, e.g. 'TH-14'. */
   iso_code: string;
   name_en: string;
   name_th: string;
@@ -89,5 +112,7 @@ export interface ScoresFile {
   source_manifest: string;
   /** Methodology version, e.g. 'v1.0'. */
   methodology_version: string;
+  /** Phase 2 ingestion_version that produced these scores (for cache-bust + audit). */
+  ingestion_version?: string;
   provinces: Province[];
 }
