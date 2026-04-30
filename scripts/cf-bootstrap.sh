@@ -41,19 +41,24 @@ else
 fi
 
 bold ""
-bold "=== 3. Bind custom domain '$APEX' ==="
-if npx wrangler pages domain list --project-name="$PROJECT" 2>/dev/null | grep -q "$APEX"; then
-  note "Domain '$APEX' already bound. Skipping."
-else
-  npx wrangler pages domain add "$APEX" --project-name="$PROJECT" || {
-    echo "  WARN: domain bind failed — likely DNS not yet pointing at Cloudflare."
-    echo "        Either delegate the apex's nameservers to Cloudflare at Porkbun,"
-    echo "        OR add a CNAME at Porkbun pointing 'thailandliveabilityindex.com'"
-    echo "        at '$PROJECT.pages.dev' (and set up CNAME flattening / ALIAS"
-    echo "        for the apex if Porkbun supports it)."
-    echo "        Re-run this script after DNS is in place."
-  }
-fi
+bold "=== 3. Custom domain — manual step (not wrangler) ==="
+cat <<EOF
+  Wrangler v4 doesn't expose 'pages domain add' (it was removed; the
+  available pages subcommands are dev/functions/project/deployment/
+  deploy/secret/download). Bind the apex via the dashboard instead:
+
+    1. https://dash.cloudflare.com → Workers & Pages → '$PROJECT'
+    2. Custom domains → Set up a custom domain
+    3. Enter '$APEX' (and again for 'www.$APEX' if you want www)
+
+  Pre-req: the domain's zone must be in your CF account, with the two
+  CF nameservers active at the registrar. If you skipped that, do it
+  first via dash.cloudflare.com → Add a domain.
+
+  See dm-20260430-cf-pages-staging-strategy.md (private repo) for the
+  full setup including the Porkbun-imported records you'll want to
+  delete after the import.
+EOF
 
 bold ""
 bold "=== 4. Manual steps remaining ==="
