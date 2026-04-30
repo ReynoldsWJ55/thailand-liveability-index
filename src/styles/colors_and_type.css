@@ -1,0 +1,355 @@
+/* VENDORED from tli-private/04-phase-4-design/01-claude-design-handoff/project/colors_and_type.css.
+   DO NOT EDIT IN-PLACE. Re-run vendoring if the design system updates.
+   Workspace patches go in src/styles/site.css.
+   Local modifications applied here:
+     1. Font URLs rewritten from relative ('fonts/' / '../fonts/') to absolute
+        ('/fonts/') so they resolve from any route depth in the static build.
+     2. The Google Fonts @import for IBM Plex Mono was relocated from line ~126
+        (between the @font-face block and :root) to the top of this file.
+        Reason: CSS spec requires @import to precede all other statements.
+        The original file emitted a Vite/PostCSS warning at build time.
+        This is a one-line move; semantics are unchanged. */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* =============================================================================
+   TLI — Colors & Type Foundation
+   Thailand Liveability Index Design System
+   ============================================================================= */
+
+/* Fonts: IBM Plex family — bilingual (Latin + Thai) coverage, research-feel.
+   Plex Sans is now SELF-HOSTED from the brand-uploaded files in /fonts.
+   Plex Sans Thai / Serif / Mono continue to load from Google Fonts CDN
+   (no brand-uploaded files were provided for those subfamilies).
+   ----------------------------------------------------------------------
+   When relative paths break (e.g. previews live one level deep), the
+   browser resolves /fonts URLs from the document. We ship paths as
+   `../fonts/...` since this CSS lives at project root and is consumed
+   from `preview/*.html` and `kit/*.html`. */
+
+/* --- Self-hosted: IBM Plex Sans (brand-uploaded) --- */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/IBMPlexSans-Regular.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic; font-weight: 400; font-display: swap;
+  src: url('/fonts/IBMPlexSans-Italic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-Italic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal; font-weight: 500; font-display: swap;
+  src: url('/fonts/IBMPlexSans-Medium.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-Medium.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic; font-weight: 500; font-display: swap;
+  src: url('/fonts/IBMPlexSans-MediumItalic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-MediumItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url('/fonts/IBMPlexSans-SemiBold.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic; font-weight: 600; font-display: swap;
+  src: url('/fonts/IBMPlexSans-SemiBoldItalic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-SemiBoldItalic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal; font-weight: 700; font-display: swap;
+  src: url('/fonts/IBMPlexSans-Bold.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic; font-weight: 700; font-display: swap;
+  src: url('/fonts/IBMPlexSans-BoldItalic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSans-BoldItalic.ttf') format('truetype');
+}
+
+/* --- Self-hosted: IBM Plex Sans Thai (brand-uploaded) --- */
+@font-face {
+  font-family: 'IBM Plex Sans Thai';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/IBMPlexSansThai-Regular.ttf') format('truetype'),
+       url('/fonts/IBMPlexSansThai-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans Thai';
+  font-style: normal; font-weight: 500; font-display: swap;
+  src: url('/fonts/IBMPlexSansThai-Medium.ttf') format('truetype'),
+       url('/fonts/IBMPlexSansThai-Medium.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans Thai';
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url('/fonts/IBMPlexSansThai-SemiBold.ttf') format('truetype'),
+       url('/fonts/IBMPlexSansThai-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Sans Thai';
+  font-style: normal; font-weight: 700; font-display: swap;
+  src: url('/fonts/IBMPlexSansThai-Bold.ttf') format('truetype'),
+       url('/fonts/IBMPlexSansThai-Bold.ttf') format('truetype');
+}
+
+/* --- Self-hosted: IBM Plex Serif (brand-uploaded) --- */
+@font-face {
+  font-family: 'IBM Plex Serif';
+  font-style: normal; font-weight: 400; font-display: swap;
+  src: url('/fonts/IBMPlexSerif-Regular.ttf') format('truetype'),
+       url('/fonts/IBMPlexSerif-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Serif';
+  font-style: italic; font-weight: 400; font-display: swap;
+  src: url('/fonts/IBMPlexSerif-Italic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSerif-Italic.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Serif';
+  font-style: normal; font-weight: 600; font-display: swap;
+  src: url('/fonts/IBMPlexSerif-SemiBold.ttf') format('truetype'),
+       url('/fonts/IBMPlexSerif-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'IBM Plex Serif';
+  font-style: italic; font-weight: 600; font-display: swap;
+  src: url('/fonts/IBMPlexSerif-SemiBoldItalic.ttf') format('truetype'),
+       url('/fonts/IBMPlexSerif-SemiBoldItalic.ttf') format('truetype');
+}
+
+/* --- Google Fonts: IBM Plex Mono (no brand files uploaded for this family) ---
+   NOTE: the @import for Plex Mono was relocated to the top of this file (see
+   vendor-header local-mod note). Self-hosting Plex Mono is a Phase 2 task. */
+
+:root {
+  /* === FONT FAMILIES === */
+  --font-sans:   "IBM Plex Sans", "IBM Plex Sans Thai", system-ui, -apple-system, sans-serif;
+  --font-thai:   "IBM Plex Sans Thai", "IBM Plex Sans", system-ui, sans-serif;
+  --font-serif:  "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --font-mono:   "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* === TYPE SCALE === */
+  --fs-12: 0.75rem;    /* micro: source citations, axis labels */
+  --fs-13: 0.8125rem;  /* caption: "AS OF", meta */
+  --fs-14: 0.875rem;   /* small body, table cells */
+  --fs-16: 1rem;       /* body */
+  --fs-18: 1.125rem;   /* lede */
+  --fs-20: 1.25rem;    /* h5 */
+  --fs-24: 1.5rem;     /* h4 */
+  --fs-30: 1.875rem;   /* h3 */
+  --fs-38: 2.375rem;   /* h2 */
+  --fs-48: 3rem;       /* h1 */
+  --fs-64: 4rem;       /* display */
+  --fs-96: 6rem;       /* hero composite score */
+
+  /* === LINE HEIGHTS (Thai needs more leading than Latin) === */
+  --lh-tight:    1.1;
+  --lh-snug:     1.25;
+  --lh-snug-th:  1.4;
+  --lh-normal:   1.55;
+  --lh-normal-th:1.75;
+  --lh-loose:    1.7;
+
+  /* === LETTER SPACING === */
+  --tracking-tight:   -0.02em;
+  --tracking-snug:    -0.01em;
+  --tracking-normal:   0;
+  --tracking-wide:     0.04em;
+  --tracking-wider:    0.08em;
+
+  /* === FONT WEIGHTS === */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ========================================================================
+     COLOR — NEUTRALS  (warm-leaning paper + ink)
+     Pure black/white avoided. Off-white "paper" canvas reads research-pub.
+     ======================================================================== */
+  --paper:        #FAF7F2;  /* page canvas */
+  --paper-2:      #F2EEE6;  /* card / section bg */
+  --paper-3:      #E8E2D6;  /* alt rows, table stripes */
+  --rule:         #D8D1C2;  /* hairline */
+  --rule-strong:  #B8B0A0;
+  --ink:          #1A1815;  /* primary text, near-black */
+  --ink-2:        #423E37;  /* secondary text */
+  --ink-3:        #6B6557;  /* captions, source tags, "AS OF" */
+  --ink-4:        #948E7E;  /* placeholder, disabled */
+  --ink-inverse:  #FAF7F2;
+  --surface-dark: #1F1D19;
+  --surface-dark-2:#2A2723;
+
+  /* === BRAND ACCENT — single editorial accent, used sparingly === */
+  --brand:        #1F5F6B;  /* indigo-leaning teal */
+  --brand-ink:    #143F47;  /* hover / pressed */
+  --brand-tint:   #E2EEF0;  /* tinted surface */
+  --brand-rule:   #BBD4D8;
+
+  /* === SCORE BAND — color-blind-safe 5-stop ramp ===
+     The central UI primitive. Always paired with the numeric score; at
+     small sizes also paired with a hatch pattern. Diverging-but-monotonic
+     so it reads in greyscale via luminance steps too.
+     0–19 poor | 20–39 weak | 40–59 mixed | 60–79 good | 80–100 strong */
+  --score-0:      #B0413E;  /* poor — desaturated brick */
+  --score-1:      #D88555;  /* weak — terracotta */
+  --score-2:      #E6C26A;  /* mixed — amber */
+  --score-3:      #82A86A;  /* good — sage */
+  --score-4:      #2E7D5B;  /* strong — deep green */
+
+  --score-0-tint: #F2DAD8;
+  --score-1-tint: #F7E4D1;
+  --score-2-tint: #F8EECF;
+  --score-3-tint: #DEE9D3;
+  --score-4-tint: #C9DECF;
+
+  --score-0-on:   #FFFFFF;
+  --score-1-on:   #2A1308;
+  --score-2-on:   #2A2208;
+  --score-3-on:   #122B0E;
+  --score-4-on:   #FFFFFF;
+
+  /* === CATEGORY ACCENTS (the 7 score categories) ===
+     Used for legends, small badges, category chips. Never dominate;
+     score band always trumps category accent. */
+  --cat-climate:      #4A8FB8;  /* Climate & Environment */
+  --cat-cost:         #C28B47;  /* Cost of Living */
+  --cat-safety:       #6B5B95;  /* Safety & Security */
+  --cat-healthcare:   #B85C7E;  /* Healthcare */
+  --cat-connectivity: #3F8C7A;  /* Connectivity & Transport */
+  --cat-culture:      #B8852A;  /* Culture & Community */
+  --cat-economy:      #5C7F3F;  /* Economy & Opportunity */
+
+  /* === SEMANTIC / DATA-PROVENANCE ===
+     "Honest over clean" requires explicit visual markers for data state. */
+  --positive:     #2E7D5B;
+  --positive-tint:#E2EFE9;
+  --warning:      #C28B47;
+  --warning-tint: #F8EFD7;
+  --danger:       #B0413E;
+  --danger-tint:  #F4DEDD;
+  --info:         #1F5F6B;
+  --info-tint:    #E2EEF0;
+
+  --inherited:      #C28B47;  /* zone inheriting parent value */
+  --inherited-tint: #F4E8D5;
+  --fresh:          #2D6A4F;  /* recent data */
+  --stale:          #B5651D;  /* outdated data */
+  --missing:        #948E7E;  /* no data */
+
+  /* === SPACING (4px base) === */
+  --sp-0:0; --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-7:28px; --sp-8:32px; --sp-10:40px;
+  --sp-12:48px; --sp-16:64px; --sp-20:80px; --sp-24:96px; --sp-32:128px;
+  /* NOTE: --sp-7 added by workspace patch on 2026-04-30. The original Claude
+     Design bundle omitted this token, but components.css references var(--sp-7)
+     for score-hero horizontal padding. With the token undefined, the entire
+     `padding: var(--sp-6) var(--sp-7)` declaration was invalid (no fallback)
+     and reverted to 0 — which is why the hero score appeared cramped. 28px
+     continues the 4px-step rhythm cleanly between sp-6 (24) and sp-8 (32).
+     See ../00-handoff-capture-memo.md for full provenance. */
+
+  /* === RADII (modest) === */
+  --r-0:0; --r-1:2px; --r-2:4px; --r-3:6px; --r-4:10px; --r-pill:999px;
+
+  /* === SHADOWS (almost none — borders do the work) === */
+  --shadow-0: none;
+  --shadow-1: 0 1px 2px rgba(15,23,35,0.05), 0 1px 1px rgba(15,23,35,0.03);
+  --shadow-2: 0 2px 6px rgba(15,23,35,0.07), 0 1px 2px rgba(15,23,35,0.04);
+  --shadow-3: 0 8px 24px rgba(15,23,35,0.10);
+
+  /* === LAYOUT === */
+  --container-narrow: 680px;   /* article reading width */
+  --container-text:   780px;   /* editorial pages */
+  --container-base:   1100px;
+  --container-wide:   1280px;
+  --gutter:           24px;
+  --gutter-sm:        16px;
+
+  /* === MOTION (calm, no bounce) === */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-1: 80ms; --dur-2: 160ms; --dur-3: 240ms; --dur-4: 360ms;
+
+  /* === HATCH PATTERNS (for color-blind-safe small-scale chips) === */
+  --hatch-0: repeating-linear-gradient(45deg, transparent 0 3px, rgba(255,255,255,0.30) 3px 4px);
+  --hatch-1: repeating-linear-gradient(0deg,  transparent 0 3px, rgba(255,255,255,0.30) 3px 4px);
+  --hatch-2: repeating-linear-gradient(90deg, transparent 0 3px, rgba(0,0,0,0.10) 3px 4px);
+  --hatch-3: repeating-linear-gradient(-45deg,transparent 0 3px, rgba(255,255,255,0.40) 3px 4px);
+  --hatch-4: none;
+}
+
+/* =============================================================================
+   BASE STYLES + SEMANTIC TYPE CLASSES
+   ============================================================================= */
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-16);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+[lang="th"], .lang-th { line-height: var(--lh-normal-th); }
+
+.tli-display {
+  font-family: var(--font-mono);
+  font-size: var(--fs-96);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--fw-medium);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  color: var(--ink);
+}
+.tli-h1 { font: var(--fw-semibold) var(--fs-48)/var(--lh-snug) var(--font-sans); letter-spacing: var(--tracking-snug); color: var(--ink); margin: 0; }
+.tli-h2 { font: var(--fw-semibold) var(--fs-38)/var(--lh-snug) var(--font-sans); letter-spacing: var(--tracking-snug); color: var(--ink); margin: 0; }
+.tli-h3 { font: var(--fw-semibold) var(--fs-30)/var(--lh-snug) var(--font-sans); color: var(--ink); margin: 0; }
+.tli-h4 { font: var(--fw-semibold) var(--fs-24)/var(--lh-snug) var(--font-sans); color: var(--ink); margin: 0; }
+.tli-h5 { font: var(--fw-semibold) var(--fs-20)/var(--lh-snug) var(--font-sans); color: var(--ink); margin: 0; }
+
+.tli-body    { font: var(--fw-regular) var(--fs-16)/var(--lh-normal) var(--font-sans); color: var(--ink); }
+.tli-body-sm { font: var(--fw-regular) var(--fs-14)/var(--lh-normal) var(--font-sans); color: var(--ink-2); }
+.tli-lede    { font: var(--fw-regular) var(--fs-18)/var(--lh-loose)  var(--font-sans); color: var(--ink-2); text-wrap: pretty; }
+.tli-caption { font: var(--fw-regular) var(--fs-13)/var(--lh-snug)   var(--font-sans); color: var(--ink-3); }
+
+.tli-eyebrow {
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tli-editorial {
+  font-family: var(--font-serif);
+  font-size: var(--fs-18);
+  line-height: var(--lh-loose);
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.tli-mono, .tli-num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.tli-source {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--ink-3);
+  letter-spacing: 0;
+}

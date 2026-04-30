@@ -1,0 +1,328 @@
+/* VENDORED from tli-private/04-phase-4-design/01-claude-design-handoff/project/components.css.
+   DO NOT EDIT IN-PLACE. Re-run vendoring if the design system updates.
+   Workspace patches go in src/styles/site.css. */
+
+/* =============================================================================
+   TLI — Components
+   Buttons, chips, cards, score primitives, citations, etc.
+   Depends on: colors_and_type.css
+   ============================================================================= */
+
+/* ---------- Layout helpers ---------- */
+.tli-container       { max-width: var(--container-base); margin: 0 auto; padding: 0 var(--gutter); }
+.tli-container-text  { max-width: var(--container-text); margin: 0 auto; padding: 0 var(--gutter); }
+.tli-container-narrow{ max-width: var(--container-narrow); margin: 0 auto; padding: 0 var(--gutter); }
+.tli-container-wide  { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--gutter); }
+
+.tli-stack > * + *   { margin-top: var(--sp-4); }
+.tli-stack-tight > * + * { margin-top: var(--sp-2); }
+.tli-stack-loose > * + * { margin-top: var(--sp-6); }
+
+.tli-row { display: flex; gap: var(--sp-4); align-items: center; }
+.tli-row-tight { display: flex; gap: var(--sp-2); align-items: center; }
+
+/* Hairline divider — the workhorse */
+.tli-rule { border: 0; border-top: 1px solid var(--rule); margin: var(--sp-6) 0; }
+.tli-rule-strong { border: 0; border-top: 1px solid var(--rule-strong); margin: var(--sp-6) 0; }
+
+/* ---------- Buttons ---------- */
+.tli-btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: 10px 16px;
+  border-radius: var(--r-2);
+  font: var(--fw-semibold) var(--fs-14)/1 var(--font-sans);
+  letter-spacing: 0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--dur-2) var(--ease-standard),
+              border-color var(--dur-2) var(--ease-standard),
+              color var(--dur-2) var(--ease-standard);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.tli-btn-primary {
+  background: var(--brand); color: var(--ink-inverse); border-color: var(--brand);
+}
+.tli-btn-primary:hover { background: var(--brand-ink); border-color: var(--brand-ink); }
+
+.tli-btn-secondary {
+  background: var(--paper); color: var(--ink); border-color: var(--rule-strong);
+}
+.tli-btn-secondary:hover { background: var(--paper-2); border-color: var(--ink-2); }
+
+.tli-btn-ghost {
+  background: transparent; color: var(--brand); border-color: transparent;
+  padding: 6px 8px;
+}
+.tli-btn-ghost:hover { background: var(--brand-tint); }
+
+.tli-btn-sm { padding: 6px 12px; font-size: var(--fs-13); }
+
+/* ---------- Links ---------- */
+.tli-link {
+  color: var(--brand);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.tli-link:hover { color: var(--brand-ink); }
+
+.tli-link-arrow {
+  color: var(--brand); font-weight: var(--fw-semibold); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.tli-link-arrow:hover { color: var(--brand-ink); }
+.tli-link-arrow::after { content: "→"; transition: transform var(--dur-2); }
+.tli-link-arrow:hover::after { transform: translateX(2px); }
+
+/* ---------- Chips ---------- */
+.tli-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font: var(--fw-medium) var(--fs-13)/1 var(--font-sans);
+  background: var(--paper-2); color: var(--ink-2);
+  border: 1px solid var(--rule);
+}
+.tli-chip-eyebrow {
+  text-transform: uppercase; letter-spacing: var(--tracking-wider);
+  font-size: var(--fs-12); font-weight: var(--fw-semibold);
+}
+
+/* Provenance chip — "AS OF MAR 2026" / "INHERITED" */
+.tli-prov {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px;
+  border-radius: var(--r-1);
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-mono);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  background: var(--paper-2); color: var(--ink-3);
+  border: 1px solid var(--rule);
+}
+.tli-prov-fresh    { background: var(--positive-tint); color: var(--positive); border-color: transparent; }
+.tli-prov-inherit  { background: var(--inherited-tint); color: var(--inherited); border-color: transparent; }
+.tli-prov-stale    { background: var(--warning-tint); color: var(--warning); border-color: transparent; }
+.tli-prov-missing  { background: var(--paper-2); color: var(--ink-4); border-style: dashed; }
+
+/* ---------- THE SCORE PRIMITIVE ---------- */
+
+/* Hero composite — 96px numeral, used on province pages */
+.tli-score-hero {
+  display: inline-flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6) var(--sp-7) var(--sp-6) calc(var(--sp-7) + 6px);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  position: relative;
+  overflow: hidden;
+  min-width: 320px;
+}
+.tli-score-hero::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 6px;
+  background: var(--score-band, var(--score-3));
+}
+.tli-score-hero__numeral {
+  font-family: var(--font-mono);
+  font-size: var(--fs-96);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--tracking-tight);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  color: var(--ink);
+  display: block;
+}
+.tli-score-hero__label {
+  font: var(--fw-semibold) var(--fs-13)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Category card — 38px numeral, color stripe on left */
+.tli-score-card {
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  position: relative;
+  overflow: hidden;
+  min-width: 200px;
+}
+.tli-score-card::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 4px;
+  background: var(--score-band, var(--score-3));
+}
+.tli-score-card__cat {
+  display: flex; align-items: center; gap: 6px;
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.tli-score-card__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-38);
+  line-height: 1;
+  font-weight: var(--fw-medium);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  color: var(--ink);
+}
+.tli-score-card__band {
+  font: var(--fw-medium) var(--fs-13)/1 var(--font-sans);
+  color: var(--ink-2);
+}
+.tli-score-card__delta {
+  font: var(--fw-medium) var(--fs-12)/1 var(--font-mono);
+  color: var(--ink-3);
+}
+.tli-score-card__delta--up   { color: var(--positive); }
+.tli-score-card__delta--down { color: var(--danger); }
+
+/* Inline chip — 14px numeral, hatch pattern at this size */
+.tli-score-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px 3px 6px;
+  border-radius: var(--r-pill);
+  font: var(--fw-medium) var(--fs-13)/1 var(--font-mono);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  background: var(--score-band, var(--score-3));
+  color: var(--score-on, white);
+  position: relative;
+  overflow: hidden;
+}
+.tli-score-chip__num { z-index: 1; font-weight: var(--fw-semibold); }
+.tli-score-chip__band {
+  z-index: 1;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-12);
+  opacity: 0.92;
+}
+.tli-score-chip::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--hatch, var(--hatch-3));
+  pointer-events: none;
+}
+
+/* Score band utility classes — apply to set the color */
+.score-0 { --score-band: var(--score-0); --score-on: var(--score-0-on); --hatch: var(--hatch-0); }
+.score-1 { --score-band: var(--score-1); --score-on: var(--score-1-on); --hatch: var(--hatch-1); }
+.score-2 { --score-band: var(--score-2); --score-on: var(--score-2-on); --hatch: var(--hatch-2); }
+.score-3 { --score-band: var(--score-3); --score-on: var(--score-3-on); --hatch: var(--hatch-3); }
+.score-4 { --score-band: var(--score-4); --score-on: var(--score-4-on); --hatch: var(--hatch-4); }
+
+/* ---------- Cards ---------- */
+.tli-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  padding: var(--sp-6);
+}
+
+/* ---------- Citation row — "SOURCE: NSO 2025  |  AS OF MAR 2026  |  METHODOLOGY →" ---------- */
+.tli-citations {
+  display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-4);
+  align-items: center;
+  padding: var(--sp-3) 0;
+  border-top: 1px solid var(--rule);
+  font: var(--fw-regular) var(--fs-12)/1 var(--font-mono);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+.tli-citations a { color: var(--brand); text-decoration: none; }
+.tli-citations a:hover { color: var(--brand-ink); text-decoration: underline; }
+
+/* ---------- Inputs ---------- */
+.tli-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+  font: var(--fw-regular) var(--fs-14)/1.4 var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+}
+.tli-input:focus {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+  border-color: var(--brand);
+}
+
+/* ---------- Tables ---------- */
+.tli-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-sans); font-size: var(--fs-14);
+}
+.tli-table th, .tli-table td {
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+.tli-table th {
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--rule-strong);
+}
+.tli-table tbody tr:hover { background: var(--paper-2); }
+.tli-table .num { font-family: var(--font-mono); font-feature-settings: "tnum" 1, "lnum" 1; text-align: right; }
+
+/* ---------- Category icon dots (the 7 categories) ---------- */
+.tli-cat-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.cat-climate      { background: var(--cat-climate); }
+.cat-cost         { background: var(--cat-cost); }
+.cat-safety       { background: var(--cat-safety); }
+.cat-healthcare   { background: var(--cat-healthcare); }
+.cat-connectivity { background: var(--cat-connectivity); }
+.cat-culture      { background: var(--cat-culture); }
+.cat-economy      { background: var(--cat-economy); }
+
+/* ---------- Score band gauge (horizontal bar with marker) ---------- */
+.tli-gauge {
+  position: relative;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(to right,
+    var(--score-0) 0% 20%,
+    var(--score-1) 20% 40%,
+    var(--score-2) 40% 60%,
+    var(--score-3) 60% 80%,
+    var(--score-4) 80% 100%);
+  margin: 8px 0;
+}
+.tli-gauge__marker {
+  position: absolute; top: -4px;
+  width: 2px; height: 16px;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+.tli-gauge__ticks {
+  display: flex; justify-content: space-between;
+  font: var(--fw-regular) var(--fs-12)/1 var(--font-mono);
+  color: var(--ink-3); margin-top: 4px;
+}
+
+/* ---------- Page chrome — header / footer for preview pages ---------- */
+.tli-page-header {
+  display: flex; align-items: baseline; gap: var(--sp-4);
+  padding: var(--sp-6) 0;
+  border-bottom: 1px solid var(--rule-strong);
+  margin-bottom: var(--sp-8);
+}
+.tli-page-header__mark {
+  font: var(--fw-bold) 18px/1 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.tli-page-header__mark span { color: var(--brand); }
+.tli-page-header__crumbs {
+  font: var(--fw-regular) var(--fs-13)/1 var(--font-mono);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}

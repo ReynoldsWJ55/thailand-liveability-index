@@ -1,0 +1,24 @@
+{
+  "name": "thailand-liveability-index",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Thailand Liveability Index — public site source.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/sitemap": "^3.7.2",
+    "astro": "^5.18.1",
+    "lucide-static": "^1.14.0"
+  }
+}

@@ -35,6 +35,13 @@ yarn-error.log*
 dist/
 build/
 
+# Astro
+.astro/
+
+# Built data — regenerated at build, do not commit.
+# (sample data at src/data/scores.sample.json IS committed and stays.)
+src/data/scores.json
+
 # Large raw data — must be regenerable; never commit raw data here.
 *.parquet
 *.pbf
