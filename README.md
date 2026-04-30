@@ -14,20 +14,31 @@ The methodology is built to be:
 - **Reproducible.** Scoring code and schemas are open source.
 - **Honest about granularity.** Where data is national or provincial, it's labeled as such, not silently extrapolated to a finer level.
 
+## Why a Thailand-specific index
+
+Several global liveability indices already exist — EIU's Global Liveability Index, Mercer Quality of Living, InterNations Expat Insider, Numbeo. None of them work for the questions a Thailand resident or prospective resident actually has:
+
+- **They cover only one or two Thai cities.** EIU and Mercer score Bangkok and stop. A retiree comparing Yasothon to Khon Kaen, or a remote worker choosing between Chiang Mai's Old City and Nimman, gets nothing useful.
+- **They're calibrated for cross-country comparison, not within-country differentiation.** Indicators are designed to make Singapore vs. Lagos legible. The variance that matters when choosing between two Thai provinces — air quality during burning season, distance to a tertiary hospital, English-language signage density, BTS/MRT access, flood exposure — is invisible at that resolution.
+- **Numbeo is user-submitted with severe sample bias.** Bangkok has thousands of submissions; most provinces have fewer than ten, are gameable, and go stale.
+- **Most are paywalled.** Mercer and EIU charge for access. The Thailand-specific indices that do exist (NESDC indicators, HDR subnational reports) are policy-oriented, lag by years, and aren't built for consumer comparison.
+
+TLI fills the gap by being Thailand-specific, sub-provincial where it matters, and transparently methodology-first.
+
 ## What it isn't
 
-- Not a Numbeo clone. Underlying data is from official sources (TMD, OpenAQ, MOPH, ACLED, transport authorities) — not user-submitted reports.
-- Not commercial. The index is published as a public utility. Methodology is open. There are no paid tiers.
-- Not a tourism index. Liveability is not the same as visitability. TLI measures what it's like to live somewhere, not what it's like to visit.
+- **Not a Numbeo clone.** Underlying data is from official sources (TMD, OpenAQ, MOPH, ACLED, transport authorities) — not user-submitted reports.
+- **Not a tourism index.** Liveability is not the same as visitability. TLI measures what it's like to live somewhere, not what it's like to visit.
+- **Not a finished product.** It's in active development; the methodology is being refined and the data pipelines are being built.
 
 ## Methodology
 
-Will be published in this repository at MVP launch. Methodology covers:
+The full methodology document will be published in this repository at MVP launch. It will cover:
 
-- Indicator selection and weighting
+- Indicator selection, definitions, and weighting
 - Source-by-source provenance, refresh cadence, and license
 - Normalization approach (z-scores, percentile bands)
-- Zone-overlay logic and inheritance rules from province → zone
+- Zone-overlay logic and inheritance rules from province to zone
 - Scoring formula and aggregation
 
 ## Data sources
@@ -38,7 +49,17 @@ A complete data sources manifest with refresh cadence and license info will be p
 
 ## Distribution
 
-TLI is designed as a standalone resource (Walk Score-shaped) with embeddable widgets that other sites can use. The first widget consumer is [thailand-wanderer.com](https://thailand-wanderer.com).
+TLI is designed as a standalone resource — a public-facing site at its own URL, with embeddable widgets that third-party sites can use to surface province- or zone-level scores in context. The shape is closer to Walk Score than to a traditional report-style index.
+
+## Roadmap
+
+- **Phase 1 — Foundations** *(closed)*: Data source inventory, methodology v1.0, indicator dictionary, Phase 1 output documents.
+- **Phase 2 — Data normalization** *(current)*: Build the ingestion pipeline, normalize indicators across all 77 provinces, validate Phase 1 hypotheses against real data, lock the zone slate.
+- **Phase 3 — Scoring and validation**: Compute provincial and zone scores, run sensitivity analysis on weights, peer-review the methodology before MVP launch.
+- **Phase 4 — Site and widgets**: Public-facing site, embeddable widgets for third-party use, public API.
+- **MVP launch**: Late August / early September 2026.
+
+Future work after MVP may include premium services (real-time API access, data feeds, custom segmentation, white-label embeds) to fund continued development. The core index, methodology, and historical scores stay openly published regardless.
 
 ## Repository status
 
