@@ -1,0 +1,45 @@
+# Environment / secrets — never commit
+.env
+.env.local
+.env.*.local
+*.env
+
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+build/
+
+# Large raw data — must be regenerable; never commit raw data here.
+*.parquet
+*.pbf
+*.osm.pbf
+
+# Temp/scratch
+*.tmp
+*.bak

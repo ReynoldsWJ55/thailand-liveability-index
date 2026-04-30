@@ -1,0 +1,47 @@
+Thailand Liveability Index — Methodology and Data Outputs License
+
+Copyright (c) 2026 Will Reynolds
+
+The methodology document, data outputs, scoring algorithm documentation,
+indicator definitions, and other non-code content in this repository are
+licensed under a Creative Commons Attribution 4.0 International License
+(CC BY 4.0).
+
+You are free to:
+
+  - Share — copy and redistribute the material in any medium or format.
+  - Adapt — remix, transform, and build upon the material for any purpose,
+    including commercially.
+
+Under the following terms:
+
+  - Attribution — You must give appropriate credit to "Thailand Liveability
+    Index" with a link back to
+    https://github.com/ReynoldsWJ55/thailand-liveability-index, provide a
+    link to the license, and indicate if changes were made. You may do so
+    in any reasonable manner, but not in any way that suggests the licensor
+    endorses you or your use.
+
+  - No additional restrictions — You may not apply legal terms or
+    technological measures that legally restrict others from doing anything
+    the license permits.
+
+Notices:
+
+  - You do not have to comply with the license for elements of the material
+    in the public domain or where your use is permitted by an applicable
+    exception or limitation.
+  - No warranties are given. The license may not give you all of the
+    permissions necessary for your intended use. For example, other rights
+    such as publicity, privacy, or moral rights may limit how you use the
+    material.
+
+Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+Note on third-party data: Underlying source data used in producing TLI
+scores is licensed by the original data providers (Thai government
+agencies, OpenAQ, ACLED, OpenStreetMap, etc.). TLI's CC BY 4.0 license
+applies only to the methodology, indicator definitions, and aggregated
+output produced by this project. Users redistributing underlying source
+data should consult and comply with each source's license terms directly.
