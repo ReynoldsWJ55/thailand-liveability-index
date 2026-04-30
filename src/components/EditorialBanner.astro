@@ -1,0 +1,50 @@
+---
+/**
+ * Editorial banner — surfaces "→ Editorial: <title>" on a province page
+ * when an editorial exists for that province slug.
+ *
+ * Visual treatment: brand-teal accent stripe down the left edge; eyebrow,
+ * title, kicker on three lines; chevron on the right. Plex Serif for the
+ * title to telegraph editorial register without overwriting the
+ * algorithmic score above it.
+ *
+ * Renders as a `<a>` so the whole banner is clickable; arrow indicates
+ * the link target.
+ */
+import type { Locale } from '../data/types';
+import { getEditorial } from '../data/editorials';
+import Lucide from './Lucide.astro';
+
+interface Props {
+  provinceSlug: string;
+  locale: Locale;
+}
+const { provinceSlug, locale } = Astro.props;
+const editorial = getEditorial(provinceSlug);
+if (!editorial) return null;
+
+const title = locale === 'th' ? editorial.title_th : editorial.title_en;
+const kicker = locale === 'th' ? editorial.kicker_th : editorial.kicker_en;
+const eyebrow = locale === 'th' ? 'บทบรรณาธิการ Layer 2' : 'Layer 2 Editorial';
+const ariaLabel = locale === 'th'
+  ? `${eyebrow}: ${title}`
+  : `${eyebrow}: ${title}`;
+const href = `/${locale}/editorial/${editorial.slug}/`;
+---
+<a href={href} class="editorial-banner" aria-label={ariaLabel}>
+  <span class="editorial-banner__stripe" aria-hidden="true"></span>
+  <span class="editorial-banner__body">
+    <span class="editorial-banner__eyebrow" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {eyebrow}
+    </span>
+    <span class="editorial-banner__title" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {title}
+    </span>
+    <span class="editorial-banner__kicker" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {kicker} · {editorial.byline}
+    </span>
+  </span>
+  <span class="editorial-banner__chevron" aria-hidden="true">
+    <Lucide name="external-link" size={14} />
+  </span>
+</a>

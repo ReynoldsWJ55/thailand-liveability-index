@@ -1700,6 +1700,90 @@ main {
 .editorial__sidebar-link:hover { text-decoration: underline; }
 
 /* =============================================================================
+   EDITORIAL BANNER — surfaced on province pages when an editorial exists
+   for that province (registered in src/data/editorials.ts).
+   Visual register: editorial (Plex Serif title) without competing with the
+   algorithmic score above it. Brand-teal stripe on the left, chevron right.
+   ============================================================================= */
+.editorial-banner {
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  margin: var(--sp-6) 0 var(--sp-8);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 120ms linear, background 120ms linear, transform 120ms linear;
+}
+.editorial-banner:hover {
+  border-color: var(--brand);
+  background: var(--paper-2);
+}
+.editorial-banner:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.editorial-banner__stripe {
+  align-self: stretch;
+  background: var(--brand);
+  border-radius: 2px;
+}
+.editorial-banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.editorial-banner__eyebrow {
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-mono);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.editorial-banner__title {
+  font: var(--fw-semibold) var(--fs-18)/1.3 var(--font-serif);
+  color: var(--ink);
+  margin-top: 4px;
+  text-wrap: balance;
+}
+[lang="th"].editorial-banner__title,
+.editorial-banner__title[lang="th"] {
+  font-family: var(--font-sans-thai);
+  line-height: 1.5;
+}
+.editorial-banner__kicker {
+  font: var(--fw-regular) var(--fs-13)/1.4 var(--font-sans);
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+[lang="th"].editorial-banner__kicker,
+.editorial-banner__kicker[lang="th"] {
+  font-family: var(--font-sans-thai);
+}
+.editorial-banner__chevron {
+  color: var(--brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.editorial-banner:hover .editorial-banner__chevron {
+  transform: translateX(2px);
+}
+@media (max-width: 520px) {
+  .editorial-banner {
+    padding: var(--sp-3) var(--sp-4);
+    grid-template-columns: 3px 1fr auto;
+    gap: var(--sp-3);
+  }
+  .editorial-banner__title { font-size: var(--fs-16); }
+}
+
+/* =============================================================================
    MOBILE BREAKPOINTS — pulls the page together below ~720px.
    Mobile-first defaults are already in place above; these overrides handle
    the typography that's too big at narrow widths and the layouts that need
