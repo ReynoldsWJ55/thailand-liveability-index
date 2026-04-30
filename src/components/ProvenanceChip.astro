@@ -1,0 +1,30 @@
+---
+/**
+ * Provenance chip — the workhorse of "honest over clean".
+ * Five states drive five tints; text is always uppercase mono per design system.
+ *
+ *   fresh    — recent data (sage tint)
+ *   inherit  — value taken from a parent or sibling province (terracotta tint)
+ *   stale    — out-of-date data (amber tint)
+ *   missing  — no data at all (dashed border, muted)
+ *   default  — generic source/meta chip (paper-2 surface)
+ */
+import Lucide from './Lucide.astro';
+
+type Variant = 'fresh' | 'inherit' | 'stale' | 'missing' | 'default';
+
+interface Props {
+  variant?: Variant;
+  /** Lucide icon name to prepend (optional). */
+  icon?: string;
+  /** Optional inline lang attribute, e.g. "th". */
+  lang?: string;
+  class?: string;
+}
+const { variant = 'default', icon, lang, class: extra = '' } = Astro.props;
+const variantClass = variant === 'default' ? '' : `tli-prov-${variant}`;
+---
+<span class:list={['tli-prov', variantClass, extra]} {...lang ? { lang } : {}}>
+  {icon && <Lucide name={icon} size={11} class="tli-prov__icon" />}
+  <slot />
+</span>

@@ -1,0 +1,122 @@
+---
+/**
+ * Indicator detail block. One per category, rendered inline (no expand/collapse
+ * in PR 3 — the kit shows it always, this PR matches). Header strip carries
+ * the category title, an inline score chip, and the freshness chip; body is a
+ * standard `.tli-table`. Citation row goes underneath, never tooltipped.
+ *
+ * Inherited values render as `↳ INHERITED FROM YALA` in the Score column
+ * instead of a number — exercises the contract end-to-end.
+ */
+import { CATEGORIES, categoryLabel, CHROME } from '../data/lookups';
+import type { CategoryScore, Indicator, Locale } from '../data/types';
+import Lucide from './Lucide.astro';
+import ScorePrimitive from './ScorePrimitive.astro';
+import ProvenanceChip from './ProvenanceChip.astro';
+import CitationRow from './CitationRow.astro';
+
+interface Props {
+  category: CategoryScore;
+  locale: Locale;
+  /** When true, the category itself reaches 0 and floors the composite. */
+  isFloor?: boolean;
+}
+const { category, locale, isFloor = false } = Astro.props;
+const meta = CATEGORIES[category.id];
+const label = categoryLabel(category.id, locale);
+const C = CHROME[locale];
+
+function indicatorLabel(ind: Indicator): string {
+  return locale === 'th' ? ind.label_th : ind.label_en;
+}
+
+function fmtValue(ind: Indicator): string {
+  if (ind.quality_flag === 'missing') return '—';
+  // Plex Mono with tnum handles right-alignment; we just produce a string.
+  if (Number.isInteger(ind.value)) return ind.value.toLocaleString('en-US');
+  return ind.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+const sources = Array.from(new Set(category.indicators.map((i) => i.source)));
+---
+<section class="section" id={category.id}>
+  <div class="section__head">
+    <h2 class="section__title" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {label} · <span class="section__title-sub">{C.indicatorDetail}</span>
+    </h2>
+    <span class="section__sub">{C.indicatorCount(category.indicator_count)}</span>
+  </div>
+
+  <div class="ind-block">
+    <div class="ind-block__head">
+      <Lucide name={meta.icon} size={20} class="ind-block__icon" />
+      <h3 {...locale === 'th' ? { lang: 'th' } : {}}>{label}</h3>
+      <ScorePrimitive
+        score={category.score}
+        scale="chip"
+        floored={isFloor}
+        locale={locale}
+      />
+      <ProvenanceChip variant="fresh">{C.asOf} {category.freshest_as_of}</ProvenanceChip>
+    </div>
+
+    <table class="tli-table">
+      <thead>
+        <tr>
+          <th {...locale === 'th' ? { lang: 'th' } : {}}>{C.indicator}</th>
+          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</th>
+          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</th>
+          <th {...locale === 'th' ? { lang: 'th' } : {}}>{C.source}</th>
+          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.asOfHeader}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {category.indicators.map((ind) => (
+          <tr>
+            <td>
+              <span {...locale === 'th' ? { lang: 'th' } : {}}>
+                {indicatorLabel(ind)}
+              </span>
+              <br />
+              <span class="tli-caption">{ind.unit}</span>
+            </td>
+            <td class="num">
+              {ind.quality_flag === 'missing' ? '—' : fmtValue(ind)}
+            </td>
+            <td class="num">
+              {ind.quality_flag === 'missing' ? (
+                <ProvenanceChip variant="missing">{C.noData}</ProvenanceChip>
+              ) : ind.quality_flag === 'inherited' && ind.inherited_from ? (
+                <ProvenanceChip variant="inherit" icon="corner-down-right">
+                  {C.inheritedFrom(ind.inherited_from)}
+                </ProvenanceChip>
+              ) : (
+                <ScorePrimitive
+                  score={ind.raw_score}
+                  scale="chip"
+                  floored={ind.raw_score === 0 && isFloor}
+                  locale={locale}
+                  bandLabelVisible={false}
+                />
+              )}
+            </td>
+            <td>
+              <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
+                {ind.source}
+                <Lucide name="external-link" size={11} class="tli-link__icon" />
+              </a>
+            </td>
+            <td class="num">{ind.as_of}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <CitationRow
+      sources={sources}
+      asOf={category.oldest_as_of}
+      locale={locale}
+      methodologyAnchor={`#${category.id}`}
+    />
+  </div>
+</section>

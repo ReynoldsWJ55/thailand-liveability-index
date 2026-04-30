@@ -1,0 +1,67 @@
+---
+import Site from '../../layouts/Site.astro';
+import Hero from '../../components/Hero.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+import IndicatorTable from '../../components/IndicatorTable.astro';
+import { CATEGORY_ORDER, CHROME } from '../../data/lookups';
+import scoresData from '../../data/scores.json';
+import type { Province, ScoresFile } from '../../data/types';
+
+export function getStaticPaths() {
+  const data = scoresData as ScoresFile;
+  return data.provinces.map((p) => ({
+    params: { province: p.id },
+    props: { province: p },
+  }));
+}
+
+const { province } = Astro.props as { province: Province };
+const locale = 'th' as const;
+const C = CHROME[locale];
+
+const cats = CATEGORY_ORDER.map((id) => province.categories[id]);
+const totalIndicators = cats.reduce((acc, c) => acc + c.indicator_count, 0);
+
+const freshestAsOf = cats
+  .map((c) => c.freshest_as_of)
+  .sort()
+  .reverse()[0];
+
+const description = province.floored
+  ? `${province.name_th} อันดับ ${province.rank} จาก 77 — คะแนนรวมติดเพดานที่ 0`
+  : `${province.name_th} คะแนนคุณภาพการอยู่อาศัย ${province.composite} จาก 100 อันดับ ${province.rank} จาก 77`;
+---
+<Site
+  title={`${province.name_th} · ดัชนีคุณภาพการอยู่อาศัย`}
+  description={description}
+  locale={locale}
+  canonicalPath={`/th/${province.id}/`}
+>
+  <Hero province={province} locale={locale} asOf={freshestAsOf} />
+
+  <section class="section" aria-labelledby="cat-title">
+    <div class="section__head">
+      <h2 class="section__title" id="cat-title" lang="th">{C.byCategory}</h2>
+      <span class="section__sub">
+        <span lang="th">7 หมวด · {totalIndicators} ตัวชี้วัด</span>
+      </span>
+    </div>
+    <div class="cat-grid">
+      {cats.map((cat) => (
+        <CategoryCard
+          category={cat}
+          locale={locale}
+          isFloor={province.floored && province.floored_by === cat.id}
+        />
+      ))}
+    </div>
+  </section>
+
+  {cats.map((cat) => (
+    <IndicatorTable
+      category={cat}
+      locale={locale}
+      isFloor={province.floored && province.floored_by === cat.id}
+    />
+  ))}
+</Site>
