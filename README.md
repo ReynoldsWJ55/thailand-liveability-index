@@ -3,6 +3,7 @@
 A standalone, methodology-first liveability index for Thailand's 77 provinces, with a zone-overlay layer that captures expat-dense and tourist-dense areas where province-level numbers obscure lived reality.
 
 **Status:** In active development. MVP launch targeted for late August / early September 2026.
+**Site:** [thailandliveabilityindex.com](https://thailandliveabilityindex.com) (reserved; goes live at MVP launch)
 
 ## What it is
 
@@ -49,21 +50,21 @@ A complete data sources manifest with refresh cadence and license info will be p
 
 ## Distribution
 
-TLI is designed as a standalone resource — a public-facing site at its own URL, with embeddable widgets that third-party sites can use to surface province- or zone-level scores in context. The shape is closer to Walk Score than to a traditional report-style index.
+TLI is designed as a standalone resource — a public-facing site at [thailandliveabilityindex.com](https://thailandliveabilityindex.com), with embeddable widgets that third-party sites can use to surface province- or zone-level scores in context. The shape is closer to Walk Score than to a traditional report-style index.
 
 ## Roadmap
 
 - **Phase 1 — Foundations** *(closed)*: Data source inventory, methodology v1.0, indicator dictionary, Phase 1 output documents.
 - **Phase 2 — Data normalization** *(current)*: Build the ingestion pipeline, normalize indicators across all 77 provinces, validate Phase 1 hypotheses against real data, lock the zone slate.
 - **Phase 3 — Scoring and validation**: Compute provincial and zone scores, run sensitivity analysis on weights, peer-review the methodology before MVP launch.
-- **Phase 4 — Site and widgets**: Public-facing site, embeddable widgets for third-party use, public API.
+- **Phase 4 — Site and widgets**: Public-facing site at the canonical domain, embeddable widgets for third-party use, public API.
 - **MVP launch**: Late August / early September 2026.
 
 Future work after MVP may include premium services (real-time API access, data feeds, custom segmentation, white-label embeds) to fund continued development. The core index, methodology, and historical scores stay openly published regardless.
 
 ## Repository status
 
-This repository is currently a placeholder. Code, methodology, and data schemas land here as the MVP approaches launch. To follow progress, watch this repo on GitHub.
+This repository is currently a placeholder. Code, methodology, and data schemas land here as the MVP approaches launch. To follow progress, watch this repo on GitHub. The canonical site at [thailandliveabilityindex.com](https://thailandliveabilityindex.com) is reserved and will go live at MVP launch.
 
 ## License and trademark
 
