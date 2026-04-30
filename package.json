@@ -3,17 +3,13 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Thailand Liveability Index — public site source.",
+  "description": "Thailand Liveability Index — coming-soon teaser.",
   "license": "MIT",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "fetch-scores": "python3 scripts/fetch-scores.py",
-    "gen-og": "node scripts/gen-og.mjs",
-    "predev": "npm run fetch-scores",
     "dev": "astro dev",
-    "prebuild": "npm run fetch-scores && npm run gen-og",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -21,9 +17,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
-    "@astrojs/sitemap": "^3.7.2",
-    "@resvg/resvg-js": "^2.6.2",
-    "astro": "^5.18.1",
-    "lucide-static": "^1.14.0"
+    "astro": "^5.18.1"
   }
 }

@@ -1,5 +1,389 @@
 ---
-// Root redirect to default locale.
-// At apex `/`, send the visitor to `/en/`. SSG-friendly via meta refresh.
-return Astro.redirect('/en/');
+/**
+ * Coming-soon teaser. Self-contained — no Site.astro layout, no Nav, no
+ * scores.json dependency. The teaser shows real Bangkok data hardcoded
+ * from the latest R2 build (ymd-2026-04-30-sha-2f2eec6). Numbers don't
+ * need to live-update during the coming-soon window; once the apex
+ * flips to `main`, this branch stops getting visits and the hardcode
+ * becomes a frozen-in-time artifact, which is fine.
+ *
+ * To launch: change Cloudflare Pages production branch from `coming-soon`
+ * to `main` in the dashboard. Coming-soon stays around as a rollback
+ * target indefinitely.
+ */
+const launchWindow = 'July 2026';
+const description = "A composite 0–100 liveability score for each of Thailand's 77 provinces — seven categories, transparent methodology, full provenance. Soft launching July 2026.";
+const url = 'https://thailandliveabilityindex.com';
+
+// Frozen Bangkok teaser data — pulled from R2 ingestion ymd-2026-04-30-sha-2f2eec6.
+const teaser = {
+  name: 'Bangkok',
+  region: 'Central Thailand',
+  rank: 7,
+  composite: 64.9,
+  band: 'GOOD',
+  asOf: 'March 2026',
+  categories: [
+    { name: 'Climate & Environment', score: 59.7, sample: 'PM2.5: 26.6 µg/m³' },
+    { name: 'Healthcare',            score: 57.9, sample: '6.3 hospital beds / 1k' },
+    { name: 'Connectivity',          score: 99.6, sample: '359 Mbps median fixed' },
+    { name: 'Cost & Economy',        score: 100,  sample: 'GPP ฿447k / capita' },
+    { name: 'Safety & Governance',   score: 69.7, sample: 'ACLED: 0.06 fatalities / 100k' },
+    { name: 'Lifestyle & Culture',   score: 20.2, sample: 'TAT: 1.0 events / 100k' },
+    { name: 'Demographics & Scale',  score: 100,  sample: '3,467 persons / km²' },
+  ],
+};
 ---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thailand Liveability Index — Coming {launchWindow}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={url} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <meta property="og:title" content="Thailand Liveability Index" />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={url} />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <style is:inline>
+    @font-face {
+      font-family: 'IBM Plex Sans';
+      font-style: normal; font-weight: 400; font-display: swap;
+      src: url('/fonts/IBMPlexSans-Regular.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans';
+      font-style: normal; font-weight: 500; font-display: swap;
+      src: url('/fonts/IBMPlexSans-Medium.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans';
+      font-style: normal; font-weight: 600; font-display: swap;
+      src: url('/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'IBM Plex Sans';
+      font-style: normal; font-weight: 700; font-display: swap;
+      src: url('/fonts/IBMPlexSans-Bold.ttf') format('truetype');
+    }
+
+    :root {
+      --paper:   #FAF7F2;
+      --paper-2: #F2EEE6;
+      --ink:     #1A1A1A;
+      --ink-2:   #555;
+      --ink-3:   #888;
+      --brand:   #1F5F6B;
+      --rule:    #E2DFD8;
+      --score-2: #D9A441; /* mixed — for 20.2 */
+      --score-3: #7BA481; /* good   — for 57-79 */
+      --score-4: #2E7D5B; /* strong — for 80-100 */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 800px 280px at 50% 20%, rgba(31,95,107,0.06), transparent 70%),
+        var(--paper);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      padding: 48px 24px 64px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .splash {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .splash__brand {
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1;
+    }
+    .splash__brand span { color: var(--brand); }
+
+    .splash__title {
+      font-weight: 600;
+      font-size: clamp(34px, 6vw, 52px);
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin: 36px 0 16px;
+      text-wrap: balance;
+    }
+    .splash__title em {
+      font-style: normal;
+      color: var(--brand);
+    }
+
+    .splash__tagline {
+      font-weight: 400;
+      font-size: clamp(15px, 2.2vw, 18px);
+      line-height: 1.55;
+      color: var(--ink-2);
+      margin: 0 0 36px;
+      max-width: 580px;
+    }
+
+    /* --- Teaser card ---------------------------------------------------- */
+    .teaser {
+      background: #ffffff;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 24px 24px 20px;
+      margin: 0 0 36px;
+    }
+    .teaser__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .teaser__head-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .teaser__eyebrow {
+      font-weight: 600;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+    }
+    .teaser__name {
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .teaser__composite {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .teaser__composite-num {
+      font-weight: 600;
+      font-size: 44px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--score-3);
+      font-variant-numeric: tabular-nums;
+    }
+    .teaser__composite-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .teaser__band {
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--score-3);
+    }
+    .teaser__rank {
+      font-size: 12px;
+      color: var(--ink-3);
+      letter-spacing: 0.04em;
+    }
+
+    .teaser__cats {
+      list-style: none;
+      margin: 16px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .teaser__cat {
+      display: grid;
+      grid-template-columns: 1fr 56px 1fr;
+      gap: 16px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .teaser__cat:last-child { border-bottom: 0; }
+    .teaser__cat-name {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .teaser__cat-score {
+      text-align: right;
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+    .teaser__cat-score.is-mid { color: var(--score-2); }
+    .teaser__cat-score.is-good { color: var(--score-3); }
+    .teaser__cat-score.is-strong { color: var(--score-4); }
+    .teaser__cat-sample {
+      font-size: 13px;
+      color: var(--ink-3);
+      letter-spacing: 0.01em;
+    }
+
+    .teaser__foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--rule);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      font-weight: 500;
+    }
+
+    /* --- Launch pill + footer ------------------------------------------- */
+    .splash__eta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin: 0 0 36px;
+      padding: 10px 14px 10px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.6);
+    }
+    .splash__eta::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .splash__rule {
+      border: 0;
+      border-top: 1px solid var(--rule);
+      margin: 32px 0 24px;
+    }
+
+    .splash__credit {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-3);
+      margin: 0;
+    }
+    .splash__credit strong { color: var(--ink-2); font-weight: 500; }
+    .splash__credit a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .splash__credit a:hover { color: var(--ink); }
+
+    /* --- Mobile --------------------------------------------------------- */
+    @media (max-width: 520px) {
+      .teaser { padding: 18px 18px 16px; }
+      .teaser__head { flex-direction: column; align-items: flex-start; }
+      .teaser__cat {
+        grid-template-columns: 1fr 48px;
+        grid-template-rows: auto auto;
+        gap: 4px 12px;
+      }
+      .teaser__cat-name { grid-column: 1; grid-row: 1; }
+      .teaser__cat-score { grid-column: 2; grid-row: 1; }
+      .teaser__cat-sample {
+        grid-column: 1 / 3;
+        grid-row: 2;
+        font-size: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="splash">
+    <p class="splash__brand">TLI<span>.</span></p>
+
+    <h1 class="splash__title">
+      Thailand <em>Liveability</em> Index.
+    </h1>
+
+    <p class="splash__tagline">
+      A composite 0–100 score for each of Thailand's 77 provinces — seven
+      categories, transparent methodology, full provenance on every number.
+    </p>
+
+    <section class="teaser" aria-label="Sample province card">
+      <div class="teaser__head">
+        <div class="teaser__head-left">
+          <span class="teaser__eyebrow">A peek at the data · {teaser.region}</span>
+          <span class="teaser__name">{teaser.name}</span>
+        </div>
+        <div class="teaser__composite">
+          <span class="teaser__composite-num">{teaser.composite}</span>
+          <div class="teaser__composite-meta">
+            <span class="teaser__band">{teaser.band}</span>
+            <span class="teaser__rank">Rank {teaser.rank} of 77</span>
+          </div>
+        </div>
+      </div>
+
+      <ul class="teaser__cats">
+        {teaser.categories.map((c) => {
+          const tone = c.score >= 80 ? 'is-strong' : c.score >= 60 ? 'is-good' : 'is-mid';
+          return (
+            <li class="teaser__cat">
+              <span class="teaser__cat-name">{c.name}</span>
+              <span class:list={['teaser__cat-score', tone]}>{c.score}</span>
+              <span class="teaser__cat-sample">{c.sample}</span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div class="teaser__foot">
+        <span>As of {teaser.asOf}</span>
+        <span>·</span>
+        <span>NSO · PCD · MoPH · NESDC · ACLED · TAT · DOPA</span>
+      </div>
+    </section>
+
+    <p class="splash__eta">
+      Soft launch · {launchWindow}
+    </p>
+
+    <hr class="splash__rule" />
+
+    <p class="splash__credit">
+      <strong>By Will Reynolds.</strong> Methodology and category dictionary
+      published under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>;
+      site code under <a href="https://opensource.org/licenses/MIT" rel="license">MIT</a>.
+      Sourced from open Thai government data.
+    </p>
+  </main>
+</body>
+</html>
