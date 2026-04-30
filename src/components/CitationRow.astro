@@ -8,9 +8,9 @@
  *   asOf          — ISO date the table reflects (oldest as_of, by convention)
  *   methodology   — anchor URL for "methodology →"
  *
- * For PR 3, methodology link points at /<locale>/methodology/ which doesn't
- * exist yet; renders as a plain anchor. Visible-but-inert is honest — better
- * than fabricating a working link.
+ * Methodology page lives at /<locale>/methodology/. The optional
+ * methodologyAnchor (e.g. "#climate") deep-links to a category section once
+ * the methodology page grows category-level anchors.
  */
 import Lucide from './Lucide.astro';
 import { CHROME } from '../data/lookups';
