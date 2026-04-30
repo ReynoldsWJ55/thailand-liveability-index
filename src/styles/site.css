@@ -1401,6 +1401,305 @@ main {
 .about-category__indicator-label { color: var(--ink); }
 
 /* =============================================================================
+   EDITORIAL — Layer 2 field-notes template (Yasothon and beyond).
+   680px primary column + 280px sticky score sidebar at desktop. Stacks at
+   ≤920px. Plex Serif body, drop cap on the lead paragraph, named byline.
+   The sidebar surfaces the algorithmic score so editorial framing never
+   overwrites the data beside it.
+   ============================================================================= */
+.editorial {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--sp-6) 0 var(--sp-16);
+  color: var(--ink);
+}
+
+.editorial__head {
+  max-width: 780px;
+  margin: 0 auto var(--sp-10);
+  padding-bottom: var(--sp-8);
+  border-bottom: 1px solid var(--rule);
+}
+.editorial__title {
+  font: var(--fw-semibold) clamp(32px, 5.5vw, 52px)/1.05 var(--font-serif);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin: var(--sp-3) 0 var(--sp-4);
+  text-wrap: balance;
+}
+.editorial[lang="th"] .editorial__title {
+  font-family: var(--font-sans-thai);
+  line-height: 1.25;
+}
+.editorial__byline {
+  font: var(--fw-regular) var(--fs-14)/1.5 var(--font-mono);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin: 0 0 var(--sp-5);
+}
+.editorial__byline strong { color: var(--ink); font-weight: var(--fw-semibold); }
+.editorial__byline time { color: var(--ink-2); }
+
+.editorial__lede {
+  font: var(--fw-regular) var(--fs-20)/var(--lh-relaxed) var(--font-serif);
+  color: var(--ink-2);
+  margin: 0;
+  text-wrap: pretty;
+}
+.editorial[lang="th"] .editorial__lede {
+  font-family: var(--font-sans-thai);
+  line-height: 1.7;
+}
+.editorial__lede strong { color: var(--ink); font-weight: var(--fw-semibold); }
+
+.editorial__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+
+/* --- Body layout: prose + sidebar ---------------------------------------- */
+.editorial__body {
+  display: grid;
+  grid-template-columns: minmax(0, 680px) 280px;
+  gap: var(--sp-10);
+  align-items: start;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+@media (max-width: 920px) {
+  .editorial__body {
+    grid-template-columns: 1fr;
+    gap: var(--sp-8);
+  }
+}
+
+.editorial__prose {
+  font-family: var(--font-serif);
+}
+.editorial[lang="th"] .editorial__prose { font-family: var(--font-sans-thai); }
+
+.editorial__section { margin: var(--sp-6) 0; }
+.editorial__h2 {
+  font: var(--fw-semibold) var(--fs-24)/1.3 var(--font-sans);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: var(--sp-10) 0 var(--sp-3);
+}
+.editorial[lang="th"] .editorial__h2 { font-family: var(--font-sans-thai); }
+
+.editorial__prose p {
+  font: var(--fw-regular) var(--fs-17)/var(--lh-relaxed) var(--font-serif);
+  color: var(--ink);
+  margin: 0 0 var(--sp-4);
+}
+.editorial[lang="th"] .editorial__prose p { font-family: var(--font-sans-thai); line-height: 1.78; }
+.editorial__prose p em { font-style: italic; color: var(--ink-2); }
+.editorial__prose p strong { color: var(--ink); font-weight: var(--fw-semibold); }
+
+.editorial__lead-para {
+  font-size: var(--fs-18) !important;
+}
+.editorial__dropcap {
+  font: var(--fw-semibold) 4.2em/0.85 var(--font-serif);
+  float: left;
+  margin: 6px 10px 0 0;
+  color: var(--brand);
+  text-transform: uppercase;
+}
+.editorial[lang="th"] .editorial__dropcap {
+  font-family: var(--font-sans-thai);
+  font-size: 3.4em;
+}
+@media (max-width: 520px) {
+  .editorial__dropcap { font-size: 3.2em; margin: 4px 6px 0 0; }
+}
+
+.editorial__draft-note {
+  background: var(--paper-2);
+  border-left: 3px solid var(--brand);
+  padding: var(--sp-3) var(--sp-4);
+  margin: 0 0 var(--sp-6);
+  font: var(--fw-regular) var(--fs-13)/1.5 var(--font-mono) !important;
+  color: var(--ink-3) !important;
+  letter-spacing: 0.01em;
+}
+.editorial__draft-note strong { color: var(--ink-2); }
+
+.editorial__figure {
+  margin: var(--sp-8) 0;
+}
+.editorial__figure figcaption {
+  font: var(--fw-regular) var(--fs-13)/1.5 var(--font-mono);
+  color: var(--ink-3);
+  margin-top: var(--sp-2);
+  letter-spacing: var(--tracking-wide);
+}
+.editorial__photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--sp-12) var(--sp-6);
+  background: var(--paper-2);
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--r-2);
+  color: var(--ink-3);
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-mono);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  min-height: 280px;
+}
+.editorial__photo-meta {
+  font-weight: var(--fw-regular);
+  color: var(--ink-3);
+  margin-top: 4px;
+  letter-spacing: var(--tracking-wide);
+}
+
+.editorial__refs {
+  margin-top: var(--sp-12);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--rule);
+}
+.editorial__refs-note {
+  font: var(--fw-regular) var(--fs-13)/1.6 var(--font-sans) !important;
+  color: var(--ink-3) !important;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.editorial[lang="th"] .editorial__refs-note { font-family: var(--font-sans-thai); }
+.editorial__link {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.editorial__link:hover { color: var(--brand-ink, var(--brand)); }
+
+/* --- Sidebar ------------------------------------------------------------- */
+.editorial__sidebar {
+  position: sticky;
+  top: var(--sp-6);
+}
+@media (max-width: 920px) {
+  .editorial__sidebar { position: static; }
+}
+.editorial__sidebar-inner {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.editorial__sidebar-eyebrow {
+  margin: 0 !important;
+  color: var(--ink-3);
+}
+.editorial__sidebar-title {
+  font: var(--fw-semibold) var(--fs-22)/1.2 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+.editorial[lang="th"] .editorial__sidebar-title { font-family: var(--font-sans-thai); }
+.editorial__sidebar-meta {
+  font: var(--fw-regular) var(--fs-13)/1.5 var(--font-sans);
+  color: var(--ink-3);
+  margin: 0;
+}
+.editorial[lang="th"] .editorial__sidebar-meta { font-family: var(--font-sans-thai); }
+
+.editorial__sidebar-composite {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--sp-4) 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  margin: 4px 0;
+}
+.editorial__sidebar-rank {
+  font: var(--fw-regular) var(--fs-13)/1 var(--font-mono);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin: 0;
+}
+.editorial__sidebar-rank strong {
+  color: var(--ink);
+  font-weight: var(--fw-semibold);
+}
+
+.editorial__sidebar-h3 {
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: var(--sp-3) 0 var(--sp-2);
+}
+.editorial[lang="th"] .editorial__sidebar-h3 { font-family: var(--font-sans-thai); }
+
+.editorial__sidebar-cats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.editorial__sidebar-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.editorial__sidebar-cat:last-child { border-bottom: 0; }
+.editorial__sidebar-cat-row {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.editorial__sidebar-cat-label {
+  font: var(--fw-medium) var(--fs-13)/1.3 var(--font-sans);
+  color: var(--ink-2);
+}
+.editorial[lang="th"] .editorial__sidebar-cat-label { font-family: var(--font-sans-thai); }
+.editorial__sidebar-cat-score {
+  font: var(--fw-medium) var(--fs-15)/1 var(--font-mono);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  color: var(--ink);
+}
+.editorial__sidebar-cat-meta {
+  font: var(--fw-regular) var(--fs-11)/1 var(--font-mono);
+  color: var(--ink-3);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding-left: 18px;
+}
+.editorial[lang="th"] .editorial__sidebar-cat-meta { font-family: var(--font-sans-thai); }
+
+.editorial__sidebar-link {
+  margin-top: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--rule);
+  font: var(--fw-semibold) var(--fs-13)/1 var(--font-sans);
+  color: var(--brand);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.editorial__sidebar-link:hover { text-decoration: underline; }
+
+/* =============================================================================
    MOBILE BREAKPOINTS — pulls the page together below ~720px.
    Mobile-first defaults are already in place above; these overrides handle
    the typography that's too big at narrow widths and the layouts that need
