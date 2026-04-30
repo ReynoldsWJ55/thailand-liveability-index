@@ -1,0 +1,88 @@
+name: Cloudflare Pages deploy
+
+# Builds and deploys both branches via wrangler:
+#   - push to main         -> preview deploy at main.thailand-liveability-index.pages.dev
+#   - push to coming-soon  -> production deploy at the apex (until soft-launch flip)
+#
+# CF Pages routes the deploy based on `--branch` matching the project's
+# production branch. Initially production-branch is `coming-soon`. After
+# the soft-launch flip (run scripts/cf-set-production-branch.sh main),
+# main starts going to apex and coming-soon becomes the preview.
+
+on:
+  push:
+    branches: [main, coming-soon]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  # One deploy per branch in flight at a time.
+  group: cf-pages-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Build and deploy ${{ github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Python deps (skipped on coming-soon)
+        # The coming-soon branch has no scripts/requirements.txt — pip step
+        # is a no-op there. main has it (boto3, duckdb, python-dotenv).
+        run: |
+          if [ -f scripts/requirements.txt ]; then
+            pip install -r scripts/requirements.txt
+          else
+            echo "No scripts/requirements.txt — skipping Python deps"
+          fi
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Build
+        # main needs R2 creds (fetch-scores.py reads them); coming-soon
+        # ignores them. Setting them on every build keeps the workflow
+        # uniform across branches.
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID:      ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY:  ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # --branch tells CF Pages which deployment tier this is. When
+          # the value matches the project's production branch, it lands
+          # on apex. Otherwise it gets a preview URL.
+          command: pages deploy ./dist --project-name=thailand-liveability-index --branch=${{ github.ref_name }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Deploy summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Commit:** \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "If CF Pages production branch is set to \`${{ github.ref_name }}\`," >> "$GITHUB_STEP_SUMMARY"
+          echo "this deploy went to the apex domain. Otherwise it's a preview at" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`${{ github.ref_name }}.thailand-liveability-index.pages.dev\`." >> "$GITHUB_STEP_SUMMARY"
