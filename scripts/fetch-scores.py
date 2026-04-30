@@ -43,6 +43,8 @@ R2_BUCKET_DASHBOARD = "tli-dashboard-data"
 R2_KEY_SCORES = "latest/scores.parquet"
 R2_BUCKET_LOOKUPS = "tli-lookups"
 R2_KEY_PROVINCES = "provinces/v1.csv"
+R2_BUCKET_DERIVED = "tli-derived"
+INDICATOR_META = ROOT / "src" / "data" / "indicator-meta.json"
 
 # Phase 2 aggregator column → front-end CategoryId
 # (see src/data/types.ts and bin/aggregate.py CATEGORIES_ORDER)
@@ -114,8 +116,60 @@ def use_sample() -> int:
     return 0
 
 
+def latest_indicator_keys(s3) -> dict[str, str]:
+    """List all r2://tli-derived/ parquets, pick latest by ingestion-version-sort per indicator.
+
+    Keys look like: <ind_id>/<ymd-YYYY-MM-DD-sha-XXXXXXX>/<ind_id>_<ym>.parquet
+    Lexicographic sort lines up with chronological order because of the ymd- prefix.
+    """
+    paginator = s3.get_paginator("list_objects_v2")
+    by_indicator: dict[str, list[str]] = {}
+    for page in paginator.paginate(Bucket=R2_BUCKET_DERIVED):
+        for obj in page.get("Contents", []):
+            key = obj["Key"]
+            if not key.endswith(".parquet"):
+                continue
+            parts = key.split("/")
+            if len(parts) < 3:
+                continue
+            iid = parts[0]
+            by_indicator.setdefault(iid, []).append(key)
+    return {iid: sorted(keys)[-1] for iid, keys in by_indicator.items()}
+
+
+def fetch_indicators(s3, duckdb_module, tmpdir: Path, indicator_meta: dict) -> dict:
+    """Download all wired indicator parquets, return {ind_id: {province_code: row_dict}}.
+
+    Only indicators present in indicator_meta are fetched (the 22 wired into
+    the composite). Discovered-but-unwired indicators on R2 are skipped.
+    """
+    print(f"fetch-scores: discovering latest indicator parquets…", flush=True)
+    latest = latest_indicator_keys(s3)
+    target_ids = sorted(set(indicator_meta.keys()) & set(latest.keys()))
+    missing = sorted(set(indicator_meta.keys()) - set(latest.keys()))
+    if missing:
+        print(f"fetch-scores: WARN — {len(missing)} indicators in meta but not on R2: {missing}")
+    print(f"fetch-scores: fetching {len(target_ids)} indicator parquets from R2…", flush=True)
+
+    out: dict[str, dict] = {}
+    con = duckdb_module.connect()
+    for iid in target_ids:
+        key = latest[iid]
+        body = s3.get_object(Bucket=R2_BUCKET_DERIVED, Key=key)["Body"].read()
+        local = tmpdir / f"{iid}.parquet"
+        local.write_bytes(body)
+        rows = con.execute(
+            f"""SELECT province_code, raw_value, normalized_value,
+                       source, source_url, upstream_updated_at, quality_flag
+                FROM read_parquet('{local}')"""
+        ).fetchall()
+        cols = [d[0] for d in con.description]
+        out[iid] = {row[0]: dict(zip(cols, row)) for row in rows}
+    return out
+
+
 def fetch_from_r2(creds: dict[str, str]) -> int:
-    """Pull scores.parquet + province lookup, emit ScoresFile JSON."""
+    """Pull scores.parquet + province lookup + 22 indicator parquets, emit ScoresFile JSON."""
     try:
         import boto3  # type: ignore
         import duckdb  # type: ignore
@@ -126,6 +180,16 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
             file=sys.stderr,
         )
         return 1
+
+    # Indicator metadata — labels, units, sources, category mapping, weights.
+    if not INDICATOR_META.exists():
+        print(
+            f"fetch-scores: missing {INDICATOR_META.relative_to(ROOT)}. "
+            "Regenerate via the extractor in tli-private (out of scope here).",
+            file=sys.stderr,
+        )
+        return 1
+    indicator_meta = json.loads(INDICATOR_META.read_text())
 
     s3 = boto3.client(
         "s3",
@@ -208,6 +272,9 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
         # Find the ingestion_version (should be uniform across rows)
         ingestion_version = next((r["ingestion_version"] for r in records if r["ingestion_version"]), None)
 
+        # --- download all 22 wired indicator parquets, group by province ---
+        indicator_data = fetch_indicators(s3, duckdb, Path(tmpdir), indicator_meta)
+
         provinces_out: list[dict[str, Any]] = []
         cat_keys = [
             ("climate", "score_climate"),
@@ -218,12 +285,25 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
             ("culture", "score_culture"),
             ("demographics", "score_demographics"),
         ]
+        # Pre-compute: which indicator IDs feed which front-end category?
+        category_indicators: dict[str, list[str]] = {}
+        for iid, meta in indicator_meta.items():
+            category_indicators.setdefault(meta["category"], []).append(iid)
 
-        # Phase 2 currently doesn't expose per-indicator data through scores.parquet.
-        # For now we ship empty indicator arrays. Indicator-level fetch lands in a
-        # follow-up that reads tli-derived/<ind>/<iv>/*.parquet for each of the
-        # ~22 wired indicators and joins them per-province per-category.
-        empty_as_of = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        # Quality flag normalization: aggregator emits "ok" for fresh; map to types.ts.
+        def map_quality(q: str | None) -> str:
+            if q is None:
+                return "fresh"
+            q = q.lower()
+            if q in ("ok", "fresh", "valid"):
+                return "fresh"
+            if q in ("partial", "stale"):
+                return "stale"
+            if q in ("inherited",):
+                return "inherited"
+            if q in ("missing", "null", "no_data"):
+                return "missing"
+            return "fresh"
 
         for rank, r in enumerate(records, start=1):
             floored = is_floored(r)
@@ -234,8 +314,10 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
                         floored_by = cat_id
                         break
 
+            province_code = r["province_code"]
             categories: dict[str, Any] = {}
             scored_count = 0
+
             for cat_id, col in cat_keys:
                 score = r[col]
                 if score is None:
@@ -243,13 +325,49 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
                 else:
                     score_value = round(float(score), 1)
                     scored_count += 1
+
+                # Indicators in this category for this province
+                ind_list = []
+                as_of_dates: list[str] = []
+                for iid in category_indicators.get(cat_id, []):
+                    meta = indicator_meta[iid]
+                    province_rows = indicator_data.get(iid, {})
+                    row = province_rows.get(province_code)
+                    if row is None:
+                        # Province has no value for this indicator — skip rather than fake
+                        continue
+                    raw_val = row.get("raw_value")
+                    norm_val = row.get("normalized_value")
+                    as_of = (row.get("upstream_updated_at") or "").strip()
+                    if as_of:
+                        as_of_dates.append(as_of)
+                    ind_list.append({
+                        "id": iid,
+                        "label_en": meta["label_en"],
+                        "label_th": meta["label_th"] or meta["label_en"],
+                        "value": float(raw_val) if raw_val is not None else 0.0,
+                        "unit": meta["unit"],
+                        "raw_score": round(float(norm_val), 1) if norm_val is not None else 0.0,
+                        "source": meta["source"] or row.get("source", ""),
+                        "source_url": meta["source_url"] or row.get("source_url", ""),
+                        "as_of": as_of[:10] if as_of else "",
+                        "quality_flag": map_quality(row.get("quality_flag")),
+                    })
+
+                if as_of_dates:
+                    as_of_sorted = sorted(d for d in as_of_dates if d)
+                    oldest = as_of_sorted[0][:10] if as_of_sorted else ""
+                    freshest = as_of_sorted[-1][:10] if as_of_sorted else ""
+                else:
+                    oldest = freshest = ""
+
                 categories[cat_id] = {
                     "id": cat_id,
                     "score": score_value,
-                    "indicator_count": 0,
-                    "oldest_as_of": empty_as_of,
-                    "freshest_as_of": empty_as_of,
-                    "indicators": [],
+                    "indicator_count": len(ind_list),
+                    "oldest_as_of": oldest,
+                    "freshest_as_of": freshest,
+                    "indicators": ind_list,
                 }
 
             # Coverage tier from cats_scored
