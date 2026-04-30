@@ -1,0 +1,68 @@
+---
+/**
+ * 77-province sortable grid. Renders all tiles statically (no client-side
+ * re-rendering); the Controls island toggles visibility by adding/removing
+ * a 'is-hidden' class on each tile based on filter state.
+ *
+ * Top-5 affordance:
+ *   - Eyebrow "Top 5 by composite" sits above the first row, marked
+ *     [data-top-eyebrow] so the Controls island can hide it when sort
+ *     changes to non-default.
+ *   - Tiles ranked 1–5 carry data-podium so the visual accent lights up.
+ *
+ * Floored row:
+ *   - An alert banner sits between the real and floored sections,
+ *     explaining the geometric-mean floor in plain language.
+ *   - Floored tiles still appear in their correct ranks (73-77 etc.).
+ */
+import type { Province, Locale } from '../data/types';
+import { CHROME } from '../data/lookups';
+import ProvinceTile from './ProvinceTile.astro';
+import Lucide from './Lucide.astro';
+
+interface Props {
+  provinces: Province[];
+  locale: Locale;
+}
+const { provinces, locale } = Astro.props;
+const C = CHROME[locale];
+
+// Sort once, server-side: composite descending, floored to the bottom.
+const sorted = [...provinces].sort((a, b) => {
+  if (a.floored && !b.floored) return 1;
+  if (!a.floored && b.floored) return -1;
+  return (b.composite ?? 0) - (a.composite ?? 0);
+});
+const real = sorted.filter((p) => !p.floored);
+const floored = sorted.filter((p) => p.floored);
+
+const flooredCopy = floored.length === 1
+  ? C.flooredRowOne(floored.length)
+  : C.flooredRowMany(floored.length);
+---
+<div class="tli-grid" data-component="province-grid" data-total={provinces.length}>
+  <div class="tli-grid__eyebrow" data-top-eyebrow>
+    <span class="tli-grid__eyebrow-label">{C.topFiveEyebrow}</span>
+    <span class="tli-grid__eyebrow-rule" aria-hidden="true"></span>
+  </div>
+
+  {real.map((p, i) => {
+    const podium = i < 5 ? ((i + 1) as 1 | 2 | 3 | 4 | 5) : null;
+    return <ProvinceTile province={p} locale={locale} podium={podium} />;
+  })}
+
+  {floored.length > 0 && (
+    <>
+      <div class="tli-grid__floored-row" role="note">
+        <Lucide name="clock-alert" size={16} />
+        <span class="tli-grid__floored-row-text">{flooredCopy}</span>
+        <a href={`/${locale}/methodology/#floor`} class="tli-grid__floored-row-link">
+          {C.whyArrow}
+        </a>
+      </div>
+      {floored.map((p) => (
+        <ProvinceTile province={p} locale={locale} />
+      ))}
+    </>
+  )}
+</div>
