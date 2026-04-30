@@ -1,0 +1,42 @@
+---
+/**
+ * Home-page hero. Different from province Hero — no composite score panel.
+ * Single-column wide hero with the title, lede, and the eyebrow row of
+ * "77 Provinces · 7 Categories · Composite 0–100" plus an AS OF chip.
+ */
+import { CHROME } from '../data/lookups';
+import type { Locale } from '../data/types';
+import ProvenanceChip from './ProvenanceChip.astro';
+
+interface Props {
+  locale: Locale;
+  /** Latest as_of stamp from scores.json (ISO date or human text). */
+  asOf: string;
+}
+const { locale, asOf } = Astro.props;
+const C = CHROME[locale];
+---
+<section class="home-hero">
+  <p class="tli-eyebrow home-hero__release">
+    {locale === 'th' ? 'ดัชนีปี 2026' : 'The 2026 index'}
+  </p>
+  <h1 class="home-hero__title" {...locale === 'th' ? { lang: 'th' } : {}}>
+    {locale === 'th'
+      ? 'ดัชนีคุณภาพการอยู่อาศัยของ 77 จังหวัดในประเทศไทย'
+      : "How liveable is each of Thailand’s 77 provinces, on the data?"}
+  </h1>
+  <p class="home-hero__lede" {...locale === 'th' ? { lang: 'th' } : {}}>
+    {C.homeLede}
+  </p>
+  <div class="home-hero__eyebrow-row">
+    {C.homeEyebrow.map((label, i) => (
+      <>
+        {i > 0 && <span class="home-hero__eyebrow-sep" aria-hidden="true"></span>}
+        <span class="home-hero__eyebrow-item">{label}</span>
+      </>
+    ))}
+    <ProvenanceChip variant="fresh" icon="calendar" class="home-hero__as-of">
+      {C.asOf} {asOf}
+    </ProvenanceChip>
+  </div>
+</section>

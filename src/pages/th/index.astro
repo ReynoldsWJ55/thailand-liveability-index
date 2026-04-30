@@ -1,49 +1,93 @@
 ---
 import Site from '../../layouts/Site.astro';
+import HomeHero from '../../components/HomeHero.astro';
+import TliMap from '../../components/TliMap.astro';
+import CuratedRow from '../../components/CuratedRow.astro';
+import Controls from '../../components/Controls.astro';
+import ProvinceGrid from '../../components/ProvinceGrid.astro';
+import ProvenanceChip from '../../components/ProvenanceChip.astro';
+import Lucide from '../../components/Lucide.astro';
 import scoresData from '../../data/scores.json';
 import type { ScoresFile } from '../../data/types';
+import { CHROME } from '../../data/lookups';
 
 const data = scoresData as ScoresFile;
-const provinces = [...data.provinces].sort((a, b) => a.rank - b.rank);
-const generatedDate = data.generated_at.slice(0, 10);
+const provinces = data.provinces;
+const C = CHROME.th;
+
+const asOfDates = provinces.flatMap((p) =>
+  Object.values(p.categories).map((c) => c.freshest_as_of),
+);
+const latestAsOf = asOfDates.sort().at(-1) ?? data.generated_at.slice(0, 10);
+const asOfDisplay = new Date(latestAsOf).toLocaleDateString('en-US', {
+  month: 'short',
+  year: 'numeric',
+}).toUpperCase();
+
+const sourceSet = new Set<string>();
+provinces.forEach((p) =>
+  Object.values(p.categories).forEach((c) =>
+    c.indicators.forEach((i) => sourceSet.add(i.source)),
+  ),
+);
+const sources = Array.from(sourceSet).slice(0, 6).join(' · ');
 ---
 <Site
-  title="ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย"
-  description="ดัชนีรวมเชิงวิจัยที่จัดอันดับคุณภาพการอยู่อาศัยของทั้ง 77 จังหวัดของประเทศไทย"
+  title={C.homeTitle}
+  description={C.homeDescription}
   locale="th"
   canonicalPath="/th/"
 >
-  <p class="tli-eyebrow" lang="th">โครงสร้างเริ่มต้น · ขั้นที่ 2 · เชื่อมต่อข้อมูลแล้ว</p>
-  <h1 class="tli-h1" lang="th">ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย</h1>
-  <p class="tli-lede" lang="th">
-    คะแนนคุณภาพการอยู่อาศัยแบบรวมสำหรับทั้ง 77 จังหวัดของประเทศไทย — เจ็ดหมวดหมู่
-    ระเบียบวิธีโปร่งใส แหล่งที่มาของข้อมูลครบถ้วน
-  </p>
+  <HomeHero locale="th" asOf={asOfDisplay} />
 
-  <p class="tli-caption" style="margin-top: var(--sp-6);">
-    <span lang="th">สร้างข้อมูลเมื่อ</span> <span class="tli-num">{generatedDate}</span> ·
-    <span lang="th">ระเบียบวิธี</span> <span class="tli-num">{data.methodology_version}</span> ·
-    <span lang="th">แหล่ง</span> <span class="tli-mono">{data.source_manifest}</span>
-  </p>
+  <section class="home-section" aria-labelledby="map-section-title">
+    <header class="home-section__head">
+      <div>
+        <h2 class="home-section__title" id="map-section-title" lang="th">{C.thailandAtAGlance}</h2>
+        <p class="home-section__sub" lang="th">{C.thailandAtAGlanceSub}</p>
+      </div>
+      <ProvenanceChip icon="badge-check" lang="th">
+        แผนที่ · 77 จังหวัด
+      </ProvenanceChip>
+    </header>
+    <TliMap provinces={provinces} locale="th" />
+    <div class="home-citations">
+      {sources && <span>SOURCE · {sources.toUpperCase()}</span>}
+      <span lang="th">{C.asOf} · {asOfDisplay}</span>
+      <a href="/th/methodology/" class="home-citations__link" lang="th">
+        <Lucide name="book-open" size={12} class="tli-citations__icon" />
+        ระเบียบวิธี →
+      </a>
+    </div>
+  </section>
 
-  <h2 class="tli-h3" lang="th" style="margin-top: var(--sp-12); margin-bottom: var(--sp-3);">
-    จังหวัดตัวอย่าง
-    <span class="tli-eyebrow" style="margin-left: var(--sp-2);">{provinces.length} <span lang="th">จาก</span> 77</span>
-  </h2>
+  <section class="home-section" aria-labelledby="curated-section-title">
+    <header class="home-section__head">
+      <div>
+        <h2 class="home-section__title" id="curated-section-title" lang="th">{C.curatedTitle}</h2>
+        <p class="home-section__sub" lang="th">{C.curatedSub}</p>
+      </div>
+      <ProvenanceChip icon="badge-check" lang="th">{C.curatedTag}</ProvenanceChip>
+    </header>
+    <CuratedRow provinces={provinces} locale="th" />
+  </section>
 
-  <ul class="tli-province-list">
-    {provinces.map((p) => (
-      <li class="tli-province-row">
-        <span class="tli-province-row__rank tli-num">{p.rank}</span>
-        <span class={`tli-province-row__score tli-num${p.floored ? ' is-floored' : ''}`}>
-          {p.floored ? 'FL' : p.composite}
-        </span>
-        <span class="tli-province-row__name" lang="th">{p.name_th}</span>
-        <span class="tli-province-row__region tli-eyebrow">{p.region}</span>
-        {p.floored && (
-          <span class="tli-prov tli-prov-missing" lang="th">ติดเพดาน · {p.floored_by?.toUpperCase()}</span>
-        )}
-      </li>
-    ))}
-  </ul>
+  <section class="home-section" aria-labelledby="all77-section-title">
+    <header class="home-section__head">
+      <div>
+        <h2 class="home-section__title" id="all77-section-title" lang="th">{C.all77Title}</h2>
+        <p class="home-section__sub" lang="th">{C.all77Sub}</p>
+      </div>
+    </header>
+    <Controls locale="th" total={provinces.length} />
+    <ProvinceGrid provinces={provinces} locale="th" />
+    <div class="home-citations">
+      <span lang="th">{C.citationsCompositeMethod}</span>
+      <span lang="th">{C.citationsScale}</span>
+      <a href="/th/methodology/#composite" class="home-citations__link" lang="th">
+        <Lucide name="book-open" size={12} class="tli-citations__icon" />
+        {C.howCompositeBuilt}
+      </a>
+    </div>
+  </section>
 </Site>
