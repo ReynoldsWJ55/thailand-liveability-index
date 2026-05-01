@@ -274,5 +274,29 @@
     "category_phase2": "Lifestyle & Culture",
     "category": "culture",
     "weight": 0.5
+  },
+  "ind_rainfall_days_per_year": {
+    "id": "ind_rainfall_days_per_year",
+    "label_en": "Wet Days Per Year (≥ 1 mm Rainfall)",
+    "label_th": "จำนวนวันที่มีฝนตก (ฝน ≥ 1 มม.) ต่อปี",
+    "unit": "wet days/yr",
+    "source": "NASA POWER (bias-corrected precipitation reanalysis)",
+    "source_url": "https://power.larc.nasa.gov/",
+    "source_description": "NASA satellite-and-reanalysis climate dataset; daily-precipitation grid covering all 77 Thai provinces.",
+    "category_phase2": "Environment & Climate",
+    "category": "climate",
+    "weight": 0.5
+  },
+  "ind_jci_accredited_count": {
+    "id": "ind_jci_accredited_count",
+    "label_en": "JCI-Accredited Hospitals in This Province",
+    "label_th": "จำนวนโรงพยาบาลที่ได้รับการรับรองมาตรฐาน JCI ในจังหวัด",
+    "unit": "hospitals",
+    "source": "Joint Commission International (JCI)",
+    "source_url": "https://www.jointcommissioninternational.org/",
+    "source_description": "International gold-standard healthcare quality accreditation body; rigorous on-site inspections.",
+    "category_phase2": "Healthcare",
+    "category": "healthcare",
+    "weight": 0.5
   }
 }
