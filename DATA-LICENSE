@@ -4,16 +4,25 @@ Copyright (c) 2026 Will Reynolds
 
 The methodology document, data outputs, scoring algorithm documentation,
 indicator definitions, and other non-code content in this repository are
-licensed under a Creative Commons Attribution 4.0 International License
-(CC BY 4.0).
+licensed under a Creative Commons Attribution-NonCommercial 4.0
+International License (CC BY-NC 4.0).
 
 You are free to:
 
   - Share — copy and redistribute the material in any medium or format.
-  - Adapt — remix, transform, and build upon the material for any purpose,
-    including commercially.
+  - Adapt — remix, transform, and build upon the material, for
+    non-commercial purposes only.
 
-Under the following attribution terms:
+Under the following terms:
+
+  Attribution — You must give appropriate credit, provide a link to the
+  license, and indicate if changes were made. You may do so in any
+  reasonable manner, but not in any way that suggests the licensor
+  endorses you or your use.
+
+  NonCommercial — You may not use the material for commercial purposes.
+  A "commercial use" is one primarily intended for or directed toward
+  commercial advantage or monetary compensation.
 
   Appropriate credit means all of the following:
 
@@ -22,18 +31,29 @@ Under the following attribution terms:
        (https://thailandliveabilityindex.com) or the canonical repository
        (https://github.com/ReynoldsWJ55/thailand-liveability-index).
     3. Providing a link to this license
-       (https://creativecommons.org/licenses/by/4.0/).
+       (https://creativecommons.org/licenses/by-nc/4.0/).
     4. If you have made changes to the data, methodology, or any aggregated
        output, clearly indicating that changes were made AND that the
        modified version is not the official Thailand Liveability Index.
     5. Not using the names "Thailand Liveability Index" or "TLI", or any
        associated visual marks, in any manner that suggests the licensor
        endorses you or your use. See TRADEMARK.md for the trademark
-       boundary; the CC BY 4.0 license does not grant rights in the
+       boundary; the CC BY-NC 4.0 license does not grant rights in the
        project's name or marks.
     6. No additional restrictions — you may not apply legal terms or
        technological measures that legally restrict others from doing
        anything the license permits.
+
+Commercial use:
+
+  Use of the methodology, data outputs, indicator definitions, or any
+  derived material from this repository in any product, service, or
+  workflow primarily intended for commercial advantage or monetary
+  compensation requires a separate commercial license.
+
+  See LICENSE-COMMERCIAL.md and the project's licensing page at
+  https://thailandliveabilityindex.com/en/licensing/ for the commercial
+  licensing pathway. Inquiries: info@thailandliveabilityindex.com.
 
 Notices:
 
@@ -45,12 +65,18 @@ Notices:
     such as publicity, privacy, or moral rights may limit how you use the
     material.
 
-Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
-Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+Full legal text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc/4.0/
 
 Note on third-party data: Underlying source data used in producing TLI
 scores is licensed by the original data providers (Thai government
-agencies, OpenAQ, ACLED, OpenStreetMap, etc.). TLI's CC BY 4.0 license
+agencies, OpenAQ, ACLED, OpenStreetMap, etc.). TLI's CC BY-NC 4.0 license
 applies only to the methodology, indicator definitions, and aggregated
 output produced by this project. Users redistributing underlying source
 data should consult and comply with each source's license terms directly.
+
+Note on prior versions: Earlier versions of this repository (commits prior
+to the 2026-05-01 licensing strategy decision) carried a CC BY 4.0 grant
+on the data outputs. Anyone who acquired data outputs from those prior
+versions retains CC BY 4.0 rights to that prior file content. New file
+content from 2026-05-01 onward is governed by this CC BY-NC 4.0 license.
