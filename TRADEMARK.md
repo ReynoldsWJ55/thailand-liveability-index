@@ -61,7 +61,7 @@ Until formal registration, the marks are protected under common-law trademark pr
 
 ## If you have any doubt
 
-Ask. Email **info@thailandliveabilityindex.com** or open an issue on this repository. The goal is not to make TLI inaccessible — the methodology and code are deliberately open. The goal is to make sure that when someone sees the TLI name, they can trust what they're getting.
+Ask. Email **contact@thailandliveabilityindex.com** or open an issue on this repository. The goal is not to make TLI inaccessible — the methodology and code are deliberately open. The goal is to make sure that when someone sees the TLI name, they can trust what they're getting.
 
 ---
 

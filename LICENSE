@@ -1,21 +1,50 @@
-MIT License
+Thailand Liveability Index — License Overview
 
-Copyright (c) 2026 Will Reynolds
+This repository contains content under multiple licenses. Each layer is
+tracked in a dedicated file. The default GitHub license-detector reads
+this file; the substantive grants live in the linked files.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+  CODE
+    File:    LICENSE-CODE
+    License: MIT
+    Scope:   All source code in this repository — Astro components,
+             TypeScript modules, Python scripts, GitHub Actions workflows,
+             CSS, JSON-Schema files, and similar.
+    Effect:  Free for any use, including commercial. No commercial
+             license required for the code.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+  METHODOLOGY AND DATA OUTPUTS (NON-COMMERCIAL)
+    File:    LICENSE-DATA
+    License: Creative Commons Attribution-NonCommercial 4.0 International
+             (CC BY-NC 4.0)
+    Scope:   Methodology document, indicator definitions, scoring
+             algorithm documentation, score outputs (scores.json,
+             scores.sample.json, indicator-meta.json, and any future
+             score / methodology output emitted into src/data/).
+    Effect:  Free for academic, journalistic, personal, civic,
+             educational, and Thai-government use, with attribution.
+             Commercial use requires a separate commercial license.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+  METHODOLOGY AND DATA OUTPUTS (COMMERCIAL)
+    File:    LICENSE-COMMERCIAL.md
+    License: Separate commercial license required (placeholder; pricing
+             deferred until commercial activation per the placeholder)
+    Scope:   Same as LICENSE-DATA but for commercial use.
+    Effect:  Email licensing@thailandliveabilityindex.com to begin a
+             commercial-licensing conversation.
+
+  TRADEMARKS
+    File:    TRADEMARK.md
+    Scope:   The names "Thailand Liveability Index" and "TLI", and any
+             associated visual marks.
+    Effect:  Trademark protection is layered on top of the open-source
+             and Creative Commons licenses. The licenses cover the
+             work; the trademark protects the identity. See TRADEMARK.md
+             for what's open, what's protected, and what counts as
+             acceptable use.
+
+This repository is dual-licensed (MIT for code, CC BY-NC 4.0 for data
+outputs) plus a separate commercial-license track and a trademark layer.
+GitHub's default license detector will display "Other" or this LICENSE
+file's contents in the sidebar; the binding grants live in
+LICENSE-CODE, LICENSE-DATA, LICENSE-COMMERCIAL.md, and TRADEMARK.md.

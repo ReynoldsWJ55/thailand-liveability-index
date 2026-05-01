@@ -7,7 +7,7 @@ the Thailand Liveability Index.
 
 These files are licensed under **Creative Commons
 Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** — see
-[`/DATA-LICENSE`](../../DATA-LICENSE) for the full grant and attribution
+[`/LICENSE-DATA`](../../LICENSE-DATA) for the full grant and attribution
 requirements.
 
 **Commercial use** of these data files requires a separate commercial
@@ -15,10 +15,10 @@ license. See [`/LICENSE-COMMERCIAL.md`](../../LICENSE-COMMERCIAL.md) and
 the project's licensing page at
 [thailandliveabilityindex.com/en/licensing/](https://thailandliveabilityindex.com/en/licensing/)
 for the commercial-licensing pathway. Inquiries:
-info@thailandliveabilityindex.com.
+licensing@thailandliveabilityindex.com.
 
 The TypeScript and Astro source files in this directory (and elsewhere
-in `src/`) are licensed under **MIT** — see [`/LICENSE`](../../LICENSE).
+in `src/`) are licensed under **MIT** — see [`/LICENSE-CODE`](../../LICENSE-CODE).
 
 The names "Thailand Liveability Index" and "TLI", and any associated
 visual marks, are trademarks of the project maintainer and are **not**

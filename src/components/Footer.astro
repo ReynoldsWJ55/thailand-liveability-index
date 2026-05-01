@@ -11,14 +11,12 @@ const copy = locale === 'th'
       methodology: 'ระเบียบวิธี',
       about: 'เกี่ยวกับ',
       licensing: 'การอนุญาต',
-      copyright: '© 2026 William J. Reynolds',
     }
   : {
       tagline: 'A research composite index for all 77 Thai provinces.',
       methodology: 'Methodology',
       about: 'About',
       licensing: 'Licensing',
-      copyright: '© 2026 William J. Reynolds',
     };
 const base = locale === 'th' ? '/th' : '/en';
 ---
@@ -30,6 +28,5 @@ const base = locale === 'th' ? '/th' : '/en';
       <a href={`${base}/about/`}>{copy.about}</a>
       <a href={`${base}/licensing/`}>{copy.licensing}</a>
     </nav>
-    <p class="tli-footer__copyright">{copy.copyright}</p>
   </div>
 </footer>

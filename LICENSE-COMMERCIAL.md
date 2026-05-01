@@ -6,6 +6,27 @@ The terms below describe the commercial-licensing pathway in
 principle; specific contracts, pricing, and signing are deferred
 until commercial activation begins (target: 2027 or later).
 
+## Why pricing is deferred
+
+Commercial-license inquiries are welcome at any time. Pricing and
+contract terms are deferred until commercial activation begins
+(target: 2027) for two reasons:
+
+1. The project's first year (2026-08 to 2027-08) is intentionally
+   non-commercial. Y1 is for accumulating authentic usage signal
+   (embed adoption, citation patterns, traffic shape) before
+   approaching customers with pricing — pricing the product
+   correctly requires data we do not yet have.
+2. The operator's current visa structure permits no commercial
+   activity inside Thailand. A transition to a commercial-permitting
+   structure (LTR, BOI-sponsored work permit, Smart Visa, or
+   operating the commercial entity from outside Thailand) is in
+   progress. Earliest plausible activation: 2027.
+
+Inquiries received during the deferred window establish a working
+relationship and shape pricing for the activation-day contract.
+Reaching out early is welcomed, not premature.
+
 ## TL;DR
 
 - **Code (MIT):** free for any use, including commercial. No commercial
@@ -72,7 +93,7 @@ conversation and published here once stable.
 
 To open a commercial-licensing conversation:
 
-1. Email **info@thailandliveabilityindex.com** with:
+1. Email **licensing@thailandliveabilityindex.com** with:
    - Brief description of your organization and the intended use case
    - Volume estimate (e.g., expected API calls per month, number of
      embeds, bulk-export refresh frequency)

@@ -54,13 +54,14 @@ TLI is designed as a standalone resource — a public-facing site at [thailandli
 
 ## Roadmap
 
-- **Phase 1 — Foundations** *(closed)*: Data source inventory, methodology v1.0, indicator dictionary, Phase 1 output documents.
-- **Phase 2 — Data normalization** *(current)*: Build the ingestion pipeline, normalize indicators across all 77 provinces, validate Phase 1 hypotheses against real data, lock the zone slate.
-- **Phase 3 — Scoring and validation**: Compute provincial and zone scores, run sensitivity analysis on weights, peer-review the methodology before MVP launch.
-- **Phase 4 — Site and widgets**: Public-facing site at the canonical domain, embeddable widgets for third-party use, public API.
-- **MVP launch**: Late August / early September 2026.
+- **Phase 1 — Foundations** *(closed, April 2026)*: Source inventory, methodology v1.0, indicator dictionary, Phase 1 output documents.
+- **Phase 2 — Data pipeline** *(closed, April 2026)*: Ingestion pipeline live, 22 indicators normalized across all 77 provinces, geometric-mean composite producing scores 0-100, zone slate v1.2 verified.
+- **Phase 3 — Site and widgets** *(current)*: Public site at the canonical domain (currently in coming-soon mode), per-indicator detail pages, embeddable widgets for third-party use, public API. Zone-level overlay UI.
+- **Soft launch**: July 2026.
+- **Hard launch**: Late August / early September 2026.
+- **Phase 4 — B2B activation** *(post-launch, gated)*: API access tiers, bulk-export feeds, white-label embeds, custom enterprise integrations. Activation gated on the operator's visa transition and Y1 usage signal; earliest 2027.
 
-Future work after MVP may include a B2B commercial-licensing layer (real-time API access tiers, bulk-export feeds, white-label embeds, custom enterprise integrations). The core index, methodology, and historical scores stay openly published for academic, journalistic, personal, civic, and Thai-government use under CC BY-NC 4.0 regardless. Commercial licensing for proprietary use is a separate paid track.
+The core index, methodology, and historical scores stay openly published for academic, journalistic, personal, civic, and Thai-government use under CC BY-NC 4.0 regardless of commercial activation. Commercial licensing for proprietary use is a separate paid track — see [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
 
 ## Repository status
 
@@ -70,9 +71,9 @@ This repository contains the public site source for [thailandliveabilityindex.co
 
 Four layers, on purpose:
 
-- **Code**: MIT (see [`LICENSE`](LICENSE)). Anyone may use, modify, and redistribute the source code, including in commercial products.
-- **Methodology and data outputs (non-commercial)**: CC BY-NC 4.0 (see [`DATA-LICENSE`](DATA-LICENSE)). Free for academic, journalistic, personal, civic, educational, and Thai-government use, with attribution.
-- **Methodology and data outputs (commercial)**: separate commercial license required for any use primarily intended for commercial advantage or monetary compensation. See [`LICENSE-COMMERCIAL.md`](LICENSE-COMMERCIAL.md) and [thailandliveabilityindex.com/en/licensing/](https://thailandliveabilityindex.com/en/licensing/). Inquiries: info@thailandliveabilityindex.com.
+- **Code**: MIT (see [`LICENSE-CODE`](LICENSE-CODE)). Anyone may use, modify, and redistribute the source code, including in commercial products.
+- **Methodology and data outputs (non-commercial)**: CC BY-NC 4.0 (see [`LICENSE-DATA`](LICENSE-DATA)). Free for academic, journalistic, personal, civic, educational, and Thai-government use, with attribution.
+- **Methodology and data outputs (commercial)**: separate commercial license required for any use primarily intended for commercial advantage or monetary compensation. See [`LICENSE-COMMERCIAL.md`](LICENSE-COMMERCIAL.md) and [thailandliveabilityindex.com/en/licensing/](https://thailandliveabilityindex.com/en/licensing/). Inquiries: licensing@thailandliveabilityindex.com.
 - **Names and marks**: "Thailand Liveability Index", "TLI", and associated visual marks are trademarks of the project maintainer. They are **not** covered by the MIT or CC BY-NC 4.0 licenses. See [`TRADEMARK.md`](TRADEMARK.md) for the boundary — what's open, what's protected, what counts as an acceptable or unacceptable use of the name.
 
 The methodology and data are openly licensed for non-commercial use so the index can be cited and built on by the academic, journalism, and civic communities. Commercial use is gated through the commercial-license pathway, which funds continued development. The brand is held closed so users can trust that "TLI" identifies the official source.
