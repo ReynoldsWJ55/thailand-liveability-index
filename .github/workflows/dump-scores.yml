@@ -1,0 +1,50 @@
+# Copyright (c) 2026 Will Reynolds
+# SPDX-License-Identifier: MIT
+name: Dump scores.json (one-shot recovery)
+
+# Manually-triggered workflow that runs scripts/fetch-scores.py with the
+# R2 secrets in CI and uploads the resulting src/data/scores.json as a
+# downloadable artifact. Use this when local .env doesn't have R2 creds
+# but you want a populated scores.json on disk for `astro dev`.
+#
+# Trigger: gh workflow run "Dump scores.json (one-shot recovery)"
+# Download: gh run download <run-id> -n scores-json -D /tmp/recover
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Python deps
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run fetch-scores.py
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID:      ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY:  ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: python scripts/fetch-scores.py
+
+      - name: Verify 77-province output
+        run: |
+          python -c "import json; d=json.load(open('src/data/scores.json')); n=len(d.get('provinces',[])); print(f'Provinces in dump: {n}'); assert n == 77, f'Expected 77 provinces, got {n}'"
+
+      - name: Upload scores.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: scores-json
+          path: src/data/scores.json
+          retention-days: 7
