@@ -551,6 +551,43 @@ main {
 /* Span pad for citation row inside the ind-block */
 .ind-block .tli-citations { margin: 0; }
 
+/* --- Methodology CTA panel ----------------------------------------------- */
+/* Mirrors the kit's bottom-of-province-page panel. Composes design-system
+   tokens — paper-2 surface, hairline border, r-3 radius. Two buttons; CTA
+   stacks below the copy on narrow widths. */
+.methodology-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin: var(--sp-12) 0;
+  padding: var(--sp-5);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-3);
+}
+.methodology-cta__copy {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.methodology-cta__sub {
+  margin-top: 4px;
+}
+.methodology-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.methodology-cta .tli-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.methodology-cta .tli-btn__icon {
+  flex-shrink: 0;
+}
+
 /* =============================================================================
    HOME PAGE — iter 2 prototype port (with iter 3 polish).
    Page-scoped layout. Composes design-system tokens; no new design decisions.

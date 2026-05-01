@@ -1,0 +1,49 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Province-page bottom CTA panel — mirrors the kit's
+ * `<section style="… background: var(--paper-2); border: 1px solid var(--rule); …">`
+ * with two buttons. Methodology (primary) deep-links to the methodology page;
+ * Source (secondary) goes to the public GitHub repo. The kit's "Download CSV"
+ * button is deliberately omitted until per-province CSV emission lands in the
+ * prebuild — linking to a non-existent CSV would violate the design system's
+ * "honest over clean" rule.
+ *
+ * Strategically: this panel is the trust + open-methodology signal at the
+ * foot of every province page. It tells researchers, journalists, and IS
+ * evaluators that the score they just read is reproducible from open code.
+ * That's the Walk Score-vs-Numbeo differentiator made literal.
+ */
+import Lucide from './Lucide.astro';
+import { CHROME, TLI_GITHUB_URL } from '../data/lookups';
+import type { Locale } from '../data/types';
+
+interface Props {
+  /** Display name of the province for the panel title (locale-aware upstream). */
+  provinceName: string;
+  locale: Locale;
+}
+const { provinceName, locale } = Astro.props;
+const C = CHROME[locale];
+---
+<section class="methodology-cta" aria-labelledby="methodology-cta-title">
+  <div class="methodology-cta__copy">
+    <h3 class="tli-h5" id="methodology-cta-title" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {C.ctaPanelTitle(provinceName)}
+    </h3>
+    <p class="tli-caption methodology-cta__sub" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {C.ctaPanelSub}
+    </p>
+  </div>
+  <div class="methodology-cta__actions">
+    <a class="tli-btn tli-btn-primary" href={`/${locale}/methodology/`}>
+      <Lucide name="book-open" size={14} class="tli-btn__icon" />
+      <span {...locale === 'th' ? { lang: 'th' } : {}}>{C.ctaMethodologyButton}</span>
+    </a>
+    <a class="tli-btn tli-btn-secondary" href={TLI_GITHUB_URL} target="_blank" rel="noopener">
+      <span {...locale === 'th' ? { lang: 'th' } : {}}>{C.ctaSourceButton}</span>
+      <Lucide name="external-link" size={14} class="tli-btn__icon" />
+    </a>
+  </div>
+</section>

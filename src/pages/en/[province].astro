@@ -6,6 +6,7 @@ import Hero from '../../components/Hero.astro';
 import CategoryCard from '../../components/CategoryCard.astro';
 import IndicatorTable from '../../components/IndicatorTable.astro';
 import EditorialBanner from '../../components/EditorialBanner.astro';
+import MethodologyCta from '../../components/MethodologyCta.astro';
 import { CATEGORY_ORDER, CHROME } from '../../data/lookups';
 import scoresData from '../../data/scores.json';
 import type { Province, ScoresFile } from '../../data/types';
@@ -72,4 +73,6 @@ const description =
       isFloor={province.floored && province.floored_by === cat.id}
     />
   ))}
+
+  <MethodologyCta provinceName={province.name_en} locale={locale} />
 </Site>

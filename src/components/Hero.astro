@@ -27,7 +27,10 @@ const name = locale === 'th' ? province.name_th : province.name_en;
 const altName = locale === 'th' ? province.name_en : province.name_th;
 const region = regionLabel(province.region, locale);
 const residents = C.residents(province.population);
-const eyebrow = `${C.province} · ${region.toUpperCase()} · ${residents.toUpperCase()}`;
+// `.tli-eyebrow` carries `text-transform: uppercase` — no manual upper-casing
+// here. Keeping the source strings their natural case avoids surprises if a
+// translator copies the eyebrow string into a non-eyebrow context.
+const eyebrow = `${C.province} · ${region} · ${residents}`;
 
 const floored = province.floored;
 const display = floored ? '0' : (province.composite ?? 0);

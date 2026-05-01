@@ -71,6 +71,13 @@ export const CATEGORIES: Record<CategoryId, CategoryMeta> = {
   },
 };
 
+/**
+ * Canonical URL for the public TLI source repository. Surfaced in the
+ * province-page CTA panel and (eventually) other "view source" affordances.
+ * The private working repo is intentionally NOT exposed.
+ */
+export const TLI_GITHUB_URL = 'https://github.com/ReynoldsWJ55/thailand-liveability-index';
+
 /** Canonical render order across the site (matches Phase 2 aggregator order). */
 export const CATEGORY_ORDER: CategoryId[] = [
   'climate',
@@ -170,6 +177,13 @@ export interface ChromeLabels {
   howCompositeBuilt: string;
   /** Shown when a category card has zero indicators in this build (R2 wiring lands category scores first; per-indicator detail follows). */
   indicatorsComingSoon: string;
+  // Province-page bottom CTA panel
+  /** "Read how Bangkok's score is computed" — provinceName interpolated. */
+  ctaPanelTitle: (provinceName: string) => string;
+  /** "Methodology v1.0 · 7 sections · 22 indicators · all sources cited." */
+  ctaPanelSub: string;
+  ctaMethodologyButton: string;
+  ctaSourceButton: string;
 }
 
 export const CHROME: Record<Locale, ChromeLabels> = {
@@ -230,6 +244,10 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsScale: 'Scale · 0–100 (normalized)',
     howCompositeBuilt: 'How the composite is built →',
     indicatorsComingSoon: 'Indicator-level detail lands in a follow-up release.',
+    ctaPanelTitle: (name) => `Read how ${name}'s score is computed`,
+    ctaPanelSub: 'Methodology v1.0 · 7 categories · 22 indicators · every source cited.',
+    ctaMethodologyButton: 'Methodology',
+    ctaSourceButton: 'Source on GitHub',
   },
   th: {
     province: 'จังหวัด',
@@ -288,5 +306,9 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsScale: 'ช่วง · 0–100 (ปรับมาตรฐาน)',
     howCompositeBuilt: 'การคำนวณคะแนนรวม →',
     indicatorsComingSoon: 'รายละเอียดระดับตัวชี้วัดจะมาในรุ่นถัดไป',
+    ctaPanelTitle: (name) => `วิธีคำนวณคะแนนของ${name}`,
+    ctaPanelSub: 'ระเบียบวิธี v1.0 · 7 หมวด · 22 ตัวชี้วัด · อ้างอิงแหล่งที่มาครบทุกตัว',
+    ctaMethodologyButton: 'ระเบียบวิธี',
+    ctaSourceButton: 'ซอร์สโค้ดบน GitHub',
   },
 };
