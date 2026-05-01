@@ -228,7 +228,7 @@
   /* === CATEGORY ACCENTS (the 7 score categories) ===
      Used for legends, small badges, category chips. Never dominate;
      score band always trumps category accent. */
-  --cat-climate:      #4A8FB8;  /* Climate & Environment */
+  --cat-climate:      #4A8FB8;  /* Environment & Climate */
   --cat-cost:         #C28B47;  /* Cost of Living */
   --cat-safety:       #6B5B95;  /* Safety & Security */
   --cat-healthcare:   #B85C7E;  /* Healthcare */

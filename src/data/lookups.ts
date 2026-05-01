@@ -22,8 +22,8 @@ export interface CategoryMeta {
 export const CATEGORIES: Record<CategoryId, CategoryMeta> = {
   climate: {
     id: 'climate',
-    label_en: 'Climate & Environment',
-    label_th: 'ภูมิอากาศและสิ่งแวดล้อม',
+    label_en: 'Environment & Climate',
+    label_th: 'สิ่งแวดล้อมและภูมิอากาศ',
     icon: 'cloud-sun',
     cssClass: 'cat-climate',
   },
