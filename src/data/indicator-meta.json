@@ -4,8 +4,8 @@
     "label_en": "ACLED-Recorded Conflict and Protest Events Per 100,000 Population, 5-Year Window",
     "label_th": "จำนวนเหตุการณ์ความขัดแย้งและการชุมนุม (ACLED) ต่อประชากร 100,000 คน ใน 5 ปี",
     "unit": "events/100k (5yr)",
-    "source": "",
-    "source_url": "",
+    "source": "ACLED — Armed Conflict Location & Event Data Project",
+    "source_url": "https://acleddata.com/",
     "category_phase2": "Safety & Governance",
     "category": "safety",
     "weight": 0.5
@@ -16,7 +16,7 @@
     "label_th": "จำนวนผู้เสียชีวิตจากเหตุการณ์ความขัดแย้ง (ACLED) ต่อประชากร 100,000 คน ใน 5 ปี",
     "unit": "fatalities/100k (5yr)",
     "source": "ACLED — Armed Conflict Location & Event Data Project",
-    "source_url": "",
+    "source_url": "https://acleddata.com/",
     "category_phase2": "Safety & Governance",
     "category": "safety",
     "weight": 1.0
@@ -24,10 +24,10 @@
   "ind_airport_intl_drive_min": {
     "id": "ind_airport_intl_drive_min",
     "label_en": "Driving Time to Nearest International Airport (Minutes)",
-    "label_th": "",
+    "label_th": "เวลาขับรถถึงสนามบินนานาชาติที่ใกล้ที่สุด (นาที)",
     "unit": "min drive",
     "source": "OpenStreetMap contributors (road network); IATA / Department of Civil Aviation Thailand (airport list)",
-    "source_url": "https://www.openstreetmap.org/,",
+    "source_url": "https://www.openstreetmap.org/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
     "weight": 1.0
@@ -35,7 +35,7 @@
   "ind_flood_frequency": {
     "id": "ind_flood_frequency",
     "label_en": "Provincial Cabinet-Resolution Flood-Aid Requests Per 100k Population (Annual)",
-    "label_th": "",
+    "label_th": "ความถี่ของน้ำท่วม (เหตุการณ์ภัยพิบัติที่คณะรัฐมนตรีรับรอง ต่อประชากร 100,000 คน)",
     "unit": "events/5yr",
     "source": "Department of Disaster Prevention and Mitigation (DDPM)",
     "source_url": "https://www.disaster.go.th/",
@@ -68,7 +68,7 @@
   "ind_heat_days_35c": {
     "id": "ind_heat_days_35c",
     "label_en": "Annual Count of Days With Maximum Temperature ≥ 35°C",
-    "label_th": "",
+    "label_th": "จำนวนวันต่อปีที่อุณหภูมิสูงสุด ≥ 35°C",
     "unit": "days/yr ≥35°C",
     "source": "Thailand Meteorological Department (TMD)",
     "source_url": "https://www.tmd.go.th/en/",
@@ -79,7 +79,7 @@
   "ind_hospital_beds_per_1k": {
     "id": "ind_hospital_beds_per_1k",
     "label_en": "Registered Hospital Beds Per 1,000 Provincial Population",
-    "label_th": "",
+    "label_th": "จำนวนเตียงโรงพยาบาลต่อประชากร 1,000 คน",
     "unit": "beds/1k pop",
     "source": "Ministry of Public Health (MoPH)",
     "source_url": "https://hcode.moph.go.th/api/health_office/",
@@ -101,7 +101,7 @@
   "ind_internet_fixed_mbps": {
     "id": "ind_internet_fixed_mbps",
     "label_en": "Provincial Median Fixed Broadband Download Speed",
-    "label_th": "",
+    "label_th": "ความเร็วอินเทอร์เน็ตบรอดแบนด์แบบประจำที่ (ค่ามัธยฐาน, Mbps)",
     "unit": "Mbps median",
     "source": "Ookla LLC (Speedtest)",
     "source_url": "https://github.com/teamookla/ookla-open-data",
@@ -112,7 +112,7 @@
   "ind_internet_mobile_mbps": {
     "id": "ind_internet_mobile_mbps",
     "label_en": "Provincial Median Mobile Broadband Download Speed",
-    "label_th": "",
+    "label_th": "ความเร็วอินเทอร์เน็ตมือถือ (ค่ามัธยฐาน, Mbps)",
     "unit": "Mbps median",
     "source": "Ookla LLC (Speedtest)",
     "source_url": "https://github.com/teamookla/ookla-open-data",
@@ -123,10 +123,10 @@
   "ind_piped_water_pct": {
     "id": "ind_piped_water_pct",
     "label_en": "Percentage of Households With Inside Piped Water Supply on Premises",
-    "label_th": "",
+    "label_th": "สัดส่วนครัวเรือนที่มีน้ำประปาภายในที่อยู่อาศัย (%)",
     "unit": "% households",
     "source": "National Statistical Office (NSO)",
-    "source_url": "",
+    "source_url": "https://www.nso.go.th/public/e-book/Statistical-Yearbook/SYB-2025_webPage/Page_SYB_EN.html",
     "category_phase2": "Environment & Climate",
     "category": "climate",
     "weight": 1.0
@@ -134,7 +134,7 @@
   "ind_pm25_annual_mean": {
     "id": "ind_pm25_annual_mean",
     "label_en": "PM2.5 Annual Mean Concentration",
-    "label_th": "",
+    "label_th": "ค่าเฉลี่ย PM2.5 รายปี (ไมโครกรัม/ลูกบาศก์เมตร)",
     "unit": "µg/m³",
     "source": "Pollution Control Department (PCD)",
     "source_url": "http://air4thai.pcd.go.th/webV3/",
@@ -145,7 +145,7 @@
   "ind_pm25_days_exceeding_who": {
     "id": "ind_pm25_days_exceeding_who",
     "label_en": "Annual Count of Days Exceeding WHO Daily PM2.5 Guideline",
-    "label_th": "",
+    "label_th": "จำนวนวันต่อปีที่ค่า PM2.5 เกินเกณฑ์มาตรฐานรายวันขององค์การอนามัยโลก",
     "unit": "days/yr > WHO",
     "source": "Pollution Control Department (PCD)",
     "source_url": "http://air4thai.pcd.go.th/webV3/",
@@ -158,8 +158,8 @@
     "label_en": "Provincial Population Density (Persons Per Square Kilometre)",
     "label_th": "ความหนาแน่นของประชากรในจังหวัด (คนต่อตารางกิโลเมตร)",
     "unit": "persons/km²",
-    "source": "",
-    "source_url": "",
+    "source": "Department of Provincial Administration (DOPA)",
+    "source_url": "https://stat.bora.dopa.go.th/",
     "category_phase2": "Demographics & Scale",
     "category": "demographics",
     "weight": 1.0
@@ -167,10 +167,10 @@
   "ind_public_transport_access": {
     "id": "ind_public_transport_access",
     "label_en": "Provincial Public Transport Access Score",
-    "label_th": "",
+    "label_th": "คะแนนการเข้าถึงระบบขนส่งสาธารณะ",
     "unit": "% urban pop",
     "source": "OpenStreetMap contributors / OpenStreetMap Foundation; ESA (WorldCover); WorldPop or NSO (population grids)",
-    "source_url": "https://www.openstreetmap.org/,",
+    "source_url": "https://www.openstreetmap.org/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
     "weight": 1.0
@@ -178,7 +178,7 @@
   "ind_rail_access": {
     "id": "ind_rail_access",
     "label_en": "Driving Time to Nearest Intercity Rail Station (Minutes)",
-    "label_th": "",
+    "label_th": "จำนวนสถานีรถไฟภายในรัศมี 30 กิโลเมตร",
     "unit": "min drive",
     "source": "State Railway of Thailand (SRT); high-speed rail consortium / Office of the National Economic and Social Development Council (NESDC) for HSR phase data",
     "source_url": "https://www.railway.co.th/en/",
@@ -203,7 +203,7 @@
     "label_th": "จำนวนงานเทศกาลและกิจกรรมท่องเที่ยวที่ขึ้นทะเบียนกับ ททท. ต่อประชากร 100,000 คน",
     "unit": "events/100k/yr",
     "source": "Tourism Authority of Thailand (TAT)",
-    "source_url": "",
+    "source_url": "https://www.tourismthailand.org/",
     "category_phase2": "Lifestyle & Culture",
     "category": "culture",
     "weight": 1.0
@@ -211,7 +211,7 @@
   "ind_tree_canopy_pct": {
     "id": "ind_tree_canopy_pct",
     "label_en": "Tree Canopy Coverage Percentage",
-    "label_th": "",
+    "label_th": "สัดส่วนพื้นที่ปกคลุมด้วยเรือนยอดต้นไม้ (Hansen GFC, %)",
     "unit": "%",
     "source": "Hansen",
     "source_url": "https://glad.umd.edu/dataset/global-2010-tree-cover-30-m",
@@ -222,7 +222,7 @@
   "ind_walkability_score": {
     "id": "ind_walkability_score",
     "label_en": "Provincial Walkability Score (Decay-Weighted Amenity Access)",
-    "label_th": "",
+    "label_th": "คะแนนความเหมาะสมต่อการเดินเท้า (จาก OpenStreetMap)",
     "unit": "0–100 score",
     "source": "OpenStreetMap contributors / OpenStreetMap Foundation",
     "source_url": "https://www.openstreetmap.org/",
@@ -233,7 +233,7 @@
   "ind_waste_management_score": {
     "id": "ind_waste_management_score",
     "label_en": "Provincial Solid Waste Management Performance",
-    "label_th": "",
+    "label_th": "คะแนนการจัดการขยะมูลฝอย",
     "unit": "% disposed",
     "source": "Pollution Control Department (PCD)",
     "source_url": "https://www.pcd.go.th/",
