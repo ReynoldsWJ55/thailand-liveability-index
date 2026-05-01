@@ -262,5 +262,17 @@
     "category": "climate",
     "weight": 1.0,
     "source_description": "Thai national pollution-control agency; publishes municipal solid-waste handling statistics by province."
+  },
+  "ind_unesco_whs_count": {
+    "id": "ind_unesco_whs_count",
+    "label_en": "UNESCO World Heritage Sites Inscribed in This Province",
+    "label_th": "จำนวนแหล่งมรดกโลก UNESCO ที่ขึ้นทะเบียนในจังหวัด",
+    "unit": "sites",
+    "source": "UNESCO World Heritage Centre",
+    "source_url": "https://whc.unesco.org/",
+    "source_description": "International heritage convention secretariat that inscribes sites of outstanding universal cultural or natural value.",
+    "category_phase2": "Lifestyle & Culture",
+    "category": "culture",
+    "weight": 0.5
   }
 }
