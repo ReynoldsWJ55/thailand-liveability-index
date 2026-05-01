@@ -1,161 +1,132 @@
-# Commercial Licensing — Thailand Liveability Index
+# Commercial-Use Reservation — Thailand Liveability Index
 
-**Status:** Placeholder (v0.1, 2026-05-01).
-**Activation:** Commercial licensing is not yet available for purchase.
-The terms below describe the commercial-licensing pathway in
-principle; specific contracts, pricing, and signing are deferred
-until commercial activation begins (target: 2027 or later).
+**Status:** Reservation notice (v0.2, 2026-05-01).
+**Activation status:** **Commercial licensing is not currently
+available, offered, or operating.** This document describes
+considerations for any future commercial-licensing pathway should one
+become available at a later date. Nothing on this page constitutes an
+offer, a service, or a commercial transaction.
 
-## Why pricing is deferred
+## Why no commercial licensing is currently offered
 
-Commercial-license inquiries are welcome at any time. Pricing and
-contract terms are deferred until commercial activation begins
-(target: 2027) for two reasons:
+The Thailand Liveability Index is a non-commercial open-data project.
+Its methodology, indicator definitions, scoring algorithm, and data
+outputs are published under
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) — free
+for academic, journalistic, personal, civic, educational, and
+Thai-government use, with attribution. The source code is published
+under MIT.
+
+A commercial-licensing pathway is **not currently active** for two
+reasons:
 
 1. The project's first year (2026-08 to 2027-08) is intentionally
    non-commercial. Y1 is for accumulating authentic usage signal
-   (embed adoption, citation patterns, traffic shape) before
-   approaching customers with pricing — pricing the product
-   correctly requires data we do not yet have.
-2. The operator's current visa structure permits no commercial
-   activity inside Thailand. A transition to a commercial-permitting
-   structure (LTR, BOI-sponsored work permit, Smart Visa, or
-   operating the commercial entity from outside Thailand) is in
-   progress. Earliest plausible activation: 2027.
+   before any commercial-licensing terms could be designed or
+   evaluated.
+2. The operator's current visa structure does not permit commercial
+   activity inside Thailand. Whether commercial licensing is ever
+   offered depends on a future change in visa structure or on
+   operating any commercial entity from outside Thailand. There is
+   no firm timeline.
 
-Inquiries received during the deferred window establish a working
-relationship and shape pricing for the activation-day contract.
-Reaching out early is welcomed, not premature.
+The earliest plausible date for any commercial-licensing pathway to
+become available is 2027, and that date is contingent and uncertain.
 
-## TL;DR
+## Expressions of interest
 
-- **Code (MIT):** free for any use, including commercial. No commercial
-  license needed for the source code.
-- **Public dataset (CC BY-NC 4.0):** free for academic, journalistic,
-  personal, civic, educational, Thai-government, and other
-  non-commercial use. Commercial use requires a separate license.
-- **This document:** explains the commercial-licensing pathway for the
-  CC BY-NC 4.0 portion (methodology, indicator definitions, scoring
-  algorithm, data outputs).
+If you may have an interest in commercial licensing **should it ever
+become available**, you may send an informational expression of
+interest to:
 
-## What is "commercial use"?
+**licensing@thailandliveabilityindex.com**
 
-A commercial use is one primarily intended for or directed toward
-**commercial advantage or monetary compensation**. Examples that
-typically require a commercial license:
+Such expressions are recorded for the operator's awareness only.
+They are **not commercial transactions**, do not create a contract,
+do not commit either party to anything, do not result in pricing
+quotations, and do not initiate a commercial relationship. The
+operator is not currently offering, promoting, advertising, or
+soliciting commercial-licensing services.
 
-- Embedding TLI scores or methodology in a paid product or paid service
+## What "commercial use" would mean if licensing ever becomes available
+
+If a commercial-licensing pathway is ever made available, it would
+likely be required for use cases primarily intended for or directed
+toward commercial advantage or monetary compensation, such as:
+
+- Embedding TLI scores or methodology in a paid product or paid
+  service
 - Building a proprietary product (real-estate platform, relocation
-  service, insurance underwriting tool, government contract) that uses
-  TLI data as a competitive input
+  service, insurance underwriting tool, government contract) that
+  uses TLI data as a competitive input
 - Reselling, sublicensing, or aggregating TLI data into a commercial
   data product
-- Using TLI data to train commercial machine-learning models intended
-  for monetization
+- Using TLI data to train commercial machine-learning models
+  intended for monetization
 - White-label embeds where TLI branding is removed in favor of the
   licensee's own branding
 
-Examples that **do not** require a commercial license (CC BY-NC 4.0
-covers these):
+The following uses **are already permitted** under the existing
+CC BY-NC 4.0 license, with attribution, and would not require any
+future commercial license:
 
 - A peer-reviewed academic paper using TLI data with attribution
 - A journalist or news outlet referencing TLI scores in editorial
   coverage with attribution
-- A non-profit using TLI data for advocacy or research with attribution
-- A Thai government agency referencing TLI scores in a policy report
+- A non-profit using TLI data for advocacy or research with
+  attribution
+- A Thai government agency referencing TLI scores in a policy
+  report
 - A personal blog post citing TLI with attribution
-- An educational institution using TLI in coursework with attribution
+- An educational institution using TLI in coursework with
+  attribution
 
-The line between "non-commercial" and "commercial" can be ambiguous in
-edge cases (e.g., a non-profit news org with corporate sponsors, a
-conference talk by an industry analyst, a free open-source tool that
-also offers paid support). When in doubt, contact us — we'd rather
-clarify upfront than discover an issue later.
+If you are uncertain whether a use case is commercial, you may
+contact contact@thailandliveabilityindex.com for non-commercial
+clarification of the existing CC BY-NC 4.0 license. Such clarification
+is informational only and does not constitute legal advice.
 
-## Pricing and tiers
+## Pricing
 
-**Pricing is not yet published.** Commercial activation is gated on
-project milestones (visa transition, Y1 usage signal, IS Business
-Plan in 2027). Once commercial activation begins, pricing is expected
-to be tiered along these axes:
+**There is no published pricing for commercial licensing because
+commercial licensing is not currently available.** Should commercial
+licensing ever become available, pricing would be designed and
+published at that future date.
 
-- **Use case** — embed widget vs. API access vs. bulk export vs.
-  white-label embed vs. custom enterprise integration
-- **Volume** — API call limits, bulk-export refresh cadence, embed
-  install count
-- **Territory** — Thailand-only vs. global commercial use
-- **Customer size** — startup / SME / enterprise
+## Trademark
 
-Specific tier shapes and prices will be set at first commercial
-conversation and published here once stable.
-
-## Inquiry process
-
-To open a commercial-licensing conversation:
-
-1. Email **licensing@thailandliveabilityindex.com** with:
-   - Brief description of your organization and the intended use case
-   - Volume estimate (e.g., expected API calls per month, number of
-     embeds, bulk-export refresh frequency)
-   - Whether you need TLI branding visible (standard) or removed
-     (white-label)
-   - Target territory and customer base
-   - Any timeline considerations
-
-2. We will respond with whether the use case is in scope, indicative
-   pricing for the relevant tier, and a draft licensing-terms outline.
-
-3. Final terms are negotiated per use case and signed under a separate
-   license agreement. The CC BY-NC 4.0 license on the public dataset
-   is **not** modified by a commercial-license signing — the public
-   data remains CC BY-NC 4.0 for non-commercial users; commercial
-   licensees receive an additional grant on top.
-
-## Scope of a commercial license
-
-A commercial license, when issued, will cover:
-
-- Use of the methodology, indicator definitions, scoring algorithm,
-  and data outputs (province-level scores, indicator metadata,
-  derived datasets) in the licensee's commercial product or workflow
-- Attribution requirements compatible with the licensee's product
-  surface (typically less strict than CC BY-NC 4.0 attribution, since
-  the licensee has paid for additional grant)
-- Term, renewal, and termination provisions standard to data-licensing
-  agreements
-- Liability, warranty, and indemnification provisions
-
-A commercial license will **not** typically grant:
-
-- Sublicensing rights without explicit additional terms
-- Trademark rights in "Thailand Liveability Index" or "TLI" — those
-  are governed separately by TRADEMARK.md
-- Rights in underlying third-party source data (Thai government data,
-  OpenAQ, ACLED, OSM, etc.) — licensees must comply with each
-  source's terms directly
-- Ownership of the methodology — licensees receive use rights, not
-  copyright transfer
-
-## Trademark layer
-
-The names "Thailand Liveability Index" and "TLI", together with any
+The names "Thailand Liveability Index" and "TLI", along with any
 associated visual marks, are trademarks of the project maintainer.
-A commercial license to the **data** does not include trademark
-rights in the **brand**. Use of the TLI name or marks in commercial
-contexts is governed separately by `TRADEMARK.md`.
+Trademark rights are independent of the underlying open-source and
+Creative Commons licenses, and would also be independent of any
+future commercial license. Use of the project's name or marks for
+any purpose that could mislead a user about the source or
+endorsement of data is reserved regardless of license.
 
-## Reference
+See [TRADEMARK.md](TRADEMARK.md) for the trademark boundary.
 
-- License-strategy decision: `dm-20260501-licensing-strategy`
-  (2026-05-01) — held in the project's private decision-memo log;
-  cited here by date and title only.
-- Strategic-goals doc: `strategic-goals-v0.1` (2026-05-01,
-  Provisional v0.1) — frames the commercial activation timing.
-- CC BY-NC 4.0 license: https://creativecommons.org/licenses/by-nc/4.0/
-- Trademark boundary: `/TRADEMARK.md` in this repository.
+## References
+
+- [LICENSE-CODE](LICENSE-CODE) — MIT (covers source code)
+- [LICENSE-DATA](LICENSE-DATA) — CC BY-NC 4.0 (covers methodology and
+  data outputs)
+- [TRADEMARK.md](TRADEMARK.md) — Trademark notice
+- [README.md](README.md) — Project overview
+- `99-meta/strategic-goals-v0.1.md` (private working repo) — frames
+  the long-term project shape that informs this reservation notice
+
+## Disclaimer
+
+This document describes a non-commercial open-data project's posture
+toward potential future commercial licensing. It is not an offer to
+license, an advertisement of services, an invitation to transact, or
+a representation that any commercial-licensing terms are currently
+available, will become available, or would have any particular
+character if they did. The operator is not currently engaged in
+commercial activity related to this project.
 
 ---
 
-**Last updated:** 2026-05-01.
-**Document status:** Placeholder v0.1. Replaced by a definitive
-commercial-licensing document at first commercial conversation.
+*This document will be revised if and when the underlying conditions
+change. Until then, the reservation notice above is the operative
+statement.*

@@ -63,6 +63,8 @@ export interface Indicator {
   raw_score: number;
   source: string;
   source_url: string;
+  /** Plain-English one-line description of what the source organization is. */
+  source_description?: string;
   /** ISO 8601 date — when the source-of-record was last refreshed. */
   as_of: string;
   quality_flag: QualityFlag;

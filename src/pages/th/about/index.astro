@@ -13,6 +13,7 @@ const data = scoresData as ScoresFile;
 interface SourceAggregate {
   source: string;
   source_url: string;
+  source_description: string;
   indicator_ids: Set<string>;
   categories: Set<CategoryId>;
   freshest_as_of: string;
@@ -31,6 +32,7 @@ for (const province of data.provinces) {
         agg = {
           source: ind.source,
           source_url: ind.source_url,
+          source_description: ind.source_description ?? '',
           indicator_ids: new Set(),
           categories: new Set(),
           freshest_as_of: ind.as_of,
@@ -133,6 +135,7 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
                 {s.source}
                 <Lucide name="external-link" size={12} class="tli-citations__icon" />
               </a>
+              {s.source_description && <p class="about-source__desc">{s.source_description}</p>}
               <div class="about-source__chips">
                 <ProvenanceChip variant={s.has_stale ? 'stale' : 'fresh'} icon="calendar" lang="th">
                   {`ณ ${s.freshest_as_of}`}
@@ -208,9 +211,11 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
         และการใช้โดยหน่วยงานราชการไทย — โดยให้เครดิต "Thailand Liveability Index, Reynolds 2026"
       </p>
       <p>
-        <strong>การใช้เชิงพาณิชย์</strong> ต้องได้รับอนุญาตให้ใช้เชิงพาณิชย์แยกต่างหาก ดู
-        <a href="/th/licensing/">/th/licensing/</a> สำหรับสัญญาอนุญาตทั้งหมดและช่องทางการอนุญาตเชิงพาณิชย์
-        สอบถาม: <a href="mailto:licensing@thailandliveabilityindex.com">licensing@thailandliveabilityindex.com</a>
+        <strong>การใช้เชิงพาณิชย์</strong> ถูกสงวนสิทธิ์และไม่ได้เปิดให้ใช้ในขณะนี้ ดู
+        <a href="/th/licensing/">/th/licensing/</a> สำหรับประกาศการสงวนสิทธิ์ทั้งหมด
+        ข้อความแสดงความสนใจในเชิงข้อมูลสามารถส่งได้ที่
+        <a href="mailto:licensing@thailandliveabilityindex.com">licensing@thailandliveabilityindex.com</a>
+        ข้อความเหล่านี้ถูกบันทึกเพื่อให้ผู้ดำเนินการรับทราบเท่านั้น และไม่ใช่ธุรกรรมเชิงพาณิชย์
       </p>
       <p>
         <strong>โค้ดส่วนหน้าเว็บ</strong> เผยแพร่ภายใต้

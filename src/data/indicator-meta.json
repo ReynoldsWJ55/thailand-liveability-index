@@ -8,7 +8,8 @@
     "source_url": "https://acleddata.com/",
     "category_phase2": "Safety & Governance",
     "category": "safety",
-    "weight": 0.5
+    "weight": 0.5,
+    "source_description": "Independent academic crisis-monitoring database covering protests, riots, and armed conflict events worldwide."
   },
   "ind_acled_fatalities_per_100k_5yr": {
     "id": "ind_acled_fatalities_per_100k_5yr",
@@ -19,7 +20,8 @@
     "source_url": "https://acleddata.com/",
     "category_phase2": "Safety & Governance",
     "category": "safety",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Independent academic crisis-monitoring database covering protests, riots, and armed conflict events worldwide."
   },
   "ind_airport_intl_drive_min": {
     "id": "ind_airport_intl_drive_min",
@@ -30,7 +32,8 @@
     "source_url": "https://www.openstreetmap.org/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Volunteer-built world map (OSM) for the road network; civil-aviation registry for airport locations."
   },
   "ind_flood_frequency": {
     "id": "ind_flood_frequency",
@@ -41,7 +44,8 @@
     "source_url": "https://www.disaster.go.th/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai government department that records cabinet-resolution flood-aid declarations by province."
   },
   "ind_forest_cover_pct": {
     "id": "ind_forest_cover_pct",
@@ -52,7 +56,8 @@
     "source_url": "https://www.nso.go.th/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 0.5
+    "weight": 0.5,
+    "source_description": "Thai government register of gazetted forest area, published annually in the National Statistical Office Yearbook."
   },
   "ind_gpp_per_capita": {
     "id": "ind_gpp_per_capita",
@@ -63,7 +68,8 @@
     "source_url": "https://www.nesdc.go.th/",
     "category_phase2": "Cost & Economy",
     "category": "economy",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai government economic-planning agency; publishes Gross Provincial Product (provincial GDP equivalent)."
   },
   "ind_heat_days_35c": {
     "id": "ind_heat_days_35c",
@@ -74,7 +80,8 @@
     "source_url": "https://www.tmd.go.th/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "NASA satellite-and-reanalysis climate dataset; daily maximum-temperature grid covering all 77 Thai provinces."
   },
   "ind_hospital_beds_per_1k": {
     "id": "ind_hospital_beds_per_1k",
@@ -85,7 +92,8 @@
     "source_url": "https://www.moph.go.th/",
     "category_phase2": "Healthcare",
     "category": "healthcare",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai Ministry of Public Health facility registry covering every hospital in the country."
   },
   "ind_hospitals_per_100k": {
     "id": "ind_hospitals_per_100k",
@@ -96,7 +104,8 @@
     "source_url": "https://www.moph.go.th/",
     "category_phase2": "Healthcare",
     "category": "healthcare",
-    "weight": 0.5
+    "weight": 0.5,
+    "source_description": "Thai Ministry of Public Health facility registry covering every hospital in the country."
   },
   "ind_internet_fixed_mbps": {
     "id": "ind_internet_fixed_mbps",
@@ -107,7 +116,8 @@
     "source_url": "https://www.speedtest.net/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Speedtest internet-speed measurement data, published openly per quarter at country and tile resolution."
   },
   "ind_internet_mobile_mbps": {
     "id": "ind_internet_mobile_mbps",
@@ -118,7 +128,8 @@
     "source_url": "https://www.speedtest.net/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 0.5
+    "weight": 0.5,
+    "source_description": "Speedtest internet-speed measurement data, published openly per quarter at country and tile resolution."
   },
   "ind_piped_water_pct": {
     "id": "ind_piped_water_pct",
@@ -129,7 +140,8 @@
     "source_url": "https://www.nso.go.th/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai government statistical surveys (Household Socio-Economic Survey, Yearbook tables) on household water access."
   },
   "ind_pm25_annual_mean": {
     "id": "ind_pm25_annual_mean",
@@ -140,7 +152,8 @@
     "source_url": "https://openaq.org/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Crowd-sourced air-quality aggregator that ingests Thai PCD government sensor feeds and exposes a uniform API."
   },
   "ind_pm25_days_exceeding_who": {
     "id": "ind_pm25_days_exceeding_who",
@@ -151,7 +164,8 @@
     "source_url": "https://openaq.org/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 0.5
+    "weight": 0.5,
+    "source_description": "Crowd-sourced air-quality aggregator that ingests Thai PCD government sensor feeds and exposes a uniform API."
   },
   "ind_population_density": {
     "id": "ind_population_density",
@@ -162,7 +176,8 @@
     "source_url": "https://www.dopa.go.th/",
     "category_phase2": "Demographics & Scale",
     "category": "demographics",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai government civil-registration system; the legal record of population by province and sub-province."
   },
   "ind_public_transport_access": {
     "id": "ind_public_transport_access",
@@ -173,7 +188,8 @@
     "source_url": "https://www.openstreetmap.org/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Volunteer-built world map (OSM) for transit nodes; ESA satellite urban-cover map; population-grid datasets."
   },
   "ind_rail_access": {
     "id": "ind_rail_access",
@@ -184,7 +200,8 @@
     "source_url": "https://www.railway.co.th/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai national railway operator and its high-speed-rail consortium partners."
   },
   "ind_rpsto_per_10k_total": {
     "id": "ind_rpsto_per_10k_total",
@@ -195,7 +212,8 @@
     "source_url": "https://www.moph.go.th/",
     "category_phase2": "Healthcare",
     "category": "healthcare",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai Ministry of Public Health facility registry, filtered to the rural community-clinic tier (รพ.สต.)."
   },
   "ind_tat_events_per_100k": {
     "id": "ind_tat_events_per_100k",
@@ -206,7 +224,8 @@
     "source_url": "https://www.tourismthailand.org/",
     "category_phase2": "Lifestyle & Culture",
     "category": "culture",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai government tourism authority; maintains the registry of nationally-recognized cultural and tourism events."
   },
   "ind_tree_canopy_pct": {
     "id": "ind_tree_canopy_pct",
@@ -217,7 +236,8 @@
     "source_url": "https://glad.umd.edu/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "University of Maryland satellite forest-cover dataset (Landsat-derived); peer-reviewed and globally cited."
   },
   "ind_walkability_score": {
     "id": "ind_walkability_score",
@@ -228,7 +248,8 @@
     "source_url": "https://www.openstreetmap.org/",
     "category_phase2": "Connectivity & Transport",
     "category": "connectivity",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Volunteer-built world map (OSM); contains walkable-amenity points-of-interest, road network, and pedestrian features."
   },
   "ind_waste_management_score": {
     "id": "ind_waste_management_score",
@@ -239,6 +260,7 @@
     "source_url": "https://www.pcd.go.th/",
     "category_phase2": "Environment & Climate",
     "category": "climate",
-    "weight": 1.0
+    "weight": 1.0,
+    "source_description": "Thai national pollution-control agency; publishes municipal solid-waste handling statistics by province."
   }
 }

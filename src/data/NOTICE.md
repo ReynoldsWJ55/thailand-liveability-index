@@ -10,12 +10,15 @@ Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)** — see
 [`/LICENSE-DATA`](../../LICENSE-DATA) for the full grant and attribution
 requirements.
 
-**Commercial use** of these data files requires a separate commercial
-license. See [`/LICENSE-COMMERCIAL.md`](../../LICENSE-COMMERCIAL.md) and
-the project's licensing page at
-[thailandliveabilityindex.com/en/licensing/](https://thailandliveabilityindex.com/en/licensing/)
-for the commercial-licensing pathway. Inquiries:
-licensing@thailandliveabilityindex.com.
+**Commercial use** of these data files is reserved and is not
+currently licensed. A commercial-licensing pathway may be made
+available at a future date but is not currently active. See
+[`/LICENSE-COMMERCIAL.md`](../../LICENSE-COMMERCIAL.md) for the
+reservation notice and the
+[licensing page](https://thailandliveabilityindex.com/en/licensing/)
+for context. Informational expressions of interest may be sent to
+licensing@thailandliveabilityindex.com — these are recorded for
+awareness only and are not commercial transactions.
 
 The TypeScript and Astro source files in this directory (and elsewhere
 in `src/`) are licensed under **MIT** — see [`/LICENSE-CODE`](../../LICENSE-CODE).
@@ -31,9 +34,3 @@ is unambiguous: data files in this directory are CC BY-NC 4.0
 (commercial use requires a separate commercial license); everything
 else under `src/` that isn't a data file is MIT.
 
-**Note on prior versions.** Earlier versions of this repository
-(commits prior to the 2026-05-01 licensing strategy decision) carried
-a CC BY 4.0 grant on the data outputs. Anyone who acquired data
-outputs from those prior versions retains CC BY 4.0 rights to that
-prior file content. New file content from 2026-05-01 onward is
-governed by CC BY-NC 4.0.

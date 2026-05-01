@@ -230,11 +230,13 @@ main {
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--sp-6);
   justify-content: space-between;
   font: var(--fw-regular) var(--fs-13)/var(--lh-normal) var(--font-sans);
   color: var(--ink-3);
 }
+.tli-footer__inner > p { margin: 0; }
 .tli-footer__inner a { color: var(--ink-2); text-decoration: none; }
 .tli-footer__inner a:hover { color: var(--ink); text-decoration: underline; }
 .tli-footer__nav {
@@ -1938,3 +1940,10 @@ main {
 
 /* Reduce-motion handling already global in line ~28; these breakpoints
    inherit that automatically. No additional overrides needed. */
+
+.about-source__desc {
+  margin: var(--sp-2) 0 0 0;
+  font-size: var(--fs-13);
+  color: var(--ink-3);
+  line-height: var(--lh-normal);
+}

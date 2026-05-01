@@ -14,6 +14,7 @@ const data = scoresData as ScoresFile;
 interface SourceAggregate {
   source: string;
   source_url: string;
+  source_description: string;
   indicator_ids: Set<string>;
   categories: Set<CategoryId>;
   freshest_as_of: string;
@@ -33,6 +34,7 @@ for (const province of data.provinces) {
         agg = {
           source: ind.source,
           source_url: ind.source_url,
+          source_description: ind.source_description ?? '',
           indicator_ids: new Set(),
           categories: new Set(),
           freshest_as_of: ind.as_of,
@@ -142,6 +144,7 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
                 {s.source}
                 <Lucide name="external-link" size={12} class="tli-citations__icon" />
               </a>
+              {s.source_description && <p class="about-source__desc">{s.source_description}</p>}
               <div class="about-source__chips">
                 <ProvenanceChip variant={s.has_stale ? 'stale' : 'fresh'} icon="calendar">
                   {`AS OF ${s.freshest_as_of}`}
@@ -220,9 +223,11 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
         with attribution to "Thailand Liveability Index, Reynolds 2026".
       </p>
       <p>
-        <strong>Commercial use</strong> requires a separate commercial license. See
-        <a href="/en/licensing/">/en/licensing/</a> for the full license stack and the
-        commercial-licensing pathway. Inquiries: <a href="mailto:licensing@thailandliveabilityindex.com">licensing@thailandliveabilityindex.com</a>.
+        <strong>Commercial use</strong> is reserved and is not currently licensed.
+        See <a href="/en/licensing/">/en/licensing/</a> for the full reservation
+        notice. Informational expressions of interest may be sent to
+        <a href="mailto:licensing@thailandliveabilityindex.com">licensing@thailandliveabilityindex.com</a>;
+        these are recorded for awareness only and are not commercial transactions.
       </p>
       <p>
         The <strong>frontend code</strong> in this repository is published under the

@@ -61,7 +61,7 @@ TLI is designed as a standalone resource — a public-facing site at [thailandli
 - **Hard launch**: Late August / early September 2026.
 - **Phase 4 — B2B activation** *(post-launch, gated)*: API access tiers, bulk-export feeds, white-label embeds, custom enterprise integrations. Activation gated on the operator's visa transition and Y1 usage signal; earliest 2027.
 
-The core index, methodology, and historical scores stay openly published for academic, journalistic, personal, civic, and Thai-government use under CC BY-NC 4.0 regardless of commercial activation. Commercial licensing for proprietary use is a separate paid track — see [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
+The core index, methodology, and historical scores stay openly published under CC BY-NC 4.0 for academic, journalistic, personal, civic, and Thai-government use, with attribution. Commercial use is reserved and not currently licensed; whether a commercial-licensing pathway is ever made available depends on future conditions described in [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md).
 
 ## Repository status
 
@@ -73,7 +73,7 @@ Four layers, on purpose:
 
 - **Code**: MIT (see [`LICENSE-CODE`](LICENSE-CODE)). Anyone may use, modify, and redistribute the source code, including in commercial products.
 - **Methodology and data outputs (non-commercial)**: CC BY-NC 4.0 (see [`LICENSE-DATA`](LICENSE-DATA)). Free for academic, journalistic, personal, civic, educational, and Thai-government use, with attribution.
-- **Methodology and data outputs (commercial)**: separate commercial license required for any use primarily intended for commercial advantage or monetary compensation. See [`LICENSE-COMMERCIAL.md`](LICENSE-COMMERCIAL.md) and [thailandliveabilityindex.com/en/licensing/](https://thailandliveabilityindex.com/en/licensing/). Inquiries: licensing@thailandliveabilityindex.com.
+- **Commercial use**: reserved and not currently licensed. The project is operated as a non-commercial open-data project. A commercial-licensing pathway may be made available at a future date but is not currently active, has no published pricing, and constitutes no offering. See [`LICENSE-COMMERCIAL.md`](LICENSE-COMMERCIAL.md) for the full reservation notice. Informational expressions of interest may be sent to licensing@thailandliveabilityindex.com — these are recorded for awareness only and are not commercial transactions.
 - **Names and marks**: "Thailand Liveability Index", "TLI", and associated visual marks are trademarks of the project maintainer. They are **not** covered by the MIT or CC BY-NC 4.0 licenses. See [`TRADEMARK.md`](TRADEMARK.md) for the boundary — what's open, what's protected, what counts as an acceptable or unacceptable use of the name.
 
-The methodology and data are openly licensed for non-commercial use so the index can be cited and built on by the academic, journalism, and civic communities. Commercial use is gated through the commercial-license pathway, which funds continued development. The brand is held closed so users can trust that "TLI" identifies the official source.
+The methodology and data are openly licensed for non-commercial use so the index can be cited and built on by the academic, journalism, and civic communities. Commercial use is reserved at this time. The brand is held closed so users can trust that "TLI" identifies the official source.

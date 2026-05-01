@@ -387,6 +387,7 @@ def fetch_from_r2(creds: dict[str, str]) -> int:
                         "raw_score": round(float(norm_val), 1) if norm_val is not None else 0.0,
                         "source": meta["source"] or row.get("source", ""),
                         "source_url": meta["source_url"] or row.get("source_url", ""),
+                        "source_description": meta.get("source_description", ""),
                         "as_of": as_of[:10] if as_of else "",
                         "quality_flag": map_quality(row.get("quality_flag")),
                     })
