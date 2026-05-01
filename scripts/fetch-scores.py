@@ -41,6 +41,17 @@ DATA = ROOT / "src" / "data"
 OUT = DATA / "scores.json"
 SAMPLE = DATA / "scores.sample.json"
 
+# Auto-load .env from repo root so local dev "just works" once values are
+# populated — no need to `set -a && source .env` before `npm run dev`.
+# CI passes secrets via env directly and load_dotenv() is a no-op there.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / ".env")
+except ImportError:
+    # python-dotenv is in scripts/requirements.txt but make this resilient
+    # so the script still runs in environments where it's not installed.
+    pass
+
 R2_BUCKET_DASHBOARD = "tli-dashboard-data"
 R2_KEY_SCORES = "latest/scores.parquet"
 R2_BUCKET_LOOKUPS = "tli-lookups"
@@ -110,6 +121,30 @@ def use_sample() -> int:
             file=sys.stderr,
         )
         return 1
+
+    # Non-destructive guardrail: if scores.json already exists and has MORE
+    # provinces than the sample, it was almost certainly populated from R2
+    # in a prior run (or recovered via CI artifact). Preserve it instead of
+    # overwriting — a no-creds run should never silently wipe out good data.
+    if OUT.exists():
+        try:
+            existing = json.loads(OUT.read_text())
+            sample = json.loads(SAMPLE.read_text())
+            n_existing = len(existing.get("provinces", []))
+            n_sample = len(sample.get("provinces", []))
+            if n_existing > n_sample:
+                print(
+                    f"fetch-scores: R2 credentials not set, but "
+                    f"{OUT.relative_to(ROOT)} already has {n_existing} provinces "
+                    f"(sample has only {n_sample}). Preserving existing file. "
+                    f"Populate .env with R2 creds to refresh from upstream.",
+                    file=sys.stderr,
+                )
+                return 0
+        except (json.JSONDecodeError, KeyError, ValueError):
+            # Existing file unreadable — fall through and overwrite from sample.
+            pass
+
     OUT.write_bytes(SAMPLE.read_bytes())
     print(
         f"fetch-scores: wrote {OUT.relative_to(ROOT)} "
