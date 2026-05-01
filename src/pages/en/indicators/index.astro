@@ -1,0 +1,120 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+import Site from '../../../layouts/Site.astro';
+import Lucide from '../../../components/Lucide.astro';
+import indicatorMeta from '../../../data/indicator-meta.json';
+import { CATEGORIES, CATEGORY_ORDER } from '../../../data/lookups';
+import type { CategoryId } from '../../../data/types';
+
+interface IndicatorMeta {
+  id: string;
+  label_en: string;
+  label_th: string;
+  unit: string;
+  source: string;
+  source_url: string;
+  source_description?: string;
+  category_phase2: string;
+  category: CategoryId;
+  weight: number;
+}
+
+const meta = indicatorMeta as Record<string, IndicatorMeta>;
+const all = Object.values(meta);
+const byCategory: Record<CategoryId, IndicatorMeta[]> = {
+  climate: [], healthcare: [], connectivity: [], economy: [],
+  safety: [], culture: [], demographics: [],
+};
+for (const m of all) {
+  if (m.category in byCategory) byCategory[m.category as CategoryId].push(m);
+}
+for (const list of Object.values(byCategory)) {
+  list.sort((a, b) => a.label_en.localeCompare(b.label_en));
+}
+---
+<Site
+  title="Indicators · Thailand Liveability Index"
+  description="The 25 indicators that compose TLI's seven-category liveability score, with source, weight, and full definitions."
+  locale="en"
+  canonicalPath="/en/indicators/"
+>
+  <main class="container indicators-index">
+    <header>
+      <h1>Indicators</h1>
+      <p class="lede">
+        TLI's composite is built from {all.length} indicators across seven independent categories.
+        Each indicator has a transparent definition, a documented source, fixed scoring goalposts,
+        and a province-by-province distribution. Click into any indicator to see its full
+        methodology, source provenance, and which Thai provinces score highest and lowest.
+      </p>
+    </header>
+
+    {CATEGORY_ORDER.map((catId) => (
+      <section class="indicators-cat">
+        <h2 class="indicators-cat__title">
+          <Lucide name={CATEGORIES[catId].icon} size={20} />
+          {CATEGORIES[catId].label_en}
+          <span class="indicators-cat__count">{byCategory[catId].length} {byCategory[catId].length === 1 ? 'indicator' : 'indicators'}</span>
+        </h2>
+        <ul class="indicators-cat__list">
+          {byCategory[catId].map((m) => (
+            <li>
+              <a href={`/en/indicators/${m.id}/`} class="indicator-card">
+                <span class="indicator-card__name">{m.label_en}</span>
+                <span class="indicator-card__meta">
+                  <span class="indicator-card__unit">{m.unit}</span>
+                  <span class="indicator-card__weight">weight {m.weight}</span>
+                </span>
+                <span class="indicator-card__source">{m.source}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="indicators-meta">
+      <h2>How indicators are weighted</h2>
+      <p>
+        Within each category, indicators carry weights between 0.5 and 1.0. A weight of 1.0
+        denotes a headline indicator; 0.5 denotes a cross-validation companion that pairs
+        with a headline. The geometric-mean composite combines the seven category scores
+        with equal weight across categories. See the <a href="/en/methodology/">methodology page</a>
+        for the full scoring rationale.
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .indicators-index { max-width: 880px; padding-block: var(--sp-7); }
+  .indicators-index header { margin-bottom: var(--sp-10); }
+  .indicators-cat { margin-bottom: var(--sp-10); }
+  .indicators-cat__title {
+    display: flex; align-items: center; gap: var(--sp-3);
+    margin-bottom: var(--sp-4); padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .indicators-cat__count {
+    margin-left: auto; font-size: var(--fs-13);
+    font-weight: var(--fw-regular); color: var(--ink-3);
+  }
+  .indicators-cat__list {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: var(--sp-3); grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) { .indicators-cat__list { grid-template-columns: 1fr 1fr; } }
+  .indicator-card {
+    display: flex; flex-direction: column; gap: var(--sp-1);
+    padding: var(--sp-4); border: 1px solid var(--rule);
+    border-radius: var(--r-2); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .indicator-card:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .indicator-card__name { font-weight: var(--fw-medium); line-height: var(--lh-tight); }
+  .indicator-card__meta { display: flex; gap: var(--sp-3); font-size: var(--fs-13); color: var(--ink-3); }
+  .indicator-card__source { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-1); }
+  .indicators-meta { margin-top: var(--sp-12); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+</style>

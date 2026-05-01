@@ -1,0 +1,239 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+import Site from '../../../layouts/Site.astro';
+import Lucide from '../../../components/Lucide.astro';
+import ProvenanceChip from '../../../components/ProvenanceChip.astro';
+import indicatorMeta from '../../../data/indicator-meta.json';
+import scoresData from '../../../data/scores.json';
+import { CATEGORIES } from '../../../data/lookups';
+import type { CategoryId, ScoresFile, Indicator } from '../../../data/types';
+
+interface IndicatorMetaShape {
+  id: string;
+  label_en: string;
+  label_th: string;
+  unit: string;
+  source: string;
+  source_url: string;
+  source_description?: string;
+  category_phase2: string;
+  category: CategoryId;
+  weight: number;
+}
+
+interface ProvinceRow {
+  id: string;
+  name_en: string;
+  name_th: string;
+  raw: number;
+  score: number;
+  as_of: string;
+}
+
+export function getStaticPaths() {
+  const meta = indicatorMeta as Record<string, IndicatorMetaShape>;
+  return Object.values(meta).map((m) => ({
+    params: { id: m.id },
+    props: { m },
+  }));
+}
+
+const { m } = Astro.props as { m: IndicatorMetaShape };
+const data = scoresData as ScoresFile;
+
+const rows: ProvinceRow[] = [];
+let freshestAsOf = '';
+for (const p of data.provinces) {
+  for (const cat of Object.values(p.categories)) {
+    for (const ind of cat.indicators as Indicator[]) {
+      if (ind.id === m.id) {
+        rows.push({
+          id: p.id,
+          name_en: p.name_en,
+          name_th: p.name_th,
+          raw: ind.value,
+          score: ind.raw_score,
+          as_of: ind.as_of,
+        });
+        if (ind.as_of && ind.as_of > freshestAsOf) freshestAsOf = ind.as_of;
+      }
+    }
+  }
+}
+const sorted = [...rows].sort((a, b) => b.score - a.score);
+const top = sorted.slice(0, 5);
+const bottom = sorted.slice(-5).reverse();
+const hasData = rows.length > 0;
+const median = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)].score : null;
+
+const cat = CATEGORIES[m.category];
+const description = `${m.label_th} แหล่งข้อมูล: ${m.source} ครอบคลุม ${rows.length} จาก 77 จังหวัดของไทย`;
+
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: m.label_th,
+  alternateName: m.label_en,
+  description: m.source_description ?? `${m.label_th} ตามที่เผยแพร่ใน Thailand Liveability Index`,
+  url: `https://thailandliveabilityindex.com/th/indicators/${m.id}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  measurementTechnique: m.source_description ?? m.source,
+  variableMeasured: {
+    '@type': 'PropertyValue',
+    name: m.label_th,
+    unitText: m.unit,
+  },
+  spatialCoverage: {
+    '@type': 'Place',
+    name: 'Thailand (77 provinces)',
+  },
+  temporalCoverage: freshestAsOf || '2024',
+  creator: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  citation: m.source,
+  isBasedOn: m.source_url,
+  keywords: ['Thailand', 'liveability', 'province', cat.label_th, m.label_th],
+};
+---
+<Site
+  title={`${m.label_th} · TLI`}
+  description={description}
+  locale="th"
+  canonicalPath={`/th/indicators/${m.id}/`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
+
+  <main class="container indicator-page">
+    <nav class="breadcrumb" aria-label="เส้นทาง">
+      <a href="/th/indicators/">ตัวชี้วัด</a>
+      <span class="breadcrumb__sep">/</span>
+      <span class={`tli-cat-chip ${cat.cssClass}`}>
+        <Lucide name={cat.icon} size={14} />
+        {cat.label_th}
+      </span>
+    </nav>
+
+    <header class="indicator-page__head">
+      <p class="tli-eyebrow">ตัวชี้วัด · TLI {m.id}</p>
+      <h1>{m.label_th}</h1>
+      <p class="indicator-page__th" lang="en">{m.label_en}</p>
+      <div class="indicator-page__meta">
+        {freshestAsOf && (
+          <ProvenanceChip variant="fresh" icon="calendar">
+            {`ณ ${freshestAsOf}`}
+          </ProvenanceChip>
+        )}
+        <ProvenanceChip icon="book-open">{m.unit}</ProvenanceChip>
+        <ProvenanceChip icon="badge-check">{`น้ำหนัก ${m.weight}`}</ProvenanceChip>
+      </div>
+    </header>
+
+    <section class="indicator-page__source">
+      <h2>แหล่งข้อมูล</h2>
+      <p>
+        <a href={m.source_url} target="_blank" rel="noopener noreferrer">
+          {m.source}
+          <Lucide name="external-link" size={14} class="tli-citations__icon" />
+        </a>
+      </p>
+      {m.source_description && <p class="indicator-page__source-desc">{m.source_description}</p>}
+    </section>
+
+    <section class="indicator-page__coverage">
+      <h2>ความครอบคลุม</h2>
+      <p>
+        {hasData ? (
+          <>{rows.length} จาก 77 จังหวัด ค่ามัธยฐาน: {median} คะแนนแต่ละจังหวัดถูก
+          ปรับให้อยู่ในช่วง 0–100 ตามค่ามาตรฐานคงที่ คะแนนยิ่งสูงยิ่งดี</>
+        ) : (
+          <>การกระจายค่ารายจังหวัดของตัวชี้วัดนี้ยังไม่ได้ถูกบรรจุในชุดข้อมูลปัจจุบัน
+          จะปรากฏที่นี่เมื่อรอบการประมวลผลถัดไปเสร็จสิ้น</>
+        )}
+      </p>
+    </section>
+
+    {hasData && (
+      <section class="indicator-page__distribution">
+        <h2>จังหวัดคะแนนสูงสุด</h2>
+        <table class="indicator-table">
+          <thead>
+            <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+          </thead>
+          <tbody>
+            {top.map((row, i) => (
+              <tr>
+                <td>{i + 1}</td>
+                <td><a href={`/th/${row.id}/`}>{row.name_th}</a></td>
+                <td>{row.raw}</td>
+                <td><strong>{row.score}</strong></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2>จังหวัดคะแนนต่ำสุด</h2>
+        <table class="indicator-table">
+          <thead>
+            <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+          </thead>
+          <tbody>
+            {bottom.map((row, i) => (
+              <tr>
+                <td>{rows.length - i}</td>
+                <td><a href={`/th/${row.id}/`}>{row.name_th}</a></td>
+                <td>{row.raw}</td>
+                <td><strong>{row.score}</strong></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    )}
+
+    <section class="indicator-page__methodology">
+      <h2>ระเบียบวิธี</h2>
+      <p>
+        ดู <a href="/th/methodology/">หน้าระเบียบวิธี</a> สำหรับวิธีการให้คะแนน TLI
+        ทั้งหมด รวมถึงวิธีการที่หมวด {cat.label_th} รวมเข้ากับอีก 6 หมวดผ่าน
+        ค่าเฉลี่ยเรขาคณิต
+      </p>
+      <p class="indicator-page__cite">
+        อ้างอิง: <em>"{m.label_th}" Thailand Liveability Index, 2026 CC BY-NC 4.0</em>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .indicator-page { max-width: 760px; padding-block: var(--sp-7); }
+  .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); margin-bottom: var(--sp-5); color: var(--ink-3); }
+  .breadcrumb a { color: var(--ink-2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb__sep { color: var(--ink-3); }
+  .indicator-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
+  .indicator-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
+  .indicator-page__th { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .indicator-page__meta { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  .indicator-page__source, .indicator-page__coverage, .indicator-page__distribution, .indicator-page__methodology { margin-bottom: var(--sp-7); }
+  .indicator-page__source-desc { color: var(--ink-2); font-size: var(--fs-15); margin-top: var(--sp-2); }
+  .indicator-table { width: 100%; border-collapse: collapse; margin-bottom: var(--sp-5); }
+  .indicator-table th, .indicator-table td { padding: var(--sp-2) var(--sp-3); text-align: left; border-bottom: 1px solid var(--rule); }
+  .indicator-table th { font-weight: var(--fw-medium); font-size: var(--fs-13); color: var(--ink-3); }
+  .indicator-table tbody a { color: var(--brand); text-decoration: none; }
+  .indicator-table tbody a:hover { text-decoration: underline; }
+  .indicator-page__cite { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px dashed var(--rule); }
+</style>

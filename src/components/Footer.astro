@@ -9,12 +9,14 @@ const copy = locale === 'th'
   ? {
       tagline: 'ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย',
       methodology: 'ระเบียบวิธี',
+      indicators: 'ตัวชี้วัด',
       about: 'เกี่ยวกับ',
       licensing: 'การอนุญาต',
     }
   : {
       tagline: 'A research composite index for all 77 Thai provinces.',
       methodology: 'Methodology',
+      indicators: 'Indicators',
       about: 'About',
       licensing: 'Licensing',
     };
@@ -25,6 +27,7 @@ const base = locale === 'th' ? '/th' : '/en';
     <p>{copy.tagline}</p>
     <nav class="tli-footer__nav" aria-label={locale === 'th' ? 'ลิงก์ส่วนท้าย' : 'Footer navigation'}>
       <a href={`${base}/methodology/`}>{copy.methodology}</a>
+      <a href={`${base}/indicators/`}>{copy.indicators}</a>
       <a href={`${base}/about/`}>{copy.about}</a>
       <a href={`${base}/licensing/`}>{copy.licensing}</a>
     </nav>

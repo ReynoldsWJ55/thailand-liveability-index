@@ -1,0 +1,119 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+import Site from '../../../layouts/Site.astro';
+import Lucide from '../../../components/Lucide.astro';
+import indicatorMeta from '../../../data/indicator-meta.json';
+import { CATEGORIES, CATEGORY_ORDER } from '../../../data/lookups';
+import type { CategoryId } from '../../../data/types';
+
+interface IndicatorMeta {
+  id: string;
+  label_en: string;
+  label_th: string;
+  unit: string;
+  source: string;
+  source_url: string;
+  source_description?: string;
+  category_phase2: string;
+  category: CategoryId;
+  weight: number;
+}
+
+const meta = indicatorMeta as Record<string, IndicatorMeta>;
+const all = Object.values(meta);
+const byCategory: Record<CategoryId, IndicatorMeta[]> = {
+  climate: [], healthcare: [], connectivity: [], economy: [],
+  safety: [], culture: [], demographics: [],
+};
+for (const m of all) {
+  if (m.category in byCategory) byCategory[m.category as CategoryId].push(m);
+}
+for (const list of Object.values(byCategory)) {
+  list.sort((a, b) => a.label_th.localeCompare(b.label_th));
+}
+---
+<Site
+  title="ตัวชี้วัด · Thailand Liveability Index"
+  description="ตัวชี้วัดทั้งหมดที่ใช้คำนวณคะแนนคุณภาพการอยู่อาศัยของจังหวัด พร้อมแหล่งข้อมูล น้ำหนัก และคำนิยามเต็ม"
+  locale="th"
+  canonicalPath="/th/indicators/"
+>
+  <main class="container indicators-index">
+    <header>
+      <h1>ตัวชี้วัด</h1>
+      <p class="lede">
+        คะแนนรวมของ TLI สร้างจากตัวชี้วัด {all.length} ตัวใน 7 หมวดหมู่อิสระ
+        แต่ละตัวชี้วัดมีคำนิยามที่โปร่งใส แหล่งข้อมูลที่บันทึกไว้ ค่ามาตรฐานการให้คะแนน
+        และการกระจายค่ารายจังหวัด คลิกที่ตัวชี้วัดใดก็ได้เพื่อดูระเบียบวิธี
+        แหล่งที่มา และจังหวัดที่ได้คะแนนสูงสุดและต่ำสุด
+      </p>
+    </header>
+
+    {CATEGORY_ORDER.map((catId) => (
+      <section class="indicators-cat">
+        <h2 class="indicators-cat__title">
+          <Lucide name={CATEGORIES[catId].icon} size={20} />
+          {CATEGORIES[catId].label_th}
+          <span class="indicators-cat__count">{byCategory[catId].length} ตัวชี้วัด</span>
+        </h2>
+        <ul class="indicators-cat__list">
+          {byCategory[catId].map((m) => (
+            <li>
+              <a href={`/th/indicators/${m.id}/`} class="indicator-card">
+                <span class="indicator-card__name">{m.label_th}</span>
+                <span class="indicator-card__meta">
+                  <span class="indicator-card__unit">{m.unit}</span>
+                  <span class="indicator-card__weight">น้ำหนัก {m.weight}</span>
+                </span>
+                <span class="indicator-card__source">{m.source}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <section class="indicators-meta">
+      <h2>การถ่วงน้ำหนัก</h2>
+      <p>
+        ภายในแต่ละหมวด ตัวชี้วัดมีน้ำหนักระหว่าง 0.5 ถึง 1.0 น้ำหนัก 1.0 หมายถึง
+        ตัวชี้วัดหลัก 0.5 หมายถึงตัวชี้วัดเสริมที่ใช้ตรวจสอบคู่กับตัวหลัก
+        จากนั้นค่าเฉลี่ยเรขาคณิตจะรวมคะแนน 7 หมวดด้วยน้ำหนักเท่ากัน
+        ดูรายละเอียดที่ <a href="/th/methodology/">หน้าระเบียบวิธี</a>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .indicators-index { max-width: 880px; padding-block: var(--sp-7); }
+  .indicators-index header { margin-bottom: var(--sp-10); }
+  .indicators-cat { margin-bottom: var(--sp-10); }
+  .indicators-cat__title {
+    display: flex; align-items: center; gap: var(--sp-3);
+    margin-bottom: var(--sp-4); padding-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .indicators-cat__count {
+    margin-left: auto; font-size: var(--fs-13);
+    font-weight: var(--fw-regular); color: var(--ink-3);
+  }
+  .indicators-cat__list {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: var(--sp-3); grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) { .indicators-cat__list { grid-template-columns: 1fr 1fr; } }
+  .indicator-card {
+    display: flex; flex-direction: column; gap: var(--sp-1);
+    padding: var(--sp-4); border: 1px solid var(--rule);
+    border-radius: var(--r-2); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .indicator-card:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .indicator-card__name { font-weight: var(--fw-medium); line-height: var(--lh-tight); }
+  .indicator-card__meta { display: flex; gap: var(--sp-3); font-size: var(--fs-13); color: var(--ink-3); }
+  .indicator-card__source { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-1); }
+  .indicators-meta { margin-top: var(--sp-12); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+</style>
