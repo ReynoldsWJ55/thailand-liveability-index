@@ -9,21 +9,27 @@ const copy = locale === 'th'
   ? {
       tagline: 'ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย',
       methodology: 'ระเบียบวิธี',
-      sources: 'แหล่งข้อมูล',
-      license: 'CC BY-NC 4.0',
+      about: 'เกี่ยวกับ',
+      licensing: 'การอนุญาต',
+      copyright: '© 2026 William J. Reynolds',
     }
   : {
-      tagline: 'A research-grade composite index for all 77 Thai provinces.',
+      tagline: 'A research composite index for all 77 Thai provinces.',
       methodology: 'Methodology',
-      sources: 'Sources',
-      license: 'CC BY-NC 4.0',
+      about: 'About',
+      licensing: 'Licensing',
+      copyright: '© 2026 William J. Reynolds',
     };
+const base = locale === 'th' ? '/th' : '/en';
 ---
 <footer class="tli-footer">
   <div class="tli-footer__inner">
     <p>{copy.tagline}</p>
-    <p>
-      <span class="tli-source">{copy.license}</span>
-    </p>
+    <nav class="tli-footer__nav" aria-label={locale === 'th' ? 'ลิงก์ส่วนท้าย' : 'Footer navigation'}>
+      <a href={`${base}/methodology/`}>{copy.methodology}</a>
+      <a href={`${base}/about/`}>{copy.about}</a>
+      <a href={`${base}/licensing/`}>{copy.licensing}</a>
+    </nav>
+    <p class="tli-footer__copyright">{copy.copyright}</p>
   </div>
 </footer>

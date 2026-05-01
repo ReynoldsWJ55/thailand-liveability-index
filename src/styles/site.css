@@ -237,6 +237,18 @@ main {
 }
 .tli-footer__inner a { color: var(--ink-2); text-decoration: none; }
 .tli-footer__inner a:hover { color: var(--ink); text-decoration: underline; }
+.tli-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+}
+.tli-footer__copyright {
+  flex-basis: 100%;
+  margin-top: var(--sp-4);
+  color: var(--ink-3);
+  font-size: var(--fs-12, 0.75rem);
+}
+
 
 /* --- Visible focus ring (accessibility, design-system aligned) ------------- */
 :focus-visible {

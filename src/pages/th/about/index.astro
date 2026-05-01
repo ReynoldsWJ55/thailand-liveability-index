@@ -135,7 +135,7 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
               </a>
               <div class="about-source__chips">
                 <ProvenanceChip variant={s.has_stale ? 'stale' : 'fresh'} icon="calendar" lang="th">
-                  ณ {s.freshest_as_of}
+                  {`ณ ${s.freshest_as_of}`}
                 </ProvenanceChip>
                 {s.has_stale && <ProvenanceChip variant="stale" icon="clock-alert" lang="th">ตัวชี้วัดเก่า</ProvenanceChip>}
               </div>
