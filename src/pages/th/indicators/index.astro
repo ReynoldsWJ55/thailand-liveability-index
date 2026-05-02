@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
 import { CATEGORIES, CATEGORY_ORDER, SLUG_MAP } from '../../../data/lookups';
+import { IN_DEVELOPMENT_INDICATORS, inDevelopmentByCategory } from '../../../data/in-development-indicators';
 import type { CategoryId } from '../../../data/types';
 
 interface IndicatorMeta {
@@ -32,6 +34,7 @@ for (const m of all) {
 for (const list of Object.values(byCategory)) {
   list.sort((a, b) => a.label_th.localeCompare(b.label_th));
 }
+const devCount = IN_DEVELOPMENT_INDICATORS.length;
 ---
 <Site
   title="ตัวชี้วัด · Thailand Liveability Index"
@@ -40,6 +43,7 @@ for (const list of Object.values(byCategory)) {
   canonicalPath="/th/indicators/"
 >
   <main class="container indicators-index">
+    <Breadcrumbs locale="th" items={[{ label: 'ตัวชี้วัด' }]} />
     <header>
       <h1>ตัวชี้วัด</h1>
       <p class="lede">
@@ -48,31 +52,112 @@ for (const list of Object.values(byCategory)) {
         และการกระจายค่ารายจังหวัด คลิกที่ตัวชี้วัดใดก็ได้เพื่อดูระเบียบวิธี
         แหล่งที่มา และจังหวัดที่ได้คะแนนสูงสุดและต่ำสุด
       </p>
+      <p class="lede-meta" lang="th">
+        <strong>ใช้งานจริง {all.length} ตัว</strong>
+        <span class="lede-meta__sep">·</span>
+        <a href="#in-development"><strong>อยู่ระหว่างพัฒนา {devCount} ตัว</strong> สำหรับ v1.2 (มิถุนายน 2026)</a>
+      </p>
     </header>
 
-    {CATEGORY_ORDER.map((catId) => (
-      <section class="indicators-cat">
-        <h2 class="indicators-cat__title">
-          <Lucide name={CATEGORIES[catId].icon} size={20} />
-          {CATEGORIES[catId].label_th}
-          <span class="indicators-cat__count">{byCategory[catId].length} ตัวชี้วัด</span>
-        </h2>
-        <ul class="indicators-cat__list">
-          {byCategory[catId].map((m) => (
-            <li>
-              <a href={`/th/indicators/${SLUG_MAP[m.id] ?? m.id}/`} class="indicator-card">
-                <span class="indicator-card__name">{m.label_th}</span>
-                <span class="indicator-card__meta">
-                  <span class="indicator-card__unit">{m.unit}</span>
-                  <span class="indicator-card__weight">น้ำหนัก {m.weight}</span>
-                </span>
-                <span class="indicator-card__source">{m.source}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
+    <details class="indicators-explainer" lang="th">
+      <summary class="indicators-explainer__summary">
+        <Lucide name="info" size={14} />
+        วิธีการให้คะแนนของ TLI
+      </summary>
+      <div class="indicators-explainer__body">
+        <dl>
+          <div>
+            <dt>ค่าดิบ</dt>
+            <dd>ค่าวัดในหน่วยจริงของตัวชี้วัด — μg/m³ สำหรับ PM2.5 เตียงต่อ 1,000 คนสำหรับโรงพยาบาล เปอร์เซ็นต์สำหรับพื้นที่ป่า หน่วยจะอยู่ใต้ชื่อตัวชี้วัดและในหน้ารายละเอียด</dd>
+          </div>
+          <div>
+            <dt>คะแนน 0–100</dt>
+            <dd>การปรับค่าดิบเทียบกับเกณฑ์มาตรฐานคงที่ <strong>ไม่ใช่เปอร์เซ็นไทล์</strong> — จังหวัดที่ได้ 60 หมายถึงอยู่ที่เกณฑ์ "ดี" ไม่ใช่ดีกว่า 60% ของจังหวัด <strong>ค่าสูงดีกว่าเสมอ</strong> ตัวชี้วัดที่ค่าดิบต่ำดี (เช่น PM2.5 ความขัดแย้ง) เกณฑ์มาตรฐานจะกลับทิศให้ทิศทางคะแนนสอดคล้องกัน</dd>
+          </div>
+          <div>
+            <dt>ช่วงคะแนน</dt>
+            <dd>0–19 ต่ำ · 20–39 อ่อน · 40–59 ปานกลาง · 60–79 ดี · 80–100 แข็งแกร่ง ใช้สีตามช่วงทั่วทั้งเว็บไซต์</dd>
+          </div>
+          <div>
+            <dt>คะแนนรวม</dt>
+            <dd>คะแนน 7 หมวดถูกรวมด้วยค่าเฉลี่ยเรขาคณิต — ดังนั้นจังหวัดใดได้ 0 ในหมวดใดหมวดหนึ่ง คะแนนรวมจะเป็น 0 อย่างซื่อสัตย์ ไม่ถูกหาค่าเฉลี่ยกลบ ภายในแต่ละหมวด ตัวชี้วัดมีน้ำหนัก 0.5 ถึง 1.0 (หลัก = 1.0, เสริม = 0.5)</dd>
+          </div>
+        </dl>
+        <p class="indicators-explainer__more">
+          สำหรับตารางเกณฑ์ การอ้างอิง และเอกสารการทำซ้ำ ดู <a href="/th/methodology/">หน้าระเบียบวิธี</a>
+        </p>
+      </div>
+    </details>
+
+    {CATEGORY_ORDER.map((catId) => {
+      const liveList = byCategory[catId];
+      const devList = inDevelopmentByCategory(catId);
+      const totalCount = liveList.length + devList.length;
+      return (
+        <section class="indicators-cat" id={catId}>
+          <h2 class="indicators-cat__title">
+            <Lucide name={CATEGORIES[catId].icon} size={20} />
+            {CATEGORIES[catId].label_th}
+            <span class="indicators-cat__count" lang="th">
+              ใช้งาน {liveList.length}{devList.length > 0 ? ` · พัฒนา ${devList.length}` : ''} · รวม {totalCount}
+            </span>
+          </h2>
+          <ul class="indicators-cat__list">
+            {liveList.map((m) => (
+              <li>
+                <a href={`/th/indicators/${SLUG_MAP[m.id] ?? m.id}/`} class="indicator-card">
+                  <span class="indicator-card__name">{m.label_th}</span>
+                  <span class="indicator-card__meta">
+                    <span class="indicator-card__unit">{m.unit}</span>
+                    <span class="indicator-card__weight">น้ำหนัก {m.weight}</span>
+                  </span>
+                  <span class="indicator-card__source">{m.source}</span>
+                </a>
+              </li>
+            ))}
+            {devList.map((m) => (
+              <li>
+                <a href={`/th/indicators/in-development/${m.slug}/`} class="indicator-card indicator-card--dev">
+                  <span class="indicator-card__badge" lang="th">อยู่ระหว่างพัฒนา · {m.target_eta}</span>
+                  <span class="indicator-card__name">{m.label_th}</span>
+                  <span class="indicator-card__meta">
+                    <span class="indicator-card__unit">{m.unit}</span>
+                    <span class="indicator-card__weight">น้ำหนัก {m.weight}</span>
+                  </span>
+                  <span class="indicator-card__source">{m.source}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })}
+
+    <section class="indicators-meta indicators-roadmap" id="in-development" aria-labelledby="in-development-h-th" lang="th">
+      <h2 id="in-development-h-th">อยู่ระหว่างพัฒนา</h2>
+      <p>
+        มีอีก {devCount} ตัวชี้วัดที่กำหนดขอบเขตและตรวจสอบแหล่งข้อมูลแล้ว แต่ยังไม่ได้ผูกเข้าคะแนนรวม
+        จะปรากฏในรอบเพิ่มตัวชี้วัด v1.2 ตามแผนเดือนมิถุนายน 2026 แต่ละตัวมีหน้าของตัวเอง
+        เพื่อให้แผนงานเป็นรูปธรรมและ URL เสถียรสำหรับการอ้างอิง
+      </p>
+      <ul class="indicators-roadmap__list">
+        {IN_DEVELOPMENT_INDICATORS.map((m) => (
+          <li>
+            <a href={`/th/indicators/in-development/${m.slug}/`} class="indicators-roadmap__link">
+              <strong>{m.label_th}</strong>
+              <span class="indicators-roadmap__cat" lang="th">{CATEGORIES[m.category].label_th}</span>
+              <span class="indicators-roadmap__src">{m.source}</span>
+              <p lang="th">{m.description_th}</p>
+              <span class="indicators-roadmap__cta" lang="th">อ่านรายละเอียด →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="indicators-roadmap__note" lang="th">
+        แต่ละหน้ามีเอกสารระบุแหล่งข้อมูล ใบอนุญาต รุ่นระเบียบวิธีเป้าหมาย และคำถามด้านการประสานข้อมูลที่ v1.2 จะแก้ไข
+        ต้องการรับข่าวเมื่อใช้งานจริง? <a href="/th/developers/#changelog">ติดตามได้ที่ changelog</a>
+      </p>
+    </section>
 
     <section class="indicators-meta">
       <h2>การถ่วงน้ำหนัก</h2>
@@ -116,4 +201,115 @@ for (const list of Object.values(byCategory)) {
   .indicator-card__meta { display: flex; gap: var(--sp-3); font-size: var(--fs-13); color: var(--ink-3); }
   .indicator-card__source { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-1); }
   .indicators-meta { margin-top: var(--sp-12); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+  .indicators-roadmap__list {
+    list-style: none; padding: 0; margin: var(--sp-5) 0 var(--sp-5);
+    display: grid; gap: var(--sp-4); grid-template-columns: 1fr;
+  }
+  .indicators-roadmap__list > li {
+    padding: var(--sp-4);
+    border: 1px dashed var(--rule-strong, var(--rule));
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+  }
+  .indicators-roadmap__list > li > strong { font-size: var(--fs-15); color: var(--ink); display: block; }
+  .indicators-roadmap__cat,
+  .indicators-roadmap__src {
+    display: inline-block;
+    font: var(--fw-medium) var(--fs-12)/1 var(--font-sans);
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-3);
+    margin-right: var(--sp-2);
+  }
+  .indicators-roadmap__cat::before { content: "→ "; color: var(--ink-3); }
+  .indicators-roadmap__list > li > p,
+  .indicators-roadmap__link p { margin: var(--sp-2) 0 0 0; font-size: var(--fs-14); color: var(--ink-2); }
+  .indicators-roadmap__link {
+    display: block;
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 120ms ease;
+  }
+  .indicators-roadmap__link:hover { transform: translateX(2px); }
+  .indicators-roadmap__link:hover strong { color: var(--brand); text-decoration: underline; }
+  .indicators-roadmap__cta {
+    display: inline-block;
+    margin-top: var(--sp-3);
+    font: var(--fw-medium) var(--fs-13)/1 var(--font-sans);
+    color: var(--brand);
+  }
+  .indicators-roadmap__note { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); }
+  .indicator-card--dev {
+    border-style: dashed !important;
+    background: var(--paper-2) !important;
+  }
+  .indicator-card__badge {
+    display: inline-block;
+    margin-bottom: 2px;
+    font: var(--fw-medium) var(--fs-11)/1 var(--font-sans);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .indicator-card__badge::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--warning, var(--brand));
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .lede-meta {
+    display: flex; align-items: center; gap: var(--sp-3);
+    margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4);
+    background: var(--paper-2); border: 1px solid var(--rule);
+    border-radius: var(--r-2); font-size: var(--fs-14); color: var(--ink-2);
+  }
+  .lede-meta a { color: var(--brand); text-decoration: none; }
+  .lede-meta a:hover { text-decoration: underline; }
+  .lede-meta__sep { color: var(--ink-3); }
+  .indicators-explainer {
+    margin: 0 0 var(--sp-7) 0;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+    overflow: hidden;
+  }
+  .indicators-explainer__summary {
+    display: inline-flex; align-items: center; gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font: var(--fw-semibold) var(--fs-14)/1 var(--font-sans);
+    color: var(--ink);
+  }
+  .indicators-explainer__summary::-webkit-details-marker { display: none; }
+  .indicators-explainer__summary::before { content: "▸"; color: var(--ink-3); margin-right: 2px; }
+  .indicators-explainer[open] .indicators-explainer__summary::before { content: "▾"; color: var(--brand); }
+  .indicators-explainer__body {
+    padding: var(--sp-3) var(--sp-5) var(--sp-5);
+    border-top: 1px dashed var(--rule);
+    background: var(--paper);
+  }
+  .indicators-explainer__body dl { display: grid; grid-template-columns: 110px 1fr; gap: var(--sp-3) var(--sp-4); margin: 0; padding: 0; }
+  .indicators-explainer__body > dl > div { display: contents; }
+  .indicators-explainer__body dt {
+    font: var(--fw-semibold) var(--fs-12)/1.2 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0;
+  }
+  .indicators-explainer__body dd {
+    margin: 0;
+    font-size: var(--fs-14);
+    line-height: var(--lh-base);
+    color: var(--ink);
+  }
+  .indicators-explainer__more { margin: var(--sp-4) 0 0 0; font-size: var(--fs-13); color: var(--ink-3); }
+  .indicators-explainer__more a { color: var(--brand); }
+  @media (max-width: 720px) {
+    .indicators-explainer__body dl { grid-template-columns: 1fr; gap: var(--sp-1); }
+  }
 </style>

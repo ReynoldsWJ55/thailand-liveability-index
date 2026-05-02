@@ -4,6 +4,7 @@
 import Site from '../../../layouts/Site.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import scoresData from '../../../data/scores.json';
 import type { ScoresFile, Indicator, CategoryId } from '../../../data/types';
 import { CATEGORIES, CATEGORY_ORDER } from '../../../data/lookups';
@@ -60,6 +61,27 @@ const sourceList = Array.from(sources.values()).sort((a, b) =>
   a.source.localeCompare(b.source),
 );
 
+// Why a source's indicators are flagged stale. Keyed by exact source string
+// matched against the source aggregate. A source with no entry here gets a
+// generic fallback ("Last refresh predates the freshness threshold."). Edit
+// this map when a stale flag is resolved or its cause changes.
+const STALE_REASONS_EN: Record<string, string> = {
+  'OpenAQ (Pollution Control Department feed)':
+    "Live API but the upstream transform isn't yet propagating the observation date through to the frontend dataset — see operator queue. Underlying data is current; the as-of timestamp is the gap.",
+  'Department of Disaster Prevention and Mitigation (DDPM)':
+    'Cabinet flood-aid resolutions are published annually with a 1–2 year reporting lag. Stale by design until the next government release; refresh planned for the v1.2 spike.',
+  'OpenStreetMap (OSM); ESA WorldCover; WorldPop':
+    'Composite proxy built from a fixed OSM extract + ESA WorldCover land-cover snapshot + WorldPop population grid. Re-extract scheduled with the v1.2 spike (June 2026).',
+  'OpenStreetMap (OSM)':
+    'Built from a fixed OSM extract date. OSM itself is continuously edited; we re-extract on a quarterly cadence — next refresh planned for v1.2 spike (June 2026).',
+};
+function staleReason(source: string): string {
+  return (
+    STALE_REASONS_EN[source] ??
+    'Last refresh predates the freshness threshold; queued for refresh.'
+  );
+}
+
 const indicatorCount = new Set(
   data.provinces.flatMap((p) =>
     Object.values(p.categories).flatMap((c) => c.indicators.map((i) => i.id)),
@@ -90,13 +112,38 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
   ogImage="/og/about.png"
 >
   <article class="methodology">
+    <Breadcrumbs locale="en" items={[{ label: 'About' }]} />
+    {/* Person JSON-LD for E-E-A-T — links page authority to Will's ORCID
+        record so AI search engines can verify expertise + experience. */}
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'William J. Reynolds',
+      url: 'https://thailandliveabilityindex.com/en/about/',
+      sameAs: [
+        'https://orcid.org/0009-0005-1217-7465',
+        'https://github.com/ReynoldsWJ55',
+      ],
+      identifier: {
+        '@type': 'PropertyValue',
+        propertyID: 'ORCID',
+        value: '0009-0005-1217-7465',
+      },
+      jobTitle: 'Author, Thailand Liveability Index',
+      knowsAbout: ['liveability indices', 'Thailand', 'composite indicators', 'open data', 'civic data'],
+    })} />
     <header class="methodology__head">
       <p class="tli-eyebrow">About · sources</p>
-      <h1 class="methodology__title">The data behind TLI</h1>
+      <h1 class="methodology__title">About the Thailand Liveability Index</h1>
       <p class="methodology__lede">
-        Every indicator on this site derives from public Thai government data, open scientific
-        datasets, or other openly-licensed research. This page lists every source, the indicators
-        we draw from each, and the freshest as-of date currently in our build.
+        The <strong>Thailand Liveability Index (TLI)</strong> is an open-data project covering
+        all 77 Thai provinces. Created by William J. Reynolds
+        (<a href="https://orcid.org/0009-0005-1217-7465" rel="me noopener" target="_blank">ORCID 0009-0005-1217-7465</a>)
+        in 2026, it combines {indicatorCount} indicators from {sourceList.length} primary public-data
+        sources into a single composite liveability score per province, published under
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>.
+        This page lists every source, the indicators we draw from each, and the freshest
+        as-of date currently in our build.
       </p>
       <div class="methodology__meta">
         <ProvenanceChip variant="fresh" icon="calendar">
@@ -147,10 +194,15 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
               {s.source_description && <p class="about-source__desc">{s.source_description}</p>}
               <div class="about-source__chips">
                 <ProvenanceChip variant={s.has_stale ? 'stale' : 'fresh'} icon="calendar">
-                  {`AS OF ${s.freshest_as_of}`}
+                  {`AS OF ${s.freshest_as_of || 'pending'}`}
                 </ProvenanceChip>
                 {s.has_stale && <ProvenanceChip variant="stale" icon="clock-alert">STALE INDICATOR</ProvenanceChip>}
               </div>
+              {s.has_stale && (
+                <p class="about-source__stale-why">
+                  <strong>Why stale:</strong> {staleReason(s.source)}
+                </p>
+              )}
             </div>
             <dl class="about-source__meta">
               <div>
@@ -186,9 +238,11 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
     <section class="methodology__section" id="categories">
       <h2 class="methodology__h2">Categories and the indicators in this build</h2>
       <p>
-        TLI's seven categories, and the indicators currently wired into each. The full
-        indicator framework includes ~22 indicators; some are still in development and will land
-        as the data pipeline matures.
+        TLI's seven categories, and the {indicatorCount} indicators currently wired into the live
+        composite. Four additional indicators (cycling infrastructure, specialist-physician density,
+        electric-power reliability, FAD heritage registry) are scoped and source-onboarded but not
+        yet wired — they land in the v1.2 indicator-spike (June 2026). See the
+        <a href="/en/indicators/#in-development">indicators roadmap</a> for the full list.
       </p>
       <ul class="about-categories">
         {categoryIndicators.map((entry) => {

@@ -4,6 +4,7 @@
 import Site from '../../../layouts/Site.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import scoresData from '../../../data/scores.json';
 import type { ScoresFile, Indicator, CategoryId } from '../../../data/types';
 import { CATEGORIES, CATEGORY_ORDER } from '../../../data/lookups';
@@ -54,6 +55,20 @@ for (const province of data.provinces) {
   }
 }
 const sourceList = Array.from(sources.values()).sort((a, b) => a.source.localeCompare(b.source));
+
+const STALE_REASONS_TH: Record<string, string> = {
+  'OpenAQ (Pollution Control Department feed)':
+    'API ใช้งานได้แต่กระบวนการต้นทางยังไม่ได้ส่งวันที่สังเกตการณ์ผ่านมายังชุดข้อมูล frontend ดูคิวงานของผู้ดำเนินการ ข้อมูลพื้นฐานเป็นปัจจุบัน เพียงแต่ไม่มีวันที่กำกับ',
+  'Department of Disaster Prevention and Mitigation (DDPM)':
+    'มติคณะรัฐมนตรีอนุมัติเงินช่วยเหลือน้ำท่วมเผยแพร่รายปีและล่าช้า 1–2 ปี เป็นข้อมูลล้าสมัยตามธรรมชาติของแหล่ง รอการรีเฟรชใน v1.2',
+  'OpenStreetMap (OSM); ESA WorldCover; WorldPop':
+    'ตัวแทนแบบประกอบจาก OSM extract + ESA WorldCover + WorldPop วันที่ตายตัว มีแผนสกัดข้อมูลใหม่ใน v1.2 (มิถุนายน 2026)',
+  'OpenStreetMap (OSM)':
+    'ใช้ OSM extract ที่วันที่ตายตัว OSM แก้ไขต่อเนื่องตลอดเวลา เราสกัดข้อมูลใหม่ทุกไตรมาส รอบถัดไปใน v1.2 (มิถุนายน 2026)',
+};
+function staleReasonTh(source: string): string {
+  return STALE_REASONS_TH[source] ?? 'การรีเฟรชล่าสุดเก่ากว่าเกณฑ์ความสด รอการอัปเดต';
+}
 const indicatorCount = new Set(
   data.provinces.flatMap((p) =>
     Object.values(p.categories).flatMap((c) => c.indicators.map((i) => i.id)),
@@ -82,13 +97,35 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
   ogImage="/og/about.png"
 >
   <article class="methodology" lang="th">
+    <Breadcrumbs locale="th" items={[{ label: 'เกี่ยวกับ' }]} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'William J. Reynolds',
+      url: 'https://thailandliveabilityindex.com/th/about/',
+      sameAs: [
+        'https://orcid.org/0009-0005-1217-7465',
+        'https://github.com/ReynoldsWJ55',
+      ],
+      identifier: {
+        '@type': 'PropertyValue',
+        propertyID: 'ORCID',
+        value: '0009-0005-1217-7465',
+      },
+      jobTitle: 'Author, Thailand Liveability Index',
+      knowsAbout: ['liveability indices', 'Thailand', 'composite indicators', 'open data'],
+    })} />
     <header class="methodology__head">
       <p class="tli-eyebrow">เกี่ยวกับ · แหล่งที่มา</p>
-      <h1 class="methodology__title">ข้อมูลเบื้องหลัง TLI</h1>
+      <h1 class="methodology__title">เกี่ยวกับดัชนีคุณภาพการอยู่อาศัยของประเทศไทย</h1>
       <p class="methodology__lede">
-        ตัวชี้วัดทุกตัวบนเว็บไซต์นี้มาจากข้อมูลเปิดของหน่วยงานรัฐไทย ข้อมูลทางวิทยาศาสตร์เปิด
-        หรือผลการวิจัยที่มีลิขสิทธิ์เปิด หน้านี้แสดงรายการทุกแหล่ง ตัวชี้วัดที่เราใช้
-        และวันที่ของข้อมูลล่าสุดที่อยู่ในชุดข้อมูลปัจจุบัน
+        <strong>Thailand Liveability Index (TLI)</strong> เป็นโครงการข้อมูลเปิด
+        ครอบคลุม 77 จังหวัดของประเทศไทย จัดทำโดย William J. Reynolds
+        (<a href="https://orcid.org/0009-0005-1217-7465" rel="me noopener" target="_blank">ORCID 0009-0005-1217-7465</a>)
+        ในปี 2026 รวม {indicatorCount} ตัวชี้วัดจาก {sourceList.length} แหล่งข้อมูลสาธารณะหลัก
+        เป็นคะแนนคุณภาพการอยู่อาศัยรวมต่อจังหวัด เผยแพร่ภายใต้
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+        หน้านี้แสดงรายการทุกแหล่ง ตัวชี้วัดที่เราใช้ และวันที่ของข้อมูลล่าสุด
       </p>
       <div class="methodology__meta">
         <ProvenanceChip variant="fresh" icon="calendar" lang="th">
@@ -138,10 +175,15 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
               {s.source_description && <p class="about-source__desc">{s.source_description}</p>}
               <div class="about-source__chips">
                 <ProvenanceChip variant={s.has_stale ? 'stale' : 'fresh'} icon="calendar" lang="th">
-                  {`ณ ${s.freshest_as_of}`}
+                  {`ณ ${s.freshest_as_of || 'รอข้อมูล'}`}
                 </ProvenanceChip>
                 {s.has_stale && <ProvenanceChip variant="stale" icon="clock-alert" lang="th">ตัวชี้วัดเก่า</ProvenanceChip>}
               </div>
+              {s.has_stale && (
+                <p class="about-source__stale-why" lang="th">
+                  <strong>เหตุที่เก่า:</strong> {staleReasonTh(s.source)}
+                </p>
+              )}
             </div>
             <dl class="about-source__meta">
               <div>
@@ -175,8 +217,11 @@ const categoryIndicators = CATEGORY_ORDER.map((cid) => {
     <section class="methodology__section" id="categories">
       <h2 class="methodology__h2">หมวดและตัวชี้วัดในชุดข้อมูลนี้</h2>
       <p>
-        เจ็ดหมวดของ TLI และตัวชี้วัดที่เชื่อมต่อแล้ว กรอบตัวชี้วัดเต็มมีประมาณ 22 ตัว
-        บางตัวยังอยู่ระหว่างการพัฒนา
+        เจ็ดหมวดของ TLI และตัวชี้วัด {indicatorCount} ตัวที่เชื่อมต่อแล้วในคะแนนรวม
+        มีอีก 4 ตัวชี้วัด (โครงสร้างพื้นฐานจักรยาน ความหนาแน่นแพทย์เฉพาะทาง ความน่าเชื่อถือของไฟฟ้า
+        ทะเบียนมรดก FAD) ที่กำหนดขอบเขตและตรวจสอบแหล่งข้อมูลแล้ว แต่ยังไม่ได้ผูก
+        จะปรากฏใน v1.2 (มิถุนายน 2026) ดู
+        <a href="/th/indicators/#in-development">แผนที่ตัวชี้วัด</a> สำหรับรายการเต็ม
       </p>
       <ul class="about-categories">
         {categoryIndicators.map((entry) => {

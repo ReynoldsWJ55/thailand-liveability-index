@@ -6,7 +6,10 @@ import Hero from '../../components/Hero.astro';
 import CategoryCard from '../../components/CategoryCard.astro';
 import IndicatorTable from '../../components/IndicatorTable.astro';
 import UrbanNaNote from '../../components/UrbanNaNote.astro';
-import { CATEGORY_ORDER, CHROME } from '../../data/lookups';
+import ScorePrimitive from '../../components/ScorePrimitive.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ProvinceFaq from '../../components/ProvinceFaq.astro';
+import { CATEGORY_ORDER, CHROME, regionLabel } from '../../data/lookups';
 import scoresData from '../../data/scores.json';
 import type { Province, ScoresFile } from '../../data/types';
 
@@ -24,6 +27,19 @@ const C = CHROME[locale];
 
 const cats = CATEGORY_ORDER.map((id) => province.categories[id]);
 const totalIndicators = cats.reduce((acc, c) => acc + c.indicator_count, 0);
+
+// Regional sibling provinces — hub-and-spoke linking. Pull all provinces in
+// the same `region` (excluding this one), sort by composite descending,
+// limit to 8 to keep the rail focused.
+const allProvinces = (scoresData as ScoresFile).provinces;
+const regionalSiblings = allProvinces
+  .filter((p) => p.region === province.region && p.id !== province.id)
+  .sort((a, b) => {
+    const sa = a.floored ? -1 : (a.composite ?? -1);
+    const sb = b.floored ? -1 : (b.composite ?? -1);
+    return sb - sa;
+  })
+  .slice(0, 8);
 
 // Determine the freshest as_of across all categories — drives the hero AS OF.
 const freshestAsOf = cats
@@ -95,6 +111,12 @@ const provinceDatasetSchema = {
   ogImage={`/og/${province.id}.png`}
 >
   <script type="application/ld+json" set:html={JSON.stringify(provinceDatasetSchema)} />
+  <div class="container">
+    <Breadcrumbs locale={locale} items={[
+      { label: regionLabel(province.region, locale), href: `/en/#all-77` },
+      { label: province.name_en },
+    ]} />
+  </div>
   <Hero province={province} locale={locale} asOf={freshestAsOf} />
 
   <section class="section" aria-labelledby="cat-title">
@@ -126,4 +148,187 @@ const provinceDatasetSchema = {
       provinceName={province.name_en}
     />
   ))}
+
+  <ProvinceFaq province={province} locale={locale} allProvinces={allProvinces} />
+
+  <details class="section province-embed province-embed--collapsible" aria-labelledby="province-embed-h">
+    <summary class="province-embed__summary">
+      <span class="province-embed__summary-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </span>
+      <span class="province-embed__summary-text">
+        <span class="province-embed__summary-title" id="province-embed-h">Embed {province.name_en} on your site</span>
+        <span class="province-embed__summary-sub">Free for non-commercial use · CC BY-NC 4.0 · attribution required</span>
+      </span>
+      <span class="province-embed__summary-cta">
+        <span class="province-embed__summary-cta-text">Get the code</span>
+        <svg class="province-embed__summary-chevron" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </span>
+    </summary>
+    <p class="province-embed__lede">
+      A live, auto-updating <code>&lt;tli-widget&gt;</code> for {province.name_en}. Pick a size,
+      copy the snippet, paste anywhere. Re-renders against the public TLI dataset.
+    </p>
+
+    <div class="province-embed__sizes" role="tablist" aria-label="Embed widget size">
+      {[
+        { size: 320,  label: 'Compact' },
+        { size: 480,  label: 'Standard' },
+        { size: 800,  label: 'Wide' },
+        { size: 1024, label: 'Profile' },
+      ].map((v, i) => (
+        <button
+          type="button"
+          class={`province-embed__size${i === 1 ? ' is-active' : ''}`}
+          data-embed-size={String(v.size)}
+          role="tab"
+          aria-selected={i === 1 ? 'true' : 'false'}
+        >
+          <span class="province-embed__size-num">{v.size}</span>
+          <span class="province-embed__size-label">{v.label}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="province-embed__live">
+      <div class="province-embed__stage">
+        <div data-embed-frame style="width:480px; max-width:100%;">
+          <tli-widget data-embed-widget province={province.id} size="480" lang="en"></tli-widget>
+        </div>
+      </div>
+
+      <div class="widget-snippet">
+        <div class="widget-snippet__head">
+          <span class="widget-snippet__label">Copy &amp; paste</span>
+          <button type="button" class="widget-snippet__copy" data-embed-copy aria-label="Copy embed snippet">Copy</button>
+        </div>
+        <pre class="widget-snippet__pre"><code data-embed-snippet>{`<script src="https://embed.thailandliveabilityindex.com/v1/tli.js" defer></script>
+<tli-widget province="${province.id}" size="480" lang="en"></tli-widget>`}</code></pre>
+      </div>
+    </div>
+
+    <p class="province-embed__more">
+      Need other languages or sizes? See the <a href="/en/developers/#embed">developer hub</a>
+      for all variants and the white-label option.
+    </p>
+  </details>
+
+  <script src="/widget/tli.js" defer></script>
+  <script>
+    (function () {
+      const root = document.querySelector('[data-embed-frame]');
+      const widget = document.querySelector('[data-embed-widget]');
+      const code = document.querySelector('[data-embed-snippet]');
+      const copyBtn = document.querySelector('[data-embed-copy]');
+      const tabs = document.querySelectorAll('[data-embed-size]');
+      if (!root || !widget || !code || !copyBtn) return;
+      const province = widget.getAttribute('province');
+      const SNIPPET = (size) =>
+        `<script src="https://embed.thailandliveabilityindex.com/v1/tli.js" defer><\/script>\n<tli-widget province="${province}" size="${size}" lang="en"></tli-widget>`;
+
+      tabs.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const size = btn.getAttribute('data-embed-size');
+          tabs.forEach(function (b) {
+            b.classList.toggle('is-active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          root.style.width = size + 'px';
+          widget.setAttribute('size', size);
+          code.textContent = SNIPPET(size);
+        });
+      });
+
+      copyBtn.addEventListener('click', async function () {
+        const text = code.textContent || '';
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.setAttribute('readonly', '');
+            ta.style.position = 'absolute'; ta.style.left = '-9999px';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+          }
+          const original = copyBtn.textContent;
+          copyBtn.textContent = 'Copied';
+          copyBtn.classList.add('is-copied');
+          setTimeout(function () { copyBtn.textContent = original; copyBtn.classList.remove('is-copied'); }, 1500);
+        } catch (err) {
+          copyBtn.textContent = 'Copy failed';
+          setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1500);
+        }
+      });
+    })();
+  </script>
+
+  {regionalSiblings.length > 0 && (
+    <section class="section province-siblings" aria-labelledby="province-siblings-h">
+      <div class="section__head">
+        <h2 class="section__title" id="province-siblings-h">
+          Other provinces in {regionLabel(province.region, locale)}
+        </h2>
+        <span class="section__sub">{regionalSiblings.length} of {allProvinces.filter((p) => p.region === province.region).length - 1} sorted by composite score</span>
+      </div>
+      <ul class="province-siblings__list">
+        {regionalSiblings.map((s) => (
+          <li>
+            <a href={`/en/${s.id}/`} class="province-siblings__card">
+              <span class="province-siblings__name">{s.name_en}</span>
+              <span class="province-siblings__sub" lang="th">{s.name_th}</span>
+              <ScorePrimitive
+                score={s.composite}
+                scale="chip"
+                floored={s.floored}
+                locale={locale}
+                bandLabelVisible={false}
+              />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="province-siblings__more">
+        <a href="/en/#all-77">Browse all 77 provinces →</a>
+      </p>
+    </section>
+  )}
 </Site>
+
+<style>
+  .province-siblings { margin-top: var(--sp-7); }
+  .province-siblings__list {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: var(--sp-3);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .province-siblings__card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "name score" "sub score";
+    align-items: center;
+    column-gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .province-siblings__card:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .province-siblings__name { grid-area: name; font-weight: var(--fw-medium); line-height: var(--lh-tight); }
+  .province-siblings__sub { grid-area: sub; font-size: var(--fs-12); color: var(--ink-3); line-height: 1.2; }
+  .province-siblings__card .tli-score-chip { grid-area: score; }
+  .province-siblings__more { margin-top: var(--sp-4); font-size: var(--fs-14); }
+  .province-siblings__more a { color: var(--brand); text-decoration: none; }
+  .province-siblings__more a:hover { text-decoration: underline; }
+
+  /* "Embed this widget" panel — most styles (size tabs, live stage) are
+     shared with /en/developers/ and live in site.css under .province-embed__*.
+     These are the page-only bits. */
+  .province-embed { margin-top: var(--sp-7); }
+  .province-embed__lede { color: var(--ink-2); margin-bottom: var(--sp-4); }
+  .province-embed__more { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); }
+  .province-embed__more a { color: var(--brand); }
+</style>
