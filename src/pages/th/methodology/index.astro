@@ -6,6 +6,26 @@ import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import Lucide from '../../../components/Lucide.astro';
 
 const lastUpdated = 'เมษายน 2026';
+
+const methodologyArticleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'ระเบียบวิธีของ Thailand Liveability Index v1.0',
+  alternateName: 'How the Thailand Liveability Index is built — methodology v1.0',
+  description: "วิธีคำนวณ TLI — เจ็ดหมวด คะแนนรวม ทำไมบางจังหวัดได้ 0 และวิธีถ่วงน้ำหนัก",
+  url: 'https://thailandliveabilityindex.com/th/methodology/',
+  inLanguage: 'th',
+  datePublished: '2026-04-30',
+  dateModified: '2026-05-02',
+  author: { '@type': 'Person', name: 'William J. Reynolds', sameAs: 'https://orcid.org/0009-0005-1217-7465' },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  about: { '@type': 'Dataset', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: [
+    'ระเบียบวิธี ดัชนีคุณภาพการอยู่อาศัย', 'ค่าเฉลี่ยเรขาคณิต',
+    'การให้คะแนนตัวชี้วัด', 'TLI methodology', 'composite indicator methodology',
+  ],
+};
 ---
 <Site
   title="ระเบียบวิธี · ดัชนีคุณภาพการอยู่อาศัยของประเทศไทย"
@@ -14,6 +34,7 @@ const lastUpdated = 'เมษายน 2026';
   canonicalPath="/th/methodology/"
   ogImage="/og/methodology.png"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(methodologyArticleSchema)} />
   <article class="methodology" lang="th">
     <header class="methodology__head">
       <p class="tli-eyebrow">ระเบียบวิธี · v1.0</p>

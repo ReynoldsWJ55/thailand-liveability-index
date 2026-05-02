@@ -33,6 +33,40 @@ provinces.forEach((p) =>
   ),
 );
 const sources = Array.from(sourceSet).slice(0, 6).join(' · ');
+
+const homeDatasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: 'Thailand Liveability Index',
+  alternateName: 'ดัชนีคุณภาพการอยู่อาศัยของประเทศไทย',
+  description: C.homeDescription,
+  url: 'https://thailandliveabilityindex.com/th/',
+  identifier: 'https://thailandliveabilityindex.com/',
+  spatialCoverage: { '@type': 'Country', name: 'Thailand', alternateName: 'ประเทศไทย' },
+  temporalCoverage: latestAsOf,
+  variableMeasured: [
+    'composite liveability score', 'environment & climate score', 'healthcare score',
+    'connectivity & transport score', 'cost & economy score', 'safety & governance score',
+    'lifestyle & culture score', 'demographics & scale score',
+  ].map((name) => ({ '@type': 'PropertyValue', name })),
+  creator: { '@type': 'Person', name: 'William J. Reynolds', sameAs: 'https://orcid.org/0009-0005-1217-7465' },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  isAccessibleForFree: true,
+  keywords: [
+    'Thailand', 'liveability', 'จังหวัด', 'ดัชนีคุณภาพการอยู่อาศัย',
+    '77 จังหวัด', 'ประเทศไทย', 'อันดับจังหวัด', 'คะแนนรวมจังหวัด',
+  ],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Thailand Liveability Index',
+  url: 'https://thailandliveabilityindex.com/',
+  inLanguage: ['en', 'th'],
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+};
 ---
 <Site
   title={C.homeTitle}
@@ -41,6 +75,8 @@ const sources = Array.from(sourceSet).slice(0, 6).join(' · ');
   canonicalPath="/th/"
   ogImage="/og/home.png"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(homeDatasetSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <HomeHero locale="th" asOf={asOfDisplay} />
 
   <section class="home-section" aria-labelledby="map-section-title">

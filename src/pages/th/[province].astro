@@ -33,6 +33,43 @@ const freshestAsOf = cats
 const description = province.floored
   ? `${province.name_th} อันดับ ${province.rank} จาก 77 — คะแนนรวมติดเพดานที่ 0`
   : `${province.name_th} คะแนนคุณภาพการอยู่อาศัย ${province.composite} จาก 100 อันดับ ${province.rank} จาก 77`;
+
+const provinceDatasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `${province.name_en} liveability score — Thailand Liveability Index`,
+  alternateName: `${province.name_th} ดัชนีคุณภาพการอยู่อาศัย`,
+  description,
+  url: `https://thailandliveabilityindex.com/th/${province.id}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  variableMeasured: cats.map((cat) => ({
+    '@type': 'PropertyValue',
+    name: cat.id,
+    value: cat.score,
+    description: `${cat.id} category score (0-100)`,
+  })),
+  spatialCoverage: {
+    '@type': 'Place',
+    name: `${province.name_en}, Thailand`,
+    alternateName: province.name_th,
+  },
+  temporalCoverage: freshestAsOf || '2024',
+  creator: { '@type': 'Person', name: 'William J. Reynolds', sameAs: 'https://orcid.org/0009-0005-1217-7465' },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: [
+    'Thailand', 'liveability', 'จังหวัด',
+    province.name_en, province.name_th,
+    `${province.name_th} คุณภาพการอยู่อาศัย`,
+    `${province.name_th} อากาศ`,
+    `${province.name_th} โรงพยาบาล`,
+    `${province.name_th} ค่าครองชีพ`,
+  ],
+};
 ---
 <Site
   title={`${province.name_th} · ดัชนีคุณภาพการอยู่อาศัย`}
@@ -41,6 +78,7 @@ const description = province.floored
   canonicalPath={`/th/${province.id}/`}
   ogImage={`/og/${province.id}.png`}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(provinceDatasetSchema)} />
   <Hero province={province} locale={locale} asOf={freshestAsOf} />
 
   <section class="section" aria-labelledby="cat-title">
