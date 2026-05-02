@@ -219,10 +219,17 @@
   --score-3-tint: #DEE9D3;
   --score-4-tint: #C9DECF;
 
+  /* On-colors: uniform neutral near-black on light bands (1, 2, 3) and white
+     on dark bands (0, 4). Previously the light-band inks were tinted toward
+     each band hue (#2A1308 brown-black, #2A2208 olive-black, #122B0E
+     green-black) — a sophisticated choice that read as visual inconsistency.
+     Switching to a single neutral #1A1A1A across the three light bands keeps
+     each individually accessible (>5:1 contrast) AND looks deliberate. White
+     on bands 0/4 is retained — those bands are already deep enough. */
   --score-0-on:   #FFFFFF;
-  --score-1-on:   #2A1308;
-  --score-2-on:   #2A2208;
-  --score-3-on:   #122B0E;
+  --score-1-on:   #1A1A1A;
+  --score-2-on:   #1A1A1A;
+  --score-3-on:   #1A1A1A;
   --score-4-on:   #FFFFFF;
 
   /* === CATEGORY ACCENTS (the 7 score categories) ===

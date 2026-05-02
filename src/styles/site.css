@@ -59,6 +59,18 @@ main {
 .tli-nav {
   border-bottom: 1px solid var(--rule);
   background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* Slightly translucent + blur — keeps the nav legible over scrolling content
+     without a hard cutoff. Falls back to solid paper if backdrop-filter
+     unsupported (older Firefox). */
+  background-color: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .tli-nav { background-color: var(--paper); }
 }
 .tli-nav__inner {
   max-width: var(--container-base);
@@ -79,6 +91,30 @@ main {
   gap: 1px;
 }
 .tli-nav__brand-dot { color: var(--brand); }
+
+/* Primary nav links — Indicators / Methodology / Developers etc. */
+.tli-nav__primary {
+  display: inline-flex;
+  gap: var(--sp-1);
+  align-items: center;
+  flex: 0 0 auto;
+}
+.tli-nav__primary-link {
+  font: var(--fw-medium) var(--fs-14)/1 var(--font-sans);
+  color: var(--ink-2);
+  text-decoration: none;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-2);
+  transition: color var(--dur-2) var(--ease-standard), background var(--dur-2) var(--ease-standard);
+  white-space: nowrap;
+}
+.tli-nav__primary-link:hover { color: var(--brand); background: var(--paper-2); }
+.tli-nav__primary-link.is-current {
+  color: var(--brand);
+  background: var(--brand-tint);
+  font-weight: var(--fw-semibold);
+}
+
 .tli-nav__lang {
   display: inline-flex;
   gap: var(--sp-1);
@@ -212,6 +248,15 @@ main {
 .tli-nav__search-item-score.score-2 { color: var(--score-2); }
 .tli-nav__search-item-score.score-3 { color: var(--score-3); }
 .tli-nav__search-item-score.score-4 { color: var(--score-4); }
+/* Indicator search results — no score chip, marker stripe instead. */
+.tli-nav__search-item--indicator {
+  border-left: 3px solid var(--brand);
+  padding-left: calc(var(--sp-3) - 3px);
+}
+.tli-nav__search-item--dev {
+  border-left-style: dashed;
+  border-left-color: var(--warning, var(--brand));
+}
 .tli-nav__search-empty {
   padding: var(--sp-3) var(--sp-4);
   font: var(--fw-regular) var(--fs-13)/1.4 var(--font-sans);
@@ -219,36 +264,69 @@ main {
 }
 
 /* --- Footer ---------------------------------------------------------------- */
-.tli-footer {
+/* Sitemap-style 4-column footer. Doubles as an internal-linking surface for
+   SEO + AI citability — every page exposes the full set of section links. */
+.tli-foot {
   border-top: 1px solid var(--rule);
   background: var(--paper-2);
-  padding: var(--sp-10) var(--gutter);
+  padding: var(--sp-10) var(--gutter) var(--sp-7);
   margin-top: var(--sp-20);
 }
-.tli-footer__inner {
+.tli-foot__inner {
   max-width: var(--container-base);
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  font: var(--fw-regular) var(--fs-14)/var(--lh-normal) var(--font-sans);
+  color: var(--ink-2);
+}
+.tli-foot__tagline {
+  margin: 0 0 var(--sp-7) 0;
+  max-width: 540px;
+  color: var(--ink-2);
+  font-size: var(--fs-15);
+}
+.tli-foot__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--sp-6);
-  justify-content: space-between;
-  font: var(--fw-regular) var(--fs-13)/var(--lh-normal) var(--font-sans);
+  padding-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--rule);
+}
+.tli-foot__col-h {
+  margin: 0 0 var(--sp-3) 0;
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
   color: var(--ink-3);
 }
-.tli-footer__inner > p { margin: 0; }
-.tli-footer__inner a { color: var(--ink-2); text-decoration: none; }
-.tli-footer__inner a:hover { color: var(--ink); text-decoration: underline; }
-.tli-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-5);
+.tli-foot__col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.tli-foot__col li { margin: 0; }
+.tli-foot__col a {
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color var(--dur-2) var(--ease-standard);
 }
-.tli-footer__copyright {
-  flex-basis: 100%;
-  margin-top: var(--sp-4);
+.tli-foot__col a:hover { color: var(--brand); text-decoration: underline; }
+.tli-foot__sub {
+  display: block;
+  font-size: var(--fs-12);
   color: var(--ink-3);
-  font-size: var(--fs-12, 0.75rem);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+.tli-foot__cite {
+  margin: var(--sp-5) 0 0 0;
+  color: var(--ink-3);
+  font-size: var(--fs-12);
+}
+/* Visually hidden — for accessible section heading. */
+.tli-vh {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
 }
 
 
@@ -1270,13 +1348,15 @@ main {
   margin: var(--sp-4) 0 var(--sp-6);
 }
 .methodology__refs-list li {
-  font: var(--fw-regular) var(--fs-13)/1.55 var(--font-serif);
-  color: var(--ink-3);
+  /* Body color bumped from --ink-3 (5.3:1 — passes AA but reads faint at
+     13px serif) to --ink-2 (9.4:1) for better academic-citation legibility. */
+  font: var(--fw-regular) var(--fs-14)/1.6 var(--font-serif);
+  color: var(--ink-2);
   padding-left: var(--sp-5);
   text-indent: calc(-1 * var(--sp-5));
-  margin-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
 }
-.methodology__refs-list li em { font-style: italic; color: var(--ink-2); }
+.methodology__refs-list li em { font-style: italic; color: var(--ink); }
 .methodology__refs-note {
   font: var(--fw-regular) var(--fs-13)/1.5 var(--font-mono) !important;
   color: var(--ink-3) !important;
@@ -1354,6 +1434,17 @@ main {
   flex-wrap: wrap;
   gap: var(--sp-2);
 }
+.about-source__stale-why {
+  margin: var(--sp-2) 0 var(--sp-3) 0 !important;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--warning-tint, var(--paper-2));
+  border-left: 3px solid var(--warning, var(--ink-3));
+  border-radius: var(--r-1);
+  font-size: var(--fs-13);
+  line-height: var(--lh-base);
+  color: var(--ink-2);
+}
+.about-source__stale-why strong { color: var(--ink); }
 .about-source__meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1867,6 +1958,9 @@ main {
   .home-citations {
     gap: var(--sp-2) var(--sp-4);
   }
+
+  /* Footer drops to 2 columns at tablet width */
+  .tli-foot__grid { grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
 }
 
 /* Below 620px — small phones, narrow tablets */
@@ -1902,7 +1996,8 @@ main {
 
 /* Below 520px — phone */
 @media (max-width: 520px) {
-  /* Nav: stack the search to a second row, brand + lang stay on top */
+  /* Nav: stack the search to a second row, primary nav drops to row 3,
+     brand + lang stay on top */
   .tli-nav__inner {
     flex-wrap: wrap;
     row-gap: var(--sp-3);
@@ -1912,6 +2007,15 @@ main {
     flex-basis: 100%;
     max-width: none;
   }
+  .tli-nav__primary {
+    order: 4;
+    flex-basis: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tli-nav__primary::-webkit-scrollbar { display: none; }
+  .tli-nav__primary-link { padding: var(--sp-2); font-size: var(--fs-13); }
   .tli-nav__brand { flex: 1 1 auto; }
 
   /* Home hero — even tighter title */
@@ -2000,14 +2104,20 @@ main {
   text-underline-offset: 2px;
 }
 .methodology__refs-list a:hover { color: var(--brand-ink); }
+/* DOI links — break to their own line on narrow wraps so they don't visually
+   collide with the journal name. inline-block with margin-left used to
+   produce overlap when the line-wrap pushed the journal name's last word
+   onto the same line as the DOI. */
 .methodology__refs-doi {
-  display: inline-block;
-  margin-left: var(--sp-2);
+  display: block;
+  margin-top: 4px;
   font-family: var(--font-mono);
   font-size: var(--fs-12);
   color: var(--ink-3);
   text-decoration: none !important;
   border-bottom: 1px dashed var(--rule);
+  word-break: break-all;
+  line-break: anywhere;
 }
 .methodology__refs-doi:hover { color: var(--brand); border-color: var(--brand); }
 .methodology__refs-callout {
@@ -2032,3 +2142,194 @@ main {
 }
 .methodology__refs-callout p { margin: var(--sp-2) 0; line-height: var(--lh-base); }
 .methodology__refs-callout-cta { margin-top: var(--sp-3); }
+
+/* ============================================================================
+   Widget embed snippet block — shared by /en/developers/ and /en/[province]/.
+   Copy-paste affordance with a Copy button that flashes "Copied".
+   ============================================================================ */
+.widget-snippet {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.widget-snippet__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+.widget-snippet__label {
+  font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.widget-snippet__copy {
+  appearance: none; -webkit-appearance: none;
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  color: var(--ink-2);
+  font: var(--fw-medium) var(--fs-12)/1 var(--font-sans);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.widget-snippet__copy:hover { background: var(--brand-tint); color: var(--brand); border-color: var(--brand-rule); }
+.widget-snippet__copy:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.widget-snippet__copy.is-copied {
+  background: var(--positive-tint, var(--brand-tint));
+  color: var(--positive, var(--brand));
+  border-color: var(--positive, var(--brand-rule));
+}
+.widget-snippet__pre {
+  margin: 0;
+  padding: var(--sp-3);
+  background: var(--paper);
+  overflow-x: auto;
+}
+.widget-snippet__pre code {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  line-height: 1.5;
+  color: var(--ink);
+  white-space: pre;
+}
+
+/* "Embed widget" preview pattern — used on /en/{province}/ and /en/developers/.
+   Size tabs above (320 / 480 / 800 / 1024) + a single live <tli-widget>
+   stage + the snippet block below. */
+.province-embed__sizes {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.province-embed__size {
+  appearance: none; -webkit-appearance: none;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-2);
+  cursor: pointer;
+  text-align: left;
+  display: flex; flex-direction: column; gap: 2px;
+  transition: all 120ms ease;
+  min-width: 110px;
+}
+.province-embed__size:hover { border-color: var(--brand); color: var(--brand); }
+.province-embed__size.is-active {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand);
+}
+.province-embed__size-num {
+  font: var(--fw-semibold) var(--fs-13)/1 var(--font-mono);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.province-embed__size-label {
+  font: var(--fw-medium) var(--fs-12)/1 var(--font-sans);
+  color: var(--ink-3);
+}
+.province-embed__size.is-active .province-embed__size-label { color: var(--brand); }
+.province-embed__live {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.province-embed__stage {
+  background: #ffffff;
+  border: 1px dashed var(--rule);
+  border-radius: var(--r-3);
+  padding: var(--sp-5);
+  display: flex; justify-content: center;
+  overflow-x: auto;
+}
+
+/* Collapsible Embed section — closed by default, with a clear summary
+   affordance so users see "click to expand" without ambiguity. SSR
+   content stays in the DOM regardless of open state, so AI/SEO
+   crawlers see the snippet either way. */
+.province-embed--collapsible {
+  padding: 0;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-2);
+  overflow: hidden;
+}
+.province-embed--collapsible[open] { background: var(--paper); }
+.province-embed__summary {
+  display: flex; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background var(--dur-2) var(--ease-standard);
+}
+.province-embed__summary::-webkit-details-marker { display: none; }
+.province-embed__summary:hover { background: var(--paper); }
+.province-embed--collapsible[open] .province-embed__summary {
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+.province-embed__summary-icon {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--brand-tint);
+  color: var(--brand);
+  border-radius: var(--r-2);
+}
+.province-embed__summary-text {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 0;
+}
+.province-embed__summary-title {
+  font: var(--fw-semibold) var(--fs-18)/1.3 var(--font-sans);
+  color: var(--ink);
+}
+.province-embed__summary-sub {
+  font-size: var(--fs-13);
+  color: var(--ink-3);
+}
+.province-embed__summary-cta {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--brand-rule);
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  color: var(--brand);
+  font: var(--fw-medium) var(--fs-13)/1 var(--font-sans);
+  transition: all 120ms ease;
+}
+.province-embed__summary:hover .province-embed__summary-cta {
+  background: var(--brand-tint);
+}
+.province-embed__summary-chevron {
+  flex: 0 0 auto;
+  display: inline-block;
+  transition: transform var(--dur-2) var(--ease-standard);
+  /* Slight nudge so the SVG visually centers with the text baseline */
+  margin-top: 1px;
+}
+.province-embed--collapsible[open] .province-embed__summary-chevron {
+  transform: rotate(90deg);
+}
+/* Body content padding when expanded */
+.province-embed--collapsible > *:not(summary) {
+  padding-left: var(--sp-5);
+  padding-right: var(--sp-5);
+}
+.province-embed--collapsible > *:not(summary):first-of-type {
+  margin-top: var(--sp-4);
+}
+.province-embed--collapsible > *:not(summary):last-of-type {
+  margin-bottom: var(--sp-5);
+}
+@media (max-width: 600px) {
+  .province-embed__summary { gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); flex-wrap: wrap; }
+  .province-embed__summary-cta { order: 3; margin-left: auto; }
+}

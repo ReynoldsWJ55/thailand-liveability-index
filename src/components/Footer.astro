@@ -1,35 +1,139 @@
 ---
 // Copyright (c) 2026 Will Reynolds
 // SPDX-License-Identifier: MIT
+/**
+ * Site footer — sitemap-style 4-column layout.
+ *
+ * Doubles as an internal-linking hub for SEO + AI citability: every page that
+ * embeds <Site> exposes the full set of section links in the DOM, so crawlers
+ * (Google, Bing, Perplexity, ChatGPT, Claude) see consistent in-context links
+ * regardless of where the user landed. Categories are linked individually so
+ * indicator-search queries can resolve to the right section.
+ */
+import { CATEGORIES, CATEGORY_ORDER, categoryLabel } from '../data/lookups';
+
 interface Props {
   locale: 'en' | 'th';
 }
 const { locale } = Astro.props;
+const base = locale === 'th' ? '/th' : '/en';
+const altBase = locale === 'th' ? '/en' : '/th';
+
 const copy = locale === 'th'
   ? {
-      tagline: 'ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย',
-      methodology: 'ระเบียบวิธี',
-      indicators: 'ตัวชี้วัด',
-      about: 'เกี่ยวกับ',
-      licensing: 'การอนุญาต',
+      tagline: 'ดัชนีคุณภาพการอยู่อาศัยระดับจังหวัดของประเทศไทย — ระเบียบวิธีโปร่งใส แหล่งที่มาของทุกตัวเลข',
+      browseHeading: 'สำรวจ',
+      browseHome: 'หน้าหลัก',
+      browseProvinces: '77 จังหวัด',
+      browseIndicators: 'รายชื่อตัวชี้วัด',
+      browseCategories: 'หมวดทั้งหมด',
+      methodHeading: 'ระเบียบวิธี',
+      methodOverview: 'ภาพรวมระเบียบวิธี',
+      methodLicensing: 'การอนุญาต',
+      methodAbout: 'เกี่ยวกับ',
+      methodPress: 'สื่อมวลชน',
+      methodDevelopers: 'นักพัฒนา · ข้อมูล · ฝัง',
+      projectHeading: 'โครงการ',
+      projectAuthor: 'William J. Reynolds',
+      projectOrcid: 'ORCID 0009-0005-1217-7465',
+      projectGithub: 'GitHub repo',
+      projectCite: 'อ้างอิง: Thailand Liveability Index, 2026 CC BY-NC 4.0',
+      switchLang: 'อ่านเป็นภาษาอังกฤษ',
+      cite: 'อ้างอิง: "ชื่อหน้า." Thailand Liveability Index, 2026 CC BY-NC 4.0',
+      copyright: '© 2026 William J. Reynolds รหัส MIT · ข้อมูล CC BY-NC 4.0',
+      categoryHeading: 'หมวด',
     }
   : {
-      tagline: 'A research composite index for all 77 Thai provinces.',
-      methodology: 'Methodology',
-      indicators: 'Indicators',
-      about: 'About',
-      licensing: 'Licensing',
+      tagline: 'A composite 0–100 liveability score for Thailand\'s 77 provinces — transparent methodology, full provenance on every number.',
+      browseHeading: 'Browse',
+      browseHome: 'Home',
+      browseProvinces: 'All 77 provinces',
+      browseIndicators: 'All indicators',
+      browseCategories: 'Categories',
+      methodHeading: 'Reference',
+      methodOverview: 'Methodology',
+      methodLicensing: 'Licensing',
+      methodAbout: 'About',
+      methodPress: 'Press',
+      methodDevelopers: 'Developers · Data · Embed',
+      projectHeading: 'Project',
+      projectAuthor: 'William J. Reynolds',
+      projectOrcid: 'ORCID 0009-0005-1217-7465',
+      projectGithub: 'GitHub repo',
+      projectCite: 'Cite as: Thailand Liveability Index, 2026. CC BY-NC 4.0',
+      switchLang: 'อ่านเป็นภาษาไทย',
+      cite: 'Cite as: "Page title." Thailand Liveability Index, 2026. CC BY-NC 4.0',
+      copyright: '© 2026 William J. Reynolds. Code MIT · Data CC BY-NC 4.0.',
+      categoryHeading: 'Categories',
     };
-const base = locale === 'th' ? '/th' : '/en';
 ---
-<footer class="tli-footer">
-  <div class="tli-footer__inner">
-    <p>{copy.tagline}</p>
-    <nav class="tli-footer__nav" aria-label={locale === 'th' ? 'ลิงก์ส่วนท้าย' : 'Footer navigation'}>
-      <a href={`${base}/methodology/`}>{copy.methodology}</a>
-      <a href={`${base}/indicators/`}>{copy.indicators}</a>
-      <a href={`${base}/about/`}>{copy.about}</a>
-      <a href={`${base}/licensing/`}>{copy.licensing}</a>
-    </nav>
+<footer class="tli-foot" aria-labelledby="footer-heading">
+  <h2 id="footer-heading" class="tli-vh">{locale === 'th' ? 'ลิงก์ส่วนท้าย' : 'Footer'}</h2>
+  <div class="tli-foot__inner">
+    <p class="tli-foot__tagline" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.tagline}</p>
+
+    <div class="tli-foot__grid">
+      <nav class="tli-foot__col" aria-labelledby="foot-browse">
+        <h3 id="foot-browse" class="tli-foot__col-h" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.browseHeading}</h3>
+        <ul>
+          <li><a href={`${base}/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.browseHome}</a></li>
+          <li><a href={`${base}/#all-77`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.browseProvinces}</a></li>
+          <li><a href={`${base}/indicators/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.browseIndicators}</a></li>
+        </ul>
+      </nav>
+
+      <nav class="tli-foot__col" aria-labelledby="foot-categories">
+        <h3 id="foot-categories" class="tli-foot__col-h" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.categoryHeading}</h3>
+        <ul>
+          {CATEGORY_ORDER.map((cid) => (
+            <li>
+              <a
+                href={`${base}/indicators/#${cid}`}
+                {...locale === 'th' ? { lang: 'th' } : {}}
+              >
+                {categoryLabel(cid, locale)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="tli-foot__col" aria-labelledby="foot-method">
+        <h3 id="foot-method" class="tli-foot__col-h" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodHeading}</h3>
+        <ul>
+          <li><a href={`${base}/methodology/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodOverview}</a></li>
+          <li><a href={`${base}/developers/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodDevelopers}</a></li>
+          <li><a href={`${base}/about/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodAbout}</a></li>
+          {/* /press is root-level (not locale-scoped) until the Thai
+              translation lands. Both locales link to the same URL for now. */}
+          <li><a href="/press/" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodPress}</a></li>
+          <li><a href={`${base}/licensing/`} {...locale === 'th' ? { lang: 'th' } : {}}>{copy.methodLicensing}</a></li>
+        </ul>
+      </nav>
+
+      <div class="tli-foot__col" aria-labelledby="foot-project">
+        <h3 id="foot-project" class="tli-foot__col-h" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.projectHeading}</h3>
+        <ul>
+          <li>
+            <a href="https://orcid.org/0009-0005-1217-7465" rel="me noopener" target="_blank">
+              {copy.projectAuthor}
+            </a>
+            <span class="tli-foot__sub">{copy.projectOrcid}</span>
+          </li>
+          <li>
+            <a href="https://github.com/ReynoldsWJ55/thailand-liveability-index" rel="noopener" target="_blank">
+              {copy.projectGithub}
+            </a>
+          </li>
+          <li>
+            <a href={altBase + '/'} {...locale === 'th' ? { lang: 'en' } : { lang: 'th' }}>
+              {copy.switchLang}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="tli-foot__cite tli-caption" {...locale === 'th' ? { lang: 'th' } : {}}>{copy.copyright}</p>
   </div>
 </footer>

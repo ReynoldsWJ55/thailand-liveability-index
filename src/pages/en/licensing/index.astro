@@ -2,6 +2,7 @@
 // Copyright (c) 2026 Will Reynolds
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 ---
 <Site
   title="Licensing — Thailand Liveability Index"
@@ -11,6 +12,7 @@ import Site from '../../../layouts/Site.astro';
   ogImage="/og/licensing.png"
 >
   <main class="container" style="max-width:760px; padding-block: var(--sp-7);">
+    <Breadcrumbs locale="en" items={[{ label: 'Licensing' }]} />
     <h1>Licensing</h1>
     <p class="lede">
       The Thailand Liveability Index is built around three distinct
