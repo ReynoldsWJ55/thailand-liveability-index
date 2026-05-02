@@ -82,6 +82,67 @@ export const CATEGORY_ORDER: CategoryId[] = [
   'demographics',
 ];
 
+/**
+ * Category anchor slugs for in-page navigation.
+ *
+ * Internal `category.id` (e.g. `climate`) is preserved for code; URL anchors
+ * use the SEO-friendly slug derived from the canonical EN label. Locked per
+ * `99-meta/seo-slug-audit-2026-05-02.md` §2.
+ */
+export const CATEGORY_ANCHOR: Record<CategoryId, string> = {
+  climate: 'environment-climate',
+  healthcare: 'healthcare',
+  connectivity: 'connectivity-transport',
+  economy: 'cost-economy',
+  safety: 'safety-governance',
+  culture: 'lifestyle-culture',
+  demographics: 'demographics-scale',
+};
+
+/**
+ * Indicator URL slug map.
+ *
+ * Internal `ind_*` IDs are preserved for the data pipeline (R2 parquets,
+ * indicator-meta.json, scores.json all key on these). Public URLs use the
+ * SEO-friendly slug. Locked per `99-meta/seo-slug-audit-2026-05-02.md` §3,
+ * with the GPP override per Will's sign-off (spell out `gross-provincial-
+ * product-per-capita` instead of `gpp-per-capita`).
+ *
+ * 25 entries — must match `indicator-meta.json` keys.
+ */
+export const SLUG_MAP: Record<string, string> = {
+  ind_acled_events_per_100k_5yr: 'conflict-events-per-100k',
+  ind_acled_fatalities_per_100k_5yr: 'conflict-fatalities-per-100k',
+  ind_airport_intl_drive_min: 'international-airport-access',
+  ind_flood_frequency: 'flood-frequency',
+  ind_forest_cover_pct: 'forest-cover',
+  ind_gpp_per_capita: 'gross-provincial-product-per-capita',
+  ind_heat_days_35c: 'heat-days-35c',
+  ind_hospital_beds_per_1k: 'hospital-beds-per-1000',
+  ind_hospitals_per_100k: 'hospitals-per-100k',
+  ind_internet_fixed_mbps: 'fixed-broadband-speed',
+  ind_internet_mobile_mbps: 'mobile-broadband-speed',
+  ind_jci_accredited_count: 'jci-accredited-hospitals',
+  ind_piped_water_pct: 'piped-water-coverage',
+  ind_pm25_annual_mean: 'pm25-annual-mean',
+  ind_pm25_days_exceeding_who: 'pm25-days-exceeding-who',
+  ind_population_density: 'population-density',
+  ind_public_transport_access: 'public-transport-access',
+  ind_rail_access: 'rail-access',
+  ind_rainfall_days_per_year: 'rainfall-days-per-year',
+  ind_rpsto_per_10k_total: 'subdistrict-health-clinics-per-10k',
+  ind_tat_events_per_100k: 'tourism-cultural-events-per-100k',
+  ind_tree_canopy_pct: 'tree-canopy-coverage',
+  ind_unesco_whs_count: 'unesco-world-heritage-sites',
+  ind_walkability_score: 'walkability-score',
+  ind_waste_management_score: 'waste-management',
+};
+
+/** Reverse lookup: SEO slug → internal indicator id. Useful for redirect handling and deserialization. */
+export const SLUG_TO_ID: Record<string, string> = Object.fromEntries(
+  Object.entries(SLUG_MAP).map(([id, slug]) => [slug, id]),
+);
+
 export function categoryLabel(id: CategoryId, locale: Locale): string {
   return locale === 'th' ? CATEGORIES[id].label_th : CATEGORIES[id].label_en;
 }

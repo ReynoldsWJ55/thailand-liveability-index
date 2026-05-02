@@ -7,7 +7,7 @@
  * to the indicator-detail section below; anchor scrolling needs no JS.
  */
 import { bandClass, bandLabel } from '../lib/score-band';
-import { CATEGORIES, categoryLabel, CHROME } from '../data/lookups';
+import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME } from '../data/lookups';
 import type { CategoryScore, Locale } from '../data/types';
 import Lucide from './Lucide.astro';
 
@@ -28,7 +28,7 @@ const cls = ['cat-card', bandClass(score, isFloor), isFloor ? 'cat-card--floored
   .join(' ');
 const bandWord = bandLabel(score, isFloor, locale);
 ---
-<a href={`#${category.id}`} class={cls}>
+<a href={`#${CATEGORY_ANCHOR[category.id]}`} class={cls}>
   <span class="cat-card__head">
     <Lucide name={meta.icon} size={16} class="cat-card__icon" />
     <span {...locale === 'th' ? { lang: 'th' } : {}}>{label}</span>

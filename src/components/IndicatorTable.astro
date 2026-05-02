@@ -10,7 +10,7 @@
  * Inherited values render as `↳ INHERITED FROM YALA` in the Score column
  * instead of a number — exercises the contract end-to-end.
  */
-import { CATEGORIES, categoryLabel, CHROME } from '../data/lookups';
+import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME } from '../data/lookups';
 import type { CategoryScore, Indicator, Locale } from '../data/types';
 import Lucide from './Lucide.astro';
 import ScorePrimitive from './ScorePrimitive.astro';
@@ -41,7 +41,7 @@ function fmtValue(ind: Indicator): string {
 
 const sources = Array.from(new Set(category.indicators.map((i) => i.source)));
 ---
-<section class="section" id={category.id}>
+<section class="section" id={CATEGORY_ANCHOR[category.id]}>
   <div class="section__head">
     <h2 class="section__title" {...locale === 'th' ? { lang: 'th' } : {}}>
       {label} · <span class="section__title-sub">{C.indicatorDetail}</span>

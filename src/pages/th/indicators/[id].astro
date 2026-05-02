@@ -6,7 +6,7 @@ import Lucide from '../../../components/Lucide.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
 import scoresData from '../../../data/scores.json';
-import { CATEGORIES } from '../../../data/lookups';
+import { CATEGORIES, SLUG_MAP } from '../../../data/lookups';
 import type { CategoryId, ScoresFile, Indicator } from '../../../data/types';
 
 interface IndicatorMetaShape {
@@ -34,12 +34,12 @@ interface ProvinceRow {
 export function getStaticPaths() {
   const meta = indicatorMeta as Record<string, IndicatorMetaShape>;
   return Object.values(meta).map((m) => ({
-    params: { id: m.id },
-    props: { m },
+    params: { id: SLUG_MAP[m.id] ?? m.id },
+    props: { m, slug: SLUG_MAP[m.id] ?? m.id },
   }));
 }
 
-const { m } = Astro.props as { m: IndicatorMetaShape };
+const { m, slug } = Astro.props as { m: IndicatorMetaShape; slug: string };
 const data = scoresData as ScoresFile;
 
 const rows: ProvinceRow[] = [];
@@ -76,7 +76,7 @@ const datasetSchema = {
   name: m.label_th,
   alternateName: m.label_en,
   description: m.source_description ?? `${m.label_th} ตามที่เผยแพร่ใน Thailand Liveability Index`,
-  url: `https://thailandliveabilityindex.com/th/indicators/${m.id}/`,
+  url: `https://thailandliveabilityindex.com/th/indicators/${slug}/`,
   isPartOf: {
     '@type': 'Dataset',
     name: 'Thailand Liveability Index',
@@ -113,7 +113,7 @@ const datasetSchema = {
   title={`${m.label_th} · TLI`}
   description={description}
   locale="th"
-  canonicalPath={`/th/indicators/${m.id}/`}
+  canonicalPath={`/th/indicators/${slug}/`}
 >
   <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
 
