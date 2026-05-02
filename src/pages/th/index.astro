@@ -32,7 +32,13 @@ provinces.forEach((p) =>
     c.indicators.forEach((i) => sourceSet.add(i.source)),
   ),
 );
-const sources = Array.from(sourceSet).slice(0, 6).join(' · ');
+const allSources = Array.from(sourceSet);
+const sourceTotal = allSources.length;
+const sourcesShown = allSources.slice(0, 5).join(' · ');
+const sourcesExtra = sourceTotal > 5 ? sourceTotal - 5 : 0;
+const sources = sourcesExtra > 0
+  ? `${sourcesShown} · และอีก ${sourcesExtra}`
+  : sourcesShown;
 
 const homeDatasetSchema = {
   '@context': 'https://schema.org',

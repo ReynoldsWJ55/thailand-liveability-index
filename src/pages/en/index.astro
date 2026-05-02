@@ -27,14 +27,22 @@ const asOfDisplay = new Date(latestAsOf).toLocaleDateString('en-US', {
   year: 'numeric',
 }).toUpperCase();
 
-// Citation sources (deduped, in encounter order).
+// Citation sources (deduped, in encounter order). The home-page source chip
+// shows the FIRST FEW + a count of the rest, so readers see we're drawing on
+// many independent authoritative datasets (not just the few visible).
 const sourceSet = new Set<string>();
 provinces.forEach((p) =>
   Object.values(p.categories).forEach((c) =>
     c.indicators.forEach((i) => sourceSet.add(i.source)),
   ),
 );
-const sources = Array.from(sourceSet).slice(0, 6).join(' · ');
+const allSources = Array.from(sourceSet);
+const sourceTotal = allSources.length;
+const sourcesShown = allSources.slice(0, 5).join(' · ');
+const sourcesExtra = sourceTotal > 5 ? sourceTotal - 5 : 0;
+const sources = sourcesExtra > 0
+  ? `${sourcesShown} · +${sourcesExtra} more`
+  : sourcesShown;
 
 // Top-level Dataset schema for AI/SEO citability — describes the whole TLI
 // dataset across all 77 provinces. Combined with WebSite schema for

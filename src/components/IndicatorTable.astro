@@ -24,7 +24,7 @@
  * Block 10 wk 6 alongside the v1.2 methodology spike. v0.1 content uses
  * indicator-meta.source_description + score-band interpretation as scaffold.
  */
-import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank } from '../data/lookups';
+import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank, indicatorDescription } from '../data/lookups';
 import { getApplicabilityOverride } from '../data/applicability_overrides';
 import type { CategoryScore, Indicator, Locale, ScoresFile } from '../data/types';
 import scoresData from '../data/scores.json';
@@ -87,8 +87,10 @@ interface Props {
   locale: Locale;
   isFloor?: boolean;
   provinceId: string;
+  /** Display name of the parent province for SEO-friendly indicator-card prose. */
+  provinceName: string;
 }
-const { category, locale, isFloor = false, provinceId } = Astro.props;
+const { category, locale, isFloor = false, provinceId, provinceName } = Astro.props;
 const meta = CATEGORIES[category.id];
 const label = categoryLabel(category.id, locale);
 const C = CHROME[locale];
@@ -244,13 +246,43 @@ const labels = locale === 'th'
                 const dist = !override && !isMissing ? distributionFor(provinceId, ind.id) : undefined;
                 return (
                   <div class="ind-card__detail-grid">
-                    <section class="ind-card__detail-block">
+                    <section class="ind-card__detail-block ind-card__detail-block--wide">
                       <h4>{labels.whatThisMeasures}</h4>
-                      <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                        {indicatorLabel(ind)} ({ind.unit}). {locale === 'th'
-                          ? 'รายละเอียดระเบียบวิธีต่อตัวชี้วัด รวมถึงค่ามาตรฐาน 0/100 และทิศทางที่ดีกว่า มีอยู่ในหน้าระเบียบวิธี'
-                          : 'See the methodology page for the goalposts (where 0 and 100 sit), the direction (higher- or lower-is-better), and the indicator-specific data quality notes.'}
-                      </p>
+                      {(() => {
+                        const desc = indicatorDescription(ind.id, locale);
+                        // Province-specific lede uses the actual value; SEO/AI gold.
+                        if (override) {
+                          return (
+                            <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                              <strong>{provinceName}</strong>{' '}
+                              {locale === 'th'
+                                ? `ไม่มีคะแนนสำหรับ ${indicatorLabel(ind)} — ดูเหตุผล N/A ด้านล่าง.`
+                                : `does not score on ${indicatorLabel(ind)} — see the N/A rationale below.`}
+                              {desc && <> {desc}</>}
+                            </p>
+                          );
+                        }
+                        if (isMissing) {
+                          return (
+                            <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                              {locale === 'th'
+                                ? `ข้อมูล ${indicatorLabel(ind)} ของ ${provinceName} ยังไม่มี.`
+                                : `${indicatorLabel(ind)} data for ${provinceName} is not yet available.`}
+                              {desc && <> {desc}</>}
+                            </p>
+                          );
+                        }
+                        const valueStr = fmtValue(ind);
+                        return (
+                          <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                            <strong>{provinceName}</strong>{' '}
+                            {locale === 'th'
+                              ? `มี ${indicatorLabel(ind)} เท่ากับ ${valueStr} ${ind.unit}.`
+                              : `has a ${indicatorLabel(ind)} of ${valueStr} ${ind.unit}.`}
+                            {desc && <> {desc}</>}
+                          </p>
+                        );
+                      })()}
                     </section>
 
                     {!override && !isMissing && (
