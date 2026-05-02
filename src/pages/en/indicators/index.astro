@@ -4,7 +4,7 @@
 import Site from '../../../layouts/Site.astro';
 import Lucide from '../../../components/Lucide.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
-import { CATEGORIES, CATEGORY_ORDER } from '../../../data/lookups';
+import { CATEGORIES, CATEGORY_ORDER, SLUG_MAP } from '../../../data/lookups';
 import type { CategoryId } from '../../../data/types';
 
 interface IndicatorMeta {
@@ -60,7 +60,7 @@ for (const list of Object.values(byCategory)) {
         <ul class="indicators-cat__list">
           {byCategory[catId].map((m) => (
             <li>
-              <a href={`/en/indicators/${m.id}/`} class="indicator-card">
+              <a href={`/en/indicators/${SLUG_MAP[m.id] ?? m.id}/`} class="indicator-card">
                 <span class="indicator-card__name">{m.label_en}</span>
                 <span class="indicator-card__meta">
                   <span class="indicator-card__unit">{m.unit}</span>
