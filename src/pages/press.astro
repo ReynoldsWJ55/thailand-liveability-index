@@ -1,0 +1,490 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * /press — Phase 1 placeholder. Live and indexable from now until Phase 2
+ * (the full asset kit landing page) replaces it at hard launch in
+ * mid-to-late August 2026. Same URL is preserved across phases. EN-only
+ * for now; /th/press route reserved for the translation pipeline.
+ *
+ * What this page does:
+ *   - Hero + 5 sections describing what's coming and how to request access
+ *   - Press contact form with a mailto: fallback on submit (no server-side
+ *     handler — TODO: upgrade to a Cloudflare Workers form handler in the
+ *     same pass that ships the API in Phase A)
+ *   - JSON-LD WebPage + ContactPage schema for AI/SEO citability
+ *
+ * Out of scope (per Phase 1 spec):
+ *   - No asset downloads, no Zenodo DOI, no /press/2026/* sub-routes
+ *   - No Thai version (separate translation workstream)
+ *   - No new design tokens — composes from existing primitives
+ */
+import Site from '../layouts/Site.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ProvenanceChip from '../components/ProvenanceChip.astro';
+import Lucide from '../components/Lucide.astro';
+
+const pageTitle = 'Press · Thailand Liveability Index';
+const pageDescription =
+  'Press materials, embargoed advance briefings, and the inaugural Thailand Liveability Index Y1 report (mid-to-late August 2026). Contact form for press, methodology, and commercial licensing inquiries.';
+
+// JSON-LD WebPage + ContactPoint — gives AI search engines a clear
+// machine-readable record of what this page is for and where to reach the
+// project for press inquiries.
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: 'https://thailandliveabilityindex.com/press',
+  inLanguage: 'en',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  about: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'press',
+      email: 'press@thailandliveabilityindex.com',
+      availableLanguage: ['en', 'th'],
+    },
+  },
+};
+
+const assetKitItems = [
+  'The full report (PDF, English and Thai executive summary)',
+  'Headline data tables (PDF, CSV)',
+  'Print-quality charts (PNG, SVG, social-share crops)',
+  'Province cards (one per 77 provinces, branded one-pagers)',
+  'Infographic (English and Thai)',
+  'Methodology one-pager',
+  'Frequently asked questions',
+  'Logo and brand kit (CC BY-NC, attribution required)',
+  'Pre-written boilerplate copy at three lengths',
+  'Quote sheet',
+  'Photography / B-roll',
+  'Single zip bundle of everything above',
+];
+---
+<Site
+  title={pageTitle}
+  description={pageDescription}
+  locale="en"
+  canonicalPath="/press/"
+  ogImage="/og/default.png"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+
+  <article class="methodology press">
+    <Breadcrumbs locale="en" items={[{ label: 'Press' }]} />
+    <header class="methodology__head">
+      <p class="tli-eyebrow">Press · Phase 1 placeholder</p>
+      <h1 class="methodology__title">Press</h1>
+      <p class="methodology__lede press__subhead">
+        <em>
+          Thailand Liveability Index — the first systematic ranking of all 77 Thai
+          provinces across seven liveability dimensions.
+        </em>
+      </p>
+      <p class="press__lead">
+        The Y1 report publishes mid-to-late August 2026. Press materials,
+        embargoed advance briefings, and the full asset kit go live at hard
+        launch.
+      </p>
+      <div class="methodology__meta">
+        <ProvenanceChip variant="stale" icon="clock-alert">
+          REPORT · AUG 2026
+        </ProvenanceChip>
+        <ProvenanceChip icon="badge-check">METHODOLOGY v1.0</ProvenanceChip>
+        <ProvenanceChip icon="book-open">CC BY-NC 4.0</ProvenanceChip>
+      </div>
+    </header>
+
+    <section class="methodology__section" id="whats-coming">
+      <h2 class="methodology__h2">What's coming</h2>
+      <p>
+        In August 2026, Thailand Liveability Index publishes its inaugural annual
+        report: rankings of all 77 Thai provinces across 25 indicators in seven
+        categories — environment &amp; climate, healthcare, connectivity &amp;
+        transport, cost &amp; economy, safety &amp; governance, lifestyle &amp;
+        culture, and demographics &amp; scale.
+      </p>
+      <p>
+        The report includes overall rankings, category-level rankings,
+        province-by-province scorecards, and a methodology supplement. The
+        dataset publishes simultaneously to Zenodo with a citable DOI under a
+        CC BY-NC 4.0 license.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="embargo">
+      <h2 class="methodology__h2">Embargo and advance access</h2>
+      <p>
+        Tier-1 outlets receive embargoed advance access 48–72 hours before
+        public release. To request advance access, use the contact form below.
+      </p>
+      <ul class="press__bullets">
+        <li>
+          <strong>Embargo lift:</strong> date confirmed in early August 2026
+        </li>
+        <li>
+          <strong>Advance asset kit:</strong> available 72 hours before embargo
+          lift to confirmed press contacts
+        </li>
+      </ul>
+    </section>
+
+    <section class="methodology__section" id="asset-kit">
+      <h2 class="methodology__h2">What the asset kit will include</h2>
+      <p class="press__caption">
+        Phase 2 deliverable. Listed here as descriptive scope; no downloads
+        exist yet.
+      </p>
+      <ul class="press__kit">
+        {assetKitItems.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="methodology__section" id="methodology">
+      <h2 class="methodology__h2">Methodology and data</h2>
+      <p>
+        The full methodology is published at
+        <a href="/en/methodology/">/en/methodology/</a>, and the dataset will
+        publish to Zenodo at launch (DOI added here at hard launch).
+        The project is led by William J. Reynolds
+        (<a href="https://orcid.org/0009-0005-1217-7465" rel="me noopener" target="_blank">ORCID 0009-0005-1217-7465</a>),
+        and the methodology and data are released under open licenses
+        (<a href="https://opensource.org/licenses/MIT" rel="noopener" target="_blank">MIT</a>
+        for code,
+        <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="noopener" target="_blank">CC BY-NC 4.0</a>
+        for the dataset).
+        Commercial licensing inquiries: use the contact form below.
+      </p>
+    </section>
+
+    <section class="methodology__section press__contact" id="contact">
+      <h2 class="methodology__h2">Contact</h2>
+      <p>
+        Use this form for press, methodology, and commercial licensing
+        inquiries. Mark "advance briefing" if you're a tier-1 outlet
+        requesting embargoed access.
+      </p>
+
+      {/* TODO(form-handler): replace mailto: fallback with a Cloudflare
+          Workers handler when the API ships in Phase A (July 2026 soft
+          launch). The handler should write to the inbox AND a CSV log,
+          per the spec. The HTML below is the same shape the handler will
+          consume. */}
+      <form
+        class="press-form"
+        data-press-form
+        action="mailto:press@thailandliveabilityindex.com"
+        method="POST"
+        enctype="text/plain"
+      >
+        <div class="press-form__row">
+          <label class="press-form__field">
+            <span class="press-form__label">Name <span class="press-form__req" aria-hidden="true">*</span></span>
+            <input type="text" name="name" required autocomplete="name" />
+          </label>
+          <label class="press-form__field">
+            <span class="press-form__label">Outlet / organization <span class="press-form__req" aria-hidden="true">*</span></span>
+            <input type="text" name="outlet" required autocomplete="organization" />
+          </label>
+        </div>
+        <div class="press-form__row">
+          <label class="press-form__field">
+            <span class="press-form__label">Email <span class="press-form__req" aria-hidden="true">*</span></span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+          <label class="press-form__field">
+            <span class="press-form__label">Role / beat <span class="press-form__req" aria-hidden="true">*</span></span>
+            <input type="text" name="role" required />
+          </label>
+        </div>
+
+        <fieldset class="press-form__fieldset">
+          <legend class="press-form__label">Language preference <span class="press-form__req" aria-hidden="true">*</span></legend>
+          <div class="press-form__radios">
+            <label class="press-form__radio">
+              <input type="radio" name="lang" value="en" checked required /> English
+            </label>
+            <label class="press-form__radio">
+              <input type="radio" name="lang" value="th" required /> Thai
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="press-form__field">
+          <span class="press-form__label">Inquiry type <span class="press-form__req" aria-hidden="true">*</span></span>
+          <select name="inquiry" required>
+            <option value="">Select inquiry type…</option>
+            <option value="advance-briefing">Advance briefing (embargoed)</option>
+            <option value="general-press">General press</option>
+            <option value="methodology">Methodology question</option>
+            <option value="commercial">Commercial licensing</option>
+          </select>
+        </label>
+
+        <label class="press-form__field">
+          <span class="press-form__label">Message <span class="press-form__optional">(optional)</span></span>
+          <textarea name="message" rows="4" placeholder="Anything you want to share up front — outlet beat, deadline, story angle…"></textarea>
+        </label>
+
+        <p class="press-form__consent">
+          By submitting you agree we may contact you about TLI press matters.
+          We don't track or share your information.
+        </p>
+
+        <div class="press-form__actions">
+          <button type="submit" class="press-form__submit">
+            Send press inquiry
+            <Lucide name="external-link" size={14} />
+          </button>
+          <span class="press-form__fallback">
+            Or email
+            <a href="mailto:press@thailandliveabilityindex.com">press@thailandliveabilityindex.com</a>
+            directly.
+          </span>
+        </div>
+      </form>
+    </section>
+  </article>
+
+  <script>
+    // Press form — client-side mailto: fallback. Reads the form values,
+    // builds a structured email body, opens the user's mail client. When
+    // the proper Workers handler ships, this script can be deleted.
+    (function () {
+      const form = document.querySelector('[data-press-form]');
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const name = fd.get('name') || '';
+        const outlet = fd.get('outlet') || '';
+        const email = fd.get('email') || '';
+        const role = fd.get('role') || '';
+        const lang = fd.get('lang') || '';
+        const inquiry = fd.get('inquiry') || '';
+        const message = fd.get('message') || '';
+        const subjectMap = {
+          'advance-briefing': 'Press — advance briefing request',
+          'general-press': 'Press — general inquiry',
+          'methodology': 'Methodology question',
+          'commercial': 'Commercial licensing inquiry',
+        };
+        const subject = subjectMap[String(inquiry)] || 'TLI press inquiry';
+        const body = [
+          'Name: ' + name,
+          'Outlet / organization: ' + outlet,
+          'Email: ' + email,
+          'Role / beat: ' + role,
+          'Language preference: ' + lang,
+          'Inquiry type: ' + inquiry,
+          '',
+          'Message:',
+          message || '(none)',
+          '',
+          '— Sent from thailandliveabilityindex.com/press',
+        ].join('\n');
+        const url =
+          'mailto:press@thailandliveabilityindex.com' +
+          '?subject=' + encodeURIComponent(subject) +
+          '&body=' + encodeURIComponent(body);
+        window.location.href = url;
+      });
+    })();
+  </script>
+</Site>
+
+<style>
+  .press { max-width: 760px; padding-block: var(--sp-7); }
+  .press__subhead em { font-style: italic; color: var(--ink-2); }
+  .press__lead {
+    margin: var(--sp-3) 0 var(--sp-5);
+    font-size: var(--fs-16);
+    color: var(--ink-2);
+    line-height: var(--lh-base);
+  }
+  .press__bullets {
+    list-style: none; padding: 0; margin: var(--sp-3) 0;
+    display: flex; flex-direction: column; gap: var(--sp-2);
+  }
+  .press__bullets li {
+    padding: var(--sp-2) var(--sp-3);
+    border-left: 2px solid var(--brand);
+    background: var(--paper-2);
+    border-radius: 0 var(--r-2) var(--r-2) 0;
+    font-size: var(--fs-14);
+  }
+  .press__caption {
+    color: var(--ink-3);
+    font-size: var(--fs-13);
+    margin-bottom: var(--sp-3);
+  }
+  .press__kit {
+    list-style: none; padding: 0; margin: 0;
+    display: grid; gap: var(--sp-2);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 600px) {
+    .press__kit { grid-template-columns: 1fr 1fr; }
+  }
+  .press__kit li {
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    font-size: var(--fs-13);
+    color: var(--ink-2);
+  }
+  .press__kit li::before {
+    content: "▸";
+    color: var(--ink-3);
+    margin-right: 6px;
+  }
+
+  /* Contact form */
+  .press__contact { margin-top: var(--sp-10); }
+  .press-form {
+    margin-top: var(--sp-4);
+    padding: var(--sp-5);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+  }
+  .press-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+  @media (min-width: 600px) {
+    .press-form__row { grid-template-columns: 1fr 1fr; }
+  }
+  .press-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+  }
+  .press-form__label {
+    font: var(--fw-semibold) var(--fs-12)/1.2 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .press-form__req { color: var(--brand); margin-left: 2px; }
+  .press-form__optional {
+    font-weight: var(--fw-regular);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-3);
+    margin-left: 6px;
+  }
+  .press-form input[type="text"],
+  .press-form input[type="email"],
+  .press-form select,
+  .press-form textarea {
+    appearance: none; -webkit-appearance: none;
+    width: 100%;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    color: var(--ink);
+    font: var(--fw-regular) var(--fs-14)/1.4 var(--font-sans);
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+  .press-form textarea {
+    resize: vertical;
+    min-height: 96px;
+    font-family: var(--font-sans);
+  }
+  .press-form input:focus-visible,
+  .press-form select:focus-visible,
+  .press-form textarea:focus-visible {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 1px var(--brand);
+  }
+  .press-form__fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
+  .press-form__radios {
+    display: inline-flex;
+    gap: var(--sp-3);
+  }
+  .press-form__radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-pill);
+    background: var(--paper);
+    font-size: var(--fs-14);
+    cursor: pointer;
+  }
+  .press-form__radio:has(input:checked) {
+    border-color: var(--brand);
+    background: var(--brand-tint);
+    color: var(--brand);
+  }
+  .press-form__consent {
+    margin: 0;
+    font-size: var(--fs-12);
+    color: var(--ink-3);
+    line-height: var(--lh-base);
+  }
+  .press-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-2);
+  }
+  .press-form__submit {
+    appearance: none; -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-5);
+    background: var(--brand);
+    color: #ffffff;
+    border: 1px solid var(--brand);
+    border-radius: var(--r-pill);
+    font: var(--fw-semibold) var(--fs-14)/1 var(--font-sans);
+    cursor: pointer;
+    transition: background 120ms ease, transform 120ms ease;
+  }
+  .press-form__submit:hover { background: var(--brand-ink); transform: translateY(-1px); }
+  .press-form__submit:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+  .press-form__fallback {
+    font-size: var(--fs-13);
+    color: var(--ink-3);
+  }
+  .press-form__fallback a { color: var(--brand); }
+</style>
