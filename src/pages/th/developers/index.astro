@@ -1,0 +1,153 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+import Site from '../../../layouts/Site.astro';
+import scoresData from '../../../data/scores.json';
+import type { ScoresFile } from '../../../data/types';
+
+const data = scoresData as ScoresFile;
+const lastRefresh = data.generated_at;
+
+const developersSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'นักพัฒนา · Thailand Liveability Index',
+  description: 'API, วิดเจ็ตฝัง และตัวอย่างโค้ดสำหรับ Thailand Liveability Index',
+  url: 'https://thailandliveabilityindex.com/th/developers/',
+  inLanguage: 'th',
+  author: { '@type': 'Person', name: 'William J. Reynolds', sameAs: 'https://orcid.org/0009-0005-1217-7465' },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  about: { '@type': 'Dataset', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: ['TLI API', 'API จังหวัด', 'วิดเจ็ตฝัง', 'liveability JSON'],
+};
+---
+<Site
+  title="นักพัฒนา · Thailand Liveability Index"
+  description="API, วิดเจ็ตฝัง และตัวอย่างโค้ดสำหรับ Thailand Liveability Index"
+  locale="th"
+  canonicalPath="/th/developers/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(developersSchema)} />
+
+  <main class="container devhub" lang="th">
+    <header class="devhub__head">
+      <p class="tli-eyebrow">นักพัฒนา</p>
+      <h1>สร้างด้วยข้อมูล TLI</h1>
+      <p class="lede">
+        คะแนนระดับจังหวัดและตัวชี้วัดของ TLI พร้อมใช้งานเป็น JSON API และวิดเจ็ตฝัง
+        ใช้ฟรีสำหรับการใช้งานที่ไม่ใช่เชิงพาณิชย์ภายใต้ <a href="/th/licensing/">CC BY-NC 4.0</a>
+        การใช้งานเชิงพาณิชย์ต้องมี<a href="/th/licensing/">ใบอนุญาตเชิงพาณิชย์</a>
+      </p>
+      <nav class="devhub__nav" aria-label="หัวข้อ">
+        <a href="#api">API</a>
+        <a href="#embed">วิดเจ็ตฝัง</a>
+        <a href="#data">ดาวน์โหลดข้อมูล</a>
+        <a href="#status">สถานะ</a>
+        <a href="#changelog">บันทึกการเปลี่ยนแปลง</a>
+      </nav>
+    </header>
+
+    <section class="devhub__section" id="api">
+      <h2>API</h2>
+      <p class="tli-eyebrow">สถานะ: กำลังพัฒนา · กำหนดส่งไตรมาส 3 ปี 2026</p>
+      <p>
+        TLI API ส่งข้อมูลคะแนนคุณภาพการอยู่อาศัยระดับจังหวัดและตัวชี้วัดเป็น JSON
+        ระดับฟรี: 1,000 ครั้ง/วัน ต่อ API key ระดับสูงกว่าผ่านใบอนุญาตเชิงพาณิชย์
+      </p>
+      <h3>endpoint ที่วางแผนไว้</h3>
+      <ul class="devhub__endpoints">
+        <li><code>GET /api/v1/province/{`{id}`}</code> — คะแนนรวม + 7 หมวด + ตัวชี้วัดสำหรับหนึ่งจังหวัด</li>
+        <li><code>GET /api/v1/indicator/{`{id}`}</code> — การกระจายข้าม 77 จังหวัดสำหรับหนึ่งตัวชี้วัด</li>
+        <li><code>GET /api/v1/composite</code> — 77 จังหวัดทั้งหมดพร้อมคะแนนรวม + คะแนนหมวด (กระชับ)</li>
+      </ul>
+      <h3>ขอ API key</h3>
+      <p>
+        การลงทะเบียน API key จะเปิดเมื่อ API พร้อม จนกว่าจะถึงเวลานั้น แจ้งความสนใจที่
+        <a href="mailto:development@thailandliveabilityindex.com">development@thailandliveabilityindex.com</a>
+      </p>
+    </section>
+
+    <section class="devhub__section" id="embed">
+      <h2>วิดเจ็ตฝัง</h2>
+      <p class="tli-eyebrow">สถานะ: กำลังพัฒนา · กำหนดส่งไตรมาส 3 ปี 2026</p>
+      <p>
+        วางการ์ดจังหวัด TLI บนหน้าใดก็ได้ Web Component, Shadow DOM, ไม่ต้องพึ่งพา framework
+        ฝังฟรีสำหรับการใช้งานที่ไม่ใช่เชิงพาณิชย์ White-label สำหรับผู้ถือใบอนุญาตเชิงพาณิชย์
+      </p>
+      <h3>ตัวอย่างโค้ด</h3>
+      <pre class="devhub__pre"><code>{`<script src="https://embed.thailandliveabilityindex.com/v1/tli.js"><\/script>
+<tli-widget province="bangkok" lang="th" size="auto"></tli-widget>`}</code></pre>
+    </section>
+
+    <section class="devhub__section" id="data">
+      <h2>ดาวน์โหลดข้อมูล</h2>
+      <p>
+        สำหรับงานวิจัย วารสารศาสตร์ และการใช้งานสาธารณประโยชน์ ชุดข้อมูล TLI ฉบับเต็ม
+        (77 จังหวัด × 25 ตัวชี้วัด) พร้อมในรูปแบบ parquet + CSV ผ่านฟอร์มที่ต้องลงทะเบียนอีเมล
+      </p>
+      <p>
+        ฟอร์มจะเปิดก่อน MVP จนกว่าจะถึงเวลานั้น ขอเข้าถึงข้อมูลที่
+        <a href="mailto:research@thailandliveabilityindex.com">research@thailandliveabilityindex.com</a>
+      </p>
+    </section>
+
+    <section class="devhub__section" id="status">
+      <h2>สถานะ</h2>
+      <dl class="devhub__status">
+        <dt>การรีเฟรชข้อมูลล่าสุด</dt>
+        <dd><time datetime={lastRefresh}>{lastRefresh.slice(0, 10)}</time></dd>
+        <dt>รอบการอัปเดต</dt>
+        <dd>Tier A รายวัน · Tier B รายเดือน · Tier C รายปี</dd>
+        <dt>API uptime</dt>
+        <dd>n/a (API ยังไม่เปิดใช้งาน)</dd>
+        <dt>Widget uptime</dt>
+        <dd>n/a (widget ยังไม่เปิดใช้งาน)</dd>
+      </dl>
+    </section>
+
+    <section class="devhub__section" id="changelog">
+      <h2>บันทึกการเปลี่ยนแปลง</h2>
+      <p>
+        การเปลี่ยนแปลงระเบียบวิธี TLI มีเลขรุ่นและประทับ DOI ดู
+        <a href="https://github.com/ReynoldsWJ55/thailand-liveability-index/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a>
+        ฉบับเต็มบน GitHub
+      </p>
+    </section>
+
+    <section class="devhub__section">
+      <h2>นโยบายเลขรุ่นและการเลิกใช้</h2>
+      <p>
+        การออกรุ่น API และ widget ใช้ semantic versioning การเปลี่ยนแปลงที่ไม่เข้ากันใหม่จะอยู่ในรุ่นเมเจอร์ใหม่
+        (<code>/api/v2/</code>, <code>/v2/tli.js</code>) รุ่นเมเจอร์ก่อนหน้าให้บริการต่ออีก <strong>12 เดือนหลังจากรุ่นใหม่
+        เข้าสู่ GA</strong> ก่อนเลิกใช้ CORS: <code>Access-Control-Allow-Origin: *</code>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .devhub { max-width: 880px; padding-block: var(--sp-7); }
+  .devhub__head { margin-bottom: var(--sp-10); padding-bottom: var(--sp-6); border-bottom: 1px solid var(--rule); }
+  .devhub__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-3); }
+  .devhub__nav { display: flex; gap: var(--sp-4); margin-top: var(--sp-5); flex-wrap: wrap; font-size: var(--fs-13); }
+  .devhub__nav a { color: var(--brand); text-decoration: none; }
+  .devhub__nav a:hover { text-decoration: underline; }
+  .devhub__section { margin-bottom: var(--sp-10); padding-bottom: var(--sp-7); border-bottom: 1px solid var(--rule); scroll-margin-top: var(--sp-7); }
+  .devhub__section:last-child { border-bottom: 0; }
+  .devhub__section h2 { margin-bottom: var(--sp-3); }
+  .devhub__section h3 { margin-top: var(--sp-5); margin-bottom: var(--sp-2); font-size: var(--fs-16); }
+  .devhub__section p { margin-bottom: var(--sp-3); line-height: var(--lh-base); }
+  .devhub__endpoints { list-style: none; padding: 0; margin: var(--sp-3) 0; }
+  .devhub__endpoints li { padding: var(--sp-2) 0; border-bottom: 1px dashed var(--rule); }
+  .devhub__endpoints code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--brand); }
+  .devhub__pre { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-2); padding: var(--sp-4); margin: var(--sp-3) 0; overflow-x: auto; }
+  .devhub__pre code { font-family: var(--font-mono); font-size: var(--fs-13); line-height: var(--lh-base); white-space: pre; }
+  .devhub__status { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-2) var(--sp-5); margin: var(--sp-3) 0; }
+  .devhub__status dt { font-weight: var(--fw-semibold); font-size: var(--fs-13); color: var(--ink-3); }
+  .devhub__status dd { margin: 0; font-size: var(--fs-15); }
+  @media (max-width: 600px) {
+    .devhub__status { grid-template-columns: 1fr; gap: var(--sp-1); }
+    .devhub__status dt { margin-top: var(--sp-3); }
+  }
+</style>
