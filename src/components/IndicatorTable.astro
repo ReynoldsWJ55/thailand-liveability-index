@@ -2,13 +2,27 @@
 // Copyright (c) 2026 Will Reynolds
 // SPDX-License-Identifier: MIT
 /**
- * Indicator detail block. One per category, rendered inline (no expand/collapse
- * in PR 3 — the kit shows it always, this PR matches). Header strip carries
- * the category title, an inline score chip, and the freshness chip; body is a
- * standard `.tli-table`. Citation row goes underneath, never tooltipped.
+ * Indicator detail block — Block 1.5 expandable cards.
  *
- * Inherited values render as `↳ INHERITED FROM YALA` in the Score column
- * instead of a number — exercises the contract end-to-end.
+ * Replaces the prior <table> layout with a CSS-grid <details> stack. Each
+ * indicator is its own native disclosure widget:
+ * - Summary row carries the same 5-column visual (name, value, score, source, AS OF)
+ * - Expanded body carries rich content scaffold (what it measures, how to
+ *   read the score, source attribution, methodology link)
+ *
+ * Why <details>:
+ * - Native browser handling: keyboard, screen-reader, mobile out of the box
+ * - SEO + AI: all content is in the DOM regardless of expand state; semantic
+ *   disclosure pattern is explicit ("this is expandable detail") so AI scrapers
+ *   (Perplexity, ChatGPT, Claude) cite the rich content with confidence
+ * - No JS required; works with JS disabled
+ *
+ * Block 3 applicability override (Bangkok N/A) preserved.
+ * Block 1 indicator display ordering preserved.
+ *
+ * Rich content authoring (per-indicator Thailand-specific framing) lands at
+ * Block 10 wk 6 alongside the v1.2 methodology spike. v0.1 content uses
+ * indicator-meta.source_description + score-band interpretation as scaffold.
  */
 import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank } from '../data/lookups';
 import { getApplicabilityOverride } from '../data/applicability_overrides';
@@ -21,9 +35,7 @@ import CitationRow from './CitationRow.astro';
 interface Props {
   category: CategoryScore;
   locale: Locale;
-  /** When true, the category itself reaches 0 and floors the composite. */
   isFloor?: boolean;
-  /** Province ID for applicability-override lookup (Block 3 tactical N/A display). */
   provinceId: string;
 }
 const { category, locale, isFloor = false, provinceId } = Astro.props;
@@ -37,19 +49,56 @@ function indicatorLabel(ind: Indicator): string {
 
 function fmtValue(ind: Indicator): string {
   if (ind.quality_flag === 'missing') return '—';
-  // Plex Mono with tnum handles right-alignment; we just produce a string.
   if (Number.isInteger(ind.value)) return ind.value.toLocaleString('en-US');
   return ind.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
-// Sort indicators by canonical display rank so topically-paired ones sit
-// adjacent (forest+canopy, PM2.5 pair, fixed+mobile broadband, etc.) per
-// Block 1 polish-pass item 7. Stable sort preserves upstream order within
-// equal ranks (defensive fallback for unlisted indicators).
+/** Score-band interpretation. EN+TH map. Same band thresholds as ScorePrimitive. */
+function scoreBandText(score: number, loc: Locale): string {
+  const bands = loc === 'th'
+    ? [
+        { max: 20, text: 'ห้าส่วนล่าง — ห่างจากเกณฑ์ระเบียบวิธีอย่างมีนัยสำคัญ' },
+        { max: 40, text: 'ต่ำกว่าค่าเฉลี่ย' },
+        { max: 60, text: 'ระดับกลาง' },
+        { max: 80, text: 'สูงกว่าค่าเฉลี่ย' },
+        { max: 101, text: 'ห้าส่วนบน — ถึงหรือเกินเกณฑ์ระเบียบวิธี' },
+      ]
+    : [
+        { max: 20, text: 'Bottom quintile — significant gap vs. methodology benchmarks' },
+        { max: 40, text: 'Below average — room for improvement' },
+        { max: 60, text: 'Mid-range — typical for Thai provinces' },
+        { max: 80, text: 'Above average — meets methodology benchmarks' },
+        { max: 101, text: 'Top quintile — meets or exceeds methodology benchmarks' },
+      ];
+  return bands.find((b) => score < b.max)?.text ?? '';
+}
+
 const sortedIndicators = [...category.indicators].sort(
   (a, b) => indicatorDisplayRank(a.id) - indicatorDisplayRank(b.id),
 );
 const sources = Array.from(new Set(sortedIndicators.map((i) => i.source)));
+
+const labels = locale === 'th'
+  ? {
+      whatThisMeasures: 'ตัวชี้วัดนี้วัดอะไร',
+      howToReadScore: 'วิธีอ่านคะแนนนี้',
+      sourceHeading: 'แหล่งข้อมูล',
+      methodologyHeading: 'ระเบียบวิธี',
+      methodologyLink: 'ดูระเบียบวิธีของ TLI',
+      viewSourceLink: 'ไปที่แหล่งข้อมูล',
+      expandHint: 'แสดงรายละเอียด',
+      collapseHint: 'ซ่อนรายละเอียด',
+    }
+  : {
+      whatThisMeasures: 'What this measures',
+      howToReadScore: 'How to read this score',
+      sourceHeading: 'Source',
+      methodologyHeading: 'Methodology',
+      methodologyLink: 'See full TLI methodology',
+      viewSourceLink: 'Visit source',
+      expandHint: 'Show details',
+      collapseHint: 'Hide details',
+    };
 ---
 <section class="section" id={CATEGORY_ANCHOR[category.id]}>
   <div class="section__head">
@@ -63,62 +112,59 @@ const sources = Array.from(new Set(sortedIndicators.map((i) => i.source)));
     <div class="ind-block__head">
       <Lucide name={meta.icon} size={20} class="ind-block__icon" />
       <h3 {...locale === 'th' ? { lang: 'th' } : {}}>{label}</h3>
-      <ScorePrimitive
-        score={category.score}
-        scale="chip"
-        floored={isFloor}
-        locale={locale}
-      />
+      <ScorePrimitive score={category.score} scale="chip" floored={isFloor} locale={locale} />
       <ProvenanceChip variant="fresh">{C.asOf} {category.freshest_as_of}</ProvenanceChip>
     </div>
 
-    <table class="tli-table">
-      <thead>
-        <tr>
-          <th {...locale === 'th' ? { lang: 'th' } : {}}>{C.indicator}</th>
-          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</th>
-          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</th>
-          <th {...locale === 'th' ? { lang: 'th' } : {}}>{C.source}</th>
-          <th class="num" {...locale === 'th' ? { lang: 'th' } : {}}>{C.asOfHeader}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sortedIndicators.map((ind) => (
-          <tr>
-            <td>
-              <span {...locale === 'th' ? { lang: 'th' } : {}}>
-                {indicatorLabel(ind)}
+    <div class="ind-cards" role="list">
+      <div class="ind-cards__header" aria-hidden="true">
+        <span class="ind-cards__col-name" {...locale === 'th' ? { lang: 'th' } : {}}>{C.indicator}</span>
+        <span class="ind-cards__col-value" {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</span>
+        <span class="ind-cards__col-score" {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</span>
+        <span class="ind-cards__col-source" {...locale === 'th' ? { lang: 'th' } : {}}>{C.source}</span>
+        <span class="ind-cards__col-asof" {...locale === 'th' ? { lang: 'th' } : {}}>{C.asOfHeader}</span>
+        <span class="ind-cards__col-chevron" aria-hidden="true"></span>
+      </div>
+
+      {sortedIndicators.map((ind) => {
+        const override = getApplicabilityOverride(provinceId, ind.id);
+        const isInherited = ind.quality_flag === 'inherited' && ind.inherited_from;
+        const isMissing = ind.quality_flag === 'missing';
+        // DefinedTerm schema for AI/SEO — each indicator gets a scoped record
+        // so AI scrapers can match queries against the indicator concept.
+        const definedTermSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'DefinedTerm',
+          name: locale === 'th' ? ind.label_th : ind.label_en,
+          alternateName: locale === 'th' ? ind.label_en : ind.label_th,
+          description: `${locale === 'th' ? ind.label_th : ind.label_en} (${ind.unit}). Source: ${ind.source}.`,
+          inDefinedTermSet: 'https://thailandliveabilityindex.com/en/methodology/',
+        };
+        return (
+          <details class="ind-card" role="listitem" name={`ind-${category.id}`}>
+            <summary class="ind-card__summary">
+              <span class="ind-card__name" {...locale === 'th' ? { lang: 'th' } : {}}>
+                <span class="ind-card__name-label">{indicatorLabel(ind)}</span>
+                <span class="ind-card__name-unit tli-caption">{ind.unit}</span>
               </span>
-              <br />
-              <span class="tli-caption">{ind.unit}</span>
-            </td>
-            <td class="num">
-              {ind.quality_flag === 'missing' ? '—' : fmtValue(ind)}
-            </td>
-            <td class="num">
-              {(() => {
-                const override = getApplicabilityOverride(provinceId, ind.id);
-                if (override) {
-                  return (
-                    <ProvenanceChip
-                      variant="na"
-                      title={locale === 'th' ? override.rationale_th : override.rationale_en}
-                    >
-                      {C.naLabel}
-                    </ProvenanceChip>
-                  );
-                }
-                if (ind.quality_flag === 'missing') {
-                  return <ProvenanceChip variant="missing">{C.noData}</ProvenanceChip>;
-                }
-                if (ind.quality_flag === 'inherited' && ind.inherited_from) {
-                  return (
-                    <ProvenanceChip variant="inherit" icon="corner-down-right">
-                      {C.inheritedFrom(ind.inherited_from)}
-                    </ProvenanceChip>
-                  );
-                }
-                return (
+              <span class="ind-card__value">
+                {isMissing ? '—' : fmtValue(ind)}
+              </span>
+              <span class="ind-card__score">
+                {override ? (
+                  <ProvenanceChip
+                    variant="na"
+                    title={locale === 'th' ? override.rationale_th : override.rationale_en}
+                  >
+                    {C.naLabel}
+                  </ProvenanceChip>
+                ) : isMissing ? (
+                  <ProvenanceChip variant="missing">{C.noData}</ProvenanceChip>
+                ) : isInherited && ind.inherited_from ? (
+                  <ProvenanceChip variant="inherit" icon="corner-down-right">
+                    {C.inheritedFrom(ind.inherited_from)}
+                  </ProvenanceChip>
+                ) : (
                   <ScorePrimitive
                     score={ind.raw_score}
                     scale="chip"
@@ -126,26 +172,174 @@ const sources = Array.from(new Set(sortedIndicators.map((i) => i.source)));
                     locale={locale}
                     bandLabelVisible={false}
                   />
-                );
-              })()}
-            </td>
-            <td>
-              <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
-                {ind.source}
-                <Lucide name="external-link" size={11} class="tli-link__icon" />
-              </a>
-            </td>
-            <td class="num">{ind.as_of}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                )}
+              </span>
+              <span class="ind-card__source-summary">
+                <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                  {ind.source}
+                </a>
+              </span>
+              <span class="ind-card__asof">{ind.as_of}</span>
+              <span class="ind-card__chevron" aria-hidden="true">
+                <Lucide name="info" size={14} />
+              </span>
+            </summary>
+
+            <div class="ind-card__detail">
+              <script type="application/ld+json" set:html={JSON.stringify(definedTermSchema)} />
+
+              <div class="ind-card__detail-grid">
+                <section class="ind-card__detail-block">
+                  <h4>{labels.whatThisMeasures}</h4>
+                  <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                    {indicatorLabel(ind)} ({ind.unit}). {locale === 'th'
+                      ? 'รายละเอียดระเบียบวิธีต่อตัวชี้วัด รวมถึงค่ามาตรฐาน 0/100 และทิศทางที่ดีกว่า มีอยู่ในหน้าระเบียบวิธี'
+                      : 'See the methodology page for the goalposts (where 0 and 100 sit), the direction (higher- or lower-is-better), and the indicator-specific data quality notes.'}
+                  </p>
+                </section>
+
+                {!override && !isMissing && (
+                  <section class="ind-card__detail-block">
+                    <h4>{labels.howToReadScore}</h4>
+                    <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                      {scoreBandText(ind.raw_score, locale)}
+                    </p>
+                  </section>
+                )}
+
+                {override && (
+                  <section class="ind-card__detail-block ind-card__detail-block--note">
+                    <h4>{locale === 'th' ? 'ทำไมจึงเป็น N/A' : 'Why N/A here'}</h4>
+                    <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                      {locale === 'th' ? override.rationale_th : override.rationale_en}
+                    </p>
+                  </section>
+                )}
+
+                <section class="ind-card__detail-block">
+                  <h4>{labels.sourceHeading}</h4>
+                  <p>
+                    <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
+                      {ind.source} ↗
+                    </a>
+                  </p>
+                  <p class="tli-caption">{labels.viewSourceLink}</p>
+                </section>
+
+                <section class="ind-card__detail-block">
+                  <h4>{labels.methodologyHeading}</h4>
+                  <p>
+                    <a href={`/${locale}/methodology/`} class="tli-link">
+                      {labels.methodologyLink} →
+                    </a>
+                  </p>
+                </section>
+              </div>
+            </div>
+          </details>
+        );
+      })}
+    </div>
 
     <CitationRow
       sources={sources}
       asOf={category.oldest_as_of}
       locale={locale}
-      methodologyAnchor={`#${category.id}`}
+      methodologyAnchor={`#${CATEGORY_ANCHOR[category.id]}`}
     />
   </div>
 </section>
+
+<style>
+  .ind-cards { display: flex; flex-direction: column; gap: 0; }
+
+  .ind-cards__header {
+    display: grid;
+    grid-template-columns: minmax(0, 42%) 10% 14% minmax(0, 22%) 12%;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    align-items: center;
+    font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  .ind-cards__col-value, .ind-cards__col-score, .ind-cards__col-asof { text-align: right; }
+
+  .ind-card { border-bottom: 1px solid var(--rule); }
+  .ind-card[open] { background: var(--paper-2); }
+  .ind-card[open] > summary { border-bottom: 1px dashed var(--rule); }
+
+  .ind-card__summary {
+    display: grid;
+    grid-template-columns: minmax(0, 42%) 10% 14% minmax(0, 22%) 12% auto;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+    transition: background var(--dur-2) var(--ease-standard);
+  }
+  .ind-card__summary::-webkit-details-marker { display: none; }
+  .ind-card__summary:hover { background: var(--paper-2); }
+  .ind-card[open] > .ind-card__summary:hover { background: var(--paper-2); }
+
+  .ind-card__name { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .ind-card__name-label { line-height: var(--lh-tight); overflow-wrap: break-word; }
+  .ind-card__name-unit { font-size: var(--fs-12); color: var(--ink-3); }
+
+  .ind-card__value, .ind-card__asof { font-family: var(--font-mono); font-feature-settings: "tnum" 1, "lnum" 1; text-align: right; }
+  .ind-card__asof { white-space: nowrap; }
+  .ind-card__score { display: flex; justify-content: flex-end; }
+  .ind-card__source-summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-13); }
+  .ind-card__source-summary a { color: var(--brand); text-decoration: none; }
+  .ind-card__source-summary a:hover { text-decoration: underline; }
+
+  .ind-card__chevron {
+    display: flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px;
+    color: var(--ink-3);
+    transition: transform var(--dur-2) var(--ease-standard);
+  }
+  .ind-card[open] > .ind-card__summary .ind-card__chevron { transform: rotate(180deg); color: var(--brand); }
+
+  .ind-card__detail { padding: var(--sp-4) var(--sp-5) var(--sp-5); background: var(--paper); }
+
+  .ind-card__detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-5);
+  }
+  .ind-card__detail-block h4 {
+    font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 var(--sp-2) 0;
+  }
+  .ind-card__detail-block p { margin: 0 0 var(--sp-2) 0; line-height: var(--lh-base); color: var(--ink); }
+  .ind-card__detail-block--note { grid-column: 1 / -1; padding: var(--sp-3) var(--sp-4); background: var(--paper-2); border-left: 3px solid var(--ink-3); border-radius: var(--r-1); }
+
+  /* Mobile: stack to single column with key:value pairs in summary */
+  @media (max-width: 720px) {
+    .ind-cards__header { display: none; }
+    .ind-card__summary {
+      grid-template-columns: 1fr auto auto;
+      grid-template-areas:
+        "name score chevron"
+        "value asof asof"
+        "source source source";
+      gap: var(--sp-2);
+    }
+    .ind-card__name { grid-area: name; }
+    .ind-card__value { grid-area: value; text-align: left; font-size: var(--fs-15); }
+    .ind-card__value::before { content: attr(data-label); font-size: var(--fs-12); color: var(--ink-3); margin-right: var(--sp-2); }
+    .ind-card__score { grid-area: score; justify-content: flex-end; }
+    .ind-card__source-summary { grid-area: source; white-space: normal; overflow: visible; text-overflow: clip; }
+    .ind-card__asof { grid-area: asof; text-align: right; }
+    .ind-card__chevron { grid-area: chevron; }
+    .ind-card__detail-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
+  }
+</style>
