@@ -2,6 +2,7 @@
 // Copyright (c) 2026 Will Reynolds
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import scoresData from '../../../data/scores.json';
 import type { ScoresFile } from '../../../data/types';
 
@@ -31,6 +32,7 @@ const developersSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(developersSchema)} />
 
   <main class="container devhub" lang="th">
+    <Breadcrumbs locale="th" items={[{ label: 'นักพัฒนา' }]} />
     <header class="devhub__head">
       <p class="tli-eyebrow">นักพัฒนา</p>
       <h1>สร้างด้วยข้อมูล TLI</h1>

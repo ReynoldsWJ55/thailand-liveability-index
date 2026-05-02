@@ -8,11 +8,20 @@
  * page). Sub-page split happens after first real implementation.
  */
 import Site from '../../../layouts/Site.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import scoresData from '../../../data/scores.json';
 import type { ScoresFile } from '../../../data/types';
 
 const data = scoresData as ScoresFile;
 const lastRefresh = data.generated_at;
+
+// Province picker — alpha by EN name. Initial province is Phuket
+// (recognisable demo); the live <tli-widget> instances boot from this id and
+// the picker rewrites their `province` attribute on change.
+const pickerProvinces = data.provinces
+  .map((p) => ({ id: p.id, name_en: p.name_en, name_th: p.name_th }))
+  .sort((a, b) => a.name_en.localeCompare(b.name_en));
+const initialId = data.provinces.find((p) => p.id === 'phuket')?.id ?? data.provinces[0].id;
 
 // TechArticle schema — developer hub gets this so AI search treats it as
 // authoritative documentation reference.
@@ -43,6 +52,7 @@ const developersSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(developersSchema)} />
 
   <main class="container devhub">
+    <Breadcrumbs locale="en" items={[{ label: 'Developers' }]} />
     <header class="devhub__head">
       <p class="tli-eyebrow">Developers</p>
       <h1>Build with TLI data</h1>
@@ -108,19 +118,146 @@ const developersSchema = {
         no React/framework dependency. Free embedding for non-commercial use; white-label for commercial license-holders.
       </p>
 
-      <h3>Snippet preview</h3>
-      <pre class="devhub__pre"><code>{`<script src="https://embed.thailandliveabilityindex.com/v1/tli.js"><\/script>
-<tli-widget province="bangkok" lang="en" size="auto"></tli-widget>`}</code></pre>
-
-      <p>
-        Approved attributes (v1 free tier): <code>province</code>, <code>size</code> (<code>auto</code> | <code>320</code> | <code>480</code> | <code>800</code>), <code>lang</code> (<code>en</code> | <code>th</code>).
-        Brand color, typography, footer attribution, and methodology link are locked at v1 (Walk Score-shaped uniformity).
+      <h3>Live preview</h3>
+      <p class="devhub__caption">
+        These are <strong>real <code>&lt;tli-widget&gt;</code> Custom Elements</strong>, not mockups —
+        the same code that ships to partner sites.
+        Each loads data from <code>/api/v1/widget-data/&lt;id&gt;.json</code> and re-renders on
+        province change. View source to see the actual embed.
       </p>
-      <p>
-        White-label customization (your brand color + your wordmark instead of TLI's) is available via the <code>partner-id</code>
-        attribute, gated by commercial license. See <a href="/en/licensing/">licensing</a>.
+
+      <script src="/widget/tli.js" defer></script>
+
+      <div class="widget-picker">
+        <label for="widget-picker-select">Province</label>
+        <select id="widget-picker-select" data-widget-picker>
+          {pickerProvinces.map((p) => (
+            <option value={p.id} selected={p.id === initialId}>{p.name_en} · {p.name_th}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Single live preview with 4 size tabs — same UX pattern as the
+          /en/{province}/ "Embed this widget" section. */}
+      <div class="province-embed__sizes" role="tablist" aria-label="Embed widget size">
+        {[
+          { size: 320,  label: 'Compact' },
+          { size: 480,  label: 'Standard' },
+          { size: 800,  label: 'Wide' },
+          { size: 1024, label: 'Profile' },
+        ].map((v, i) => (
+          <button
+            type="button"
+            class={`province-embed__size${i === 1 ? ' is-active' : ''}`}
+            data-dev-size={String(v.size)}
+            role="tab"
+            aria-selected={i === 1 ? 'true' : 'false'}
+          >
+            <span class="province-embed__size-num">{v.size}</span>
+            <span class="province-embed__size-label">{v.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="province-embed__live">
+        <div class="province-embed__stage">
+          <div data-dev-frame style="width:480px; max-width:100%;">
+            <tli-widget data-dev-widget province={initialId} size="480" lang="en"></tli-widget>
+          </div>
+        </div>
+
+        <div class="widget-snippet">
+          <div class="widget-snippet__head">
+            <span class="widget-snippet__label">Embed snippet</span>
+            <button type="button" class="widget-snippet__copy" data-dev-copy aria-label="Copy embed snippet">Copy</button>
+          </div>
+          <pre class="widget-snippet__pre"><code data-dev-snippet>{`<script src="https://embed.thailandliveabilityindex.com/v1/tli.js" defer></script>
+<tli-widget province="${initialId}" size="480" lang="en"></tli-widget>`}</code></pre>
+        </div>
+      </div>
+
+      <p class="devhub__note">
+        Three attributes cover the common case: <code>province</code> (slug, required),
+        <code>size</code> (<code>auto</code> · <code>320</code> · <code>480</code> · <code>800</code> · <code>1024</code>; defaults to <code>auto</code>),
+        <code>lang</code> (<code>en</code> · <code>th</code>; inherits from <code>&lt;html lang&gt;</code>).
+        Brand color, typography, footer attribution, and the methodology link are locked at v1.
+        White-label customization is gated by <a href="/en/licensing/">commercial license</a>.
       </p>
     </section>
+
+    <script>
+      // Single-preview developer demo: province picker + size tabs + Copy.
+      // Province picker swaps the live widget's province; size tabs swap the
+      // size attribute and the surrounding container width. The snippet code
+      // text mirrors whichever combination is selected, so what you copy is
+      // exactly what's rendered.
+      (function () {
+        const picker = document.querySelector('[data-widget-picker]');
+        const tabs = document.querySelectorAll('[data-dev-size]');
+        const frame = document.querySelector('[data-dev-frame]');
+        const widget = document.querySelector('[data-dev-widget]');
+        const code = document.querySelector('[data-dev-snippet]');
+        const copyBtn = document.querySelector('[data-dev-copy]');
+        if (!frame || !widget || !code || !copyBtn) return;
+
+        function currentSize() {
+          const active = document.querySelector('[data-dev-size].is-active');
+          return active ? active.getAttribute('data-dev-size') : '480';
+        }
+        function currentProvince() {
+          return widget.getAttribute('province');
+        }
+        function refreshSnippet() {
+          const province = currentProvince();
+          const size = currentSize();
+          code.textContent =
+            '<script src="https://embed.thailandliveabilityindex.com/v1/tli.js" defer><\/script>\n' +
+            '<tli-widget province="' + province + '" size="' + size + '" lang="en"></tli-widget>';
+        }
+
+        if (picker) {
+          picker.addEventListener('change', function (e) {
+            widget.setAttribute('province', e.target.value);
+            refreshSnippet();
+          });
+        }
+
+        tabs.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const size = btn.getAttribute('data-dev-size');
+            tabs.forEach(function (b) {
+              b.classList.toggle('is-active', b === btn);
+              b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+            });
+            frame.style.width = size + 'px';
+            widget.setAttribute('size', size);
+            refreshSnippet();
+          });
+        });
+
+        copyBtn.addEventListener('click', async function () {
+          const text = code.textContent || '';
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = text; ta.setAttribute('readonly', '');
+              ta.style.position = 'absolute'; ta.style.left = '-9999px';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); document.body.removeChild(ta);
+            }
+            const original = copyBtn.textContent;
+            copyBtn.textContent = 'Copied';
+            copyBtn.classList.add('is-copied');
+            setTimeout(function () { copyBtn.textContent = original; copyBtn.classList.remove('is-copied'); }, 1500);
+          } catch (err) {
+            copyBtn.textContent = 'Copy failed';
+            setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1500);
+          }
+        });
+      })();
+    </script>
 
     <section class="devhub__section" id="data">
       <h2>Bulk data</h2>
@@ -195,4 +332,53 @@ const developersSchema = {
     .devhub__status { grid-template-columns: 1fr; gap: var(--sp-1); }
     .devhub__status dt { margin-top: var(--sp-3); }
   }
+
+  /* ============================================================================
+     Embed widget specimens — ported from the Claude Design system kit at
+     04-phase-4-design/01-claude-design-handoff/project/kit/embed-widget.html.
+     Three sizes: 320 / 480 / 800. Scoped under .tli-w to avoid colliding
+     with host-site CSS once shipped.
+     ============================================================================ */
+  .devhub__caption { font-size: var(--fs-13); color: var(--ink-3); margin: var(--sp-2) 0 var(--sp-4); }
+
+  /* Province picker for the live widget demo */
+  .widget-picker {
+    display: flex; align-items: center; gap: var(--sp-3);
+    margin: var(--sp-3) 0 var(--sp-5);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+  }
+  .widget-picker label {
+    font: var(--fw-semibold) var(--fs-12)/1 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .widget-picker select {
+    flex: 0 1 320px;
+    padding: 6px 10px;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    color: var(--ink);
+    font: var(--fw-regular) var(--fs-14)/1 var(--font-sans);
+    cursor: pointer;
+  }
+  .widget-picker select:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
+  }
+
+  /* Embed-section styles (size tabs + live stage + snippet) live in site.css
+     under .province-embed__* and .widget-snippet__*, shared with the
+     /en/{province}/ "Embed this widget" surface. */
+  .devhub__note { font-size: var(--fs-14); color: var(--ink-2); margin-top: var(--sp-4); line-height: var(--lh-base); }
+  .devhub__note code { font-size: var(--fs-13); color: var(--brand); }
+
+  /* The widget itself renders inside Shadow DOM (see public/widget/tli.js)
+     so all .tli-w* styles are scoped there. The specimen wrappers above
+     (.widget-specimens / .widget-specimen / .widget-specimen__stage) are
+     the only host-page styles still in use. */
 </style>

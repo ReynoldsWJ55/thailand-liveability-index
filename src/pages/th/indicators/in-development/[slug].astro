@@ -1,0 +1,171 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+import Site from '../../../../layouts/Site.astro';
+import Lucide from '../../../../components/Lucide.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import ProvenanceChip from '../../../../components/ProvenanceChip.astro';
+import { CATEGORIES } from '../../../../data/lookups';
+import { IN_DEVELOPMENT_INDICATORS, type InDevelopmentIndicator } from '../../../../data/in-development-indicators';
+
+export function getStaticPaths() {
+  return IN_DEVELOPMENT_INDICATORS.map((m) => ({
+    params: { slug: m.slug },
+    props: { m },
+  }));
+}
+
+const { m } = Astro.props as { m: InDevelopmentIndicator };
+const cat = CATEGORIES[m.category];
+const description = `${m.label_th} อยู่ระหว่างพัฒนาสำหรับ v1.2 (เป้าหมาย ${m.target_eta}) แหล่งข้อมูล: ${m.source}`;
+
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: m.label_th,
+  alternateName: m.label_en,
+  description: m.source_description,
+  url: `https://thailandliveabilityindex.com/th/indicators/in-development/${m.slug}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  creativeWorkStatus: 'Draft',
+  measurementTechnique: m.source_description,
+  variableMeasured: {
+    '@type': 'PropertyValue',
+    name: m.label_th,
+    unitText: m.unit,
+  },
+  spatialCoverage: {
+    '@type': 'Place',
+    name: 'Thailand (77 provinces)',
+  },
+  temporalCoverage: m.target_eta,
+  creator: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  citation: m.source,
+  isBasedOn: m.source_url,
+  keywords: ['Thailand', 'liveability', 'province', 'in development', cat.label_th, m.label_th],
+};
+---
+<Site
+  title={`${m.label_th} · TLI (อยู่ระหว่างพัฒนา)`}
+  description={description}
+  locale="th"
+  canonicalPath={`/th/indicators/in-development/${m.slug}/`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
+
+  <main class="container indicator-page indicator-page--dev">
+    <Breadcrumbs locale="th" items={[
+      { label: 'ตัวชี้วัด', href: '/th/indicators/' },
+      { label: 'อยู่ระหว่างพัฒนา', href: '/th/indicators/#in-development' },
+      { label: cat.label_th, href: `/th/indicators/#${m.category}`, chip: { icon: cat.icon, cssClass: cat.cssClass } },
+      { label: m.label_th },
+    ]} />
+
+    <header class="indicator-page__head">
+      <p class="tli-eyebrow">ตัวชี้วัด · อยู่ระหว่างพัฒนา · {m.target_version}</p>
+      <h1>{m.label_th}</h1>
+      <p class="indicator-page__th" lang="en">{m.label_en}</p>
+      <div class="indicator-page__meta">
+        <ProvenanceChip variant="stale" icon="clock-alert">
+          {`เป้าหมาย ${m.target_eta}`}
+        </ProvenanceChip>
+        <ProvenanceChip icon="book-open">{m.unit}</ProvenanceChip>
+        <ProvenanceChip icon="badge-check">{`น้ำหนัก ${m.weight}`}</ProvenanceChip>
+      </div>
+    </header>
+
+    <section class="indicator-page__dev-banner" role="note">
+      <Lucide name="info" size={16} />
+      <div>
+        <strong>ยังไม่ได้ผูกเข้าคะแนนรวม</strong> ตัวชี้วัดนี้กำหนดขอบเขตและตรวจสอบแหล่งข้อมูลแล้ว
+        รอบการเพิ่มตัวชี้วัด v1.2 ตามแผนเดือน {m.target_eta} แสดงไว้ที่นี่เพื่อให้แผนงานเป็นรูปธรรม
+        และ URL เสถียรสำหรับการอ้างอิง
+      </div>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>วัดอะไร</h2>
+      <p>{m.description_th}</p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>แหล่งข้อมูล</h2>
+      <p>
+        <a href={m.source_url} target="_blank" rel="noopener noreferrer">
+          {m.source}
+          <Lucide name="external-link" size={14} class="tli-citations__icon" />
+        </a>
+      </p>
+      <p class="indicator-page__source-desc">{m.source_description}</p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>ทิศทาง</h2>
+      <p>
+        <strong>
+          {m.direction === 'higher' ? 'ค่าสูงดีกว่า' : m.direction === 'lower' ? 'ค่าต่ำดีกว่า' : 'ค่ากลางดีที่สุด'}
+        </strong>
+        {' — '}
+        ให้คะแนน 0–100 เทียบกับเกณฑ์มาตรฐานคงที่ เกณฑ์ที่แน่นอนจะเผยแพร่พร้อมรุ่น v1.2
+        ดู <a href="/th/methodology/">หน้าระเบียบวิธี</a> สำหรับวิธีการให้คะแนน
+      </p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>สถานะ</h2>
+      <p>{m.status_note_th}</p>
+    </section>
+
+    <section class="indicator-page__methodology">
+      <h2>บริบทแผนงาน</h2>
+      <p>
+        ดู <a href="/th/indicators/#in-development">รายการอยู่ระหว่างพัฒนาทั้งหมด</a> ในหน้าตัวชี้วัด
+        หรือ <a href="/th/developers/#changelog">changelog ของนักพัฒนา</a> เพื่อติดตามการอัปเดต
+      </p>
+      <p class="indicator-page__cite">
+        อ้างอิง: <em>"{m.label_th}" Thailand Liveability Index แผนงาน 2026 ({m.target_version}, {m.target_eta}) CC BY-NC 4.0</em>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .indicator-page { max-width: 760px; padding-block: var(--sp-7); }
+  .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); margin-bottom: var(--sp-5); color: var(--ink-3); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--ink-2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb__sep { color: var(--ink-3); }
+  .indicator-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
+  .indicator-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
+  .indicator-page__th { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .indicator-page__meta { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  .indicator-page__dev-banner {
+    display: flex; gap: var(--sp-3); align-items: flex-start;
+    padding: var(--sp-4);
+    background: var(--warning-tint, var(--paper-2));
+    border: 1px dashed var(--warning, var(--rule-strong, var(--rule)));
+    border-radius: var(--r-2);
+    margin-bottom: var(--sp-7);
+    color: var(--ink);
+    font-size: var(--fs-14);
+    line-height: var(--lh-base);
+  }
+  .indicator-page__dev-banner svg { flex: 0 0 auto; color: var(--warning, var(--brand)); margin-top: 2px; }
+  .indicator-page__source, .indicator-page__methodology { margin-bottom: var(--sp-7); }
+  .indicator-page__source-desc { color: var(--ink-2); font-size: var(--fs-15); margin-top: var(--sp-2); }
+  .indicator-page__cite { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px dashed var(--rule); }
+</style>
