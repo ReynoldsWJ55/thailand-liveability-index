@@ -418,3 +418,127 @@ export const CHROME: Record<Locale, ChromeLabels> = {
       `${provinceName}ได้คะแนนต่ำในตัวชี้วัดบางตัว (${indicatorList}) ที่ไม่เหมาะกับจังหวัดที่เป็นเขตเมืองทั้งหมด การแก้ไขระเบียบวิธีที่เหมาะสมจะอยู่ในรุ่น v1.2 — ดูคิวตรวจสอบ smell-test`,
   },
 };
+
+/**
+ * Plain-language indicator descriptions — keyed by indicator id.
+ *
+ * Used in the indicator-card "What this measures" block. Format on the page:
+ *   "{ProvinceName} has a {indicator label} of {value} {unit}. {description}"
+ *
+ * Description writing rules:
+ * - 1-2 sentences, plain language (no jargon)
+ * - Always state directionality ("higher is better" / "lower is better")
+ * - Mention the underlying concept, not just the metric (e.g. "PM2.5 is fine
+ *   particulate matter linked to respiratory and cardiovascular harm")
+ *
+ * v0.1 ships English descriptions; Thai ones use a short fallback. Native-Thai-
+ * fluent reviewer pass queued in operator queue. v1.2 spike (June) will refine.
+ */
+export const INDICATOR_PLAIN_DESCRIPTIONS: Record<string, { en: string; th: string }> = {
+  ind_acled_events_per_100k_5yr: {
+    en: 'Cumulative count over the past five years of armed-conflict events recorded by the Armed Conflict Location & Event Data Project, normalized per 100,000 residents. Lower is safer.',
+    th: 'จำนวนเหตุการณ์ความขัดแย้งทางอาวุธในรอบ 5 ปี ต่อประชากร 100,000 คน ค่าต่ำดีกว่า',
+  },
+  ind_acled_fatalities_per_100k_5yr: {
+    en: 'Cumulative fatalities over the past five years from armed-conflict events recorded by ACLED, normalized per 100,000 residents. Lower is safer.',
+    th: 'จำนวนผู้เสียชีวิตจากเหตุการณ์ความขัดแย้งในรอบ 5 ปี ต่อประชากร 100,000 คน ค่าต่ำดีกว่า',
+  },
+  ind_airport_intl_drive_min: {
+    en: "Driving time in minutes from the province's main population centre to the nearest international airport, derived from OpenStreetMap road data. Shorter drive times improve connectivity for residents and inbound travel.",
+    th: 'เวลาขับรถ (นาที) จากศูนย์กลางจังหวัดถึงสนามบินนานาชาติที่ใกล้ที่สุด ค่าต่ำดีกว่า',
+  },
+  ind_flood_frequency: {
+    en: 'Provincial cabinet-resolution flood-aid requests per 100,000 residents (annual baseline), reflecting the frequency of declared flood disasters severe enough to trigger central-government aid. Lower is better.',
+    th: 'จำนวนคำร้องขอความช่วยเหลือกรณีน้ำท่วมที่คณะรัฐมนตรีรับรอง ต่อประชากร 100,000 คน ค่าต่ำดีกว่า',
+  },
+  ind_forest_cover_pct: {
+    en: "Percentage of provincial land area classified as forest by the Royal Forest Department's administrative survey (republished by the National Statistical Office). Higher cover supports biodiversity, carbon storage, and microclimate stability.",
+    th: 'สัดส่วนพื้นที่ป่าของจังหวัด ตามข้อมูลกรมป่าไม้ ค่าสูงดีกว่า',
+  },
+  ind_gpp_per_capita: {
+    en: 'Gross Provincial Product per capita in Thai baht — total economic output produced within the province divided by population. Higher values indicate stronger local economic activity and tax base.',
+    th: 'ผลิตภัณฑ์มวลรวมจังหวัดต่อหัว (บาท) ค่าสูงดีกว่า',
+  },
+  ind_heat_days_35c: {
+    en: 'Annual count of days with maximum temperature reaching or exceeding 35°C, from NASA POWER reanalysis. More heat days indicate higher heat-stress risk for outdoor workers, infrastructure, and energy demand.',
+    th: 'จำนวนวันที่อุณหภูมิสูงสุด ≥ 35°C ต่อปี ค่าต่ำดีกว่า',
+  },
+  ind_hospital_beds_per_1k: {
+    en: 'Registered hospital beds per 1,000 residents, from Ministry of Public Health hospital registry. Higher capacity supports inpatient care and surge response.',
+    th: 'จำนวนเตียงโรงพยาบาลที่ขึ้นทะเบียน ต่อประชากร 1,000 คน ค่าสูงดีกว่า',
+  },
+  ind_hospitals_per_100k: {
+    en: 'Hospital-grade healthcare facilities (community, general, and tertiary hospitals) per 100,000 residents. Higher density reduces travel time to advanced care.',
+    th: 'จำนวนสถานพยาบาลระดับโรงพยาบาล ต่อประชากร 100,000 คน ค่าสูงดีกว่า',
+  },
+  ind_internet_fixed_mbps: {
+    en: 'Median provincial fixed-line broadband download speed in megabits per second, from Ookla Speedtest open data. Higher speeds support remote work, e-commerce, and digital services.',
+    th: 'ความเร็วบรอดแบนด์แบบมีสายเฉลี่ย (Mbps) ค่าสูงดีกว่า',
+  },
+  ind_internet_mobile_mbps: {
+    en: 'Median provincial mobile broadband download speed in megabits per second, from Ookla Speedtest open data. Higher speeds matter most for residents and travellers without fixed-line access.',
+    th: 'ความเร็วอินเทอร์เน็ตมือถือเฉลี่ย (Mbps) ค่าสูงดีกว่า',
+  },
+  ind_jci_accredited_count: {
+    en: 'Count of hospitals in the province accredited by Joint Commission International, the leading global standard for healthcare quality. JCI accreditation is a strong signal of medical-tourism-grade care.',
+    th: 'จำนวนโรงพยาบาลที่ได้รับการรับรองจาก Joint Commission International (JCI) ค่าสูงดีกว่า',
+  },
+  ind_piped_water_pct: {
+    en: 'Percentage of households with inside piped-water supply on the premises, from National Statistical Office household survey data. Higher coverage improves health, sanitation, and time saved on water collection.',
+    th: 'สัดส่วนครัวเรือนที่มีน้ำประปาภายในบ้าน ค่าสูงดีกว่า',
+  },
+  ind_pm25_annual_mean: {
+    en: 'Annual mean concentration of fine particulate matter (PM2.5) in micrograms per cubic meter, from OpenAQ aggregating Pollution Control Department feeds. PM2.5 particles penetrate deep into the lungs and bloodstream and are linked to respiratory and cardiovascular disease. Lower is better; the WHO 2021 guideline is 5 µg/m³.',
+    th: 'ค่าเฉลี่ยรายปีของฝุ่นละอองขนาดเล็กกว่า 2.5 ไมครอน (PM2.5) (µg/m³) ค่าต่ำดีกว่า',
+  },
+  ind_pm25_days_exceeding_who: {
+    en: 'Annual count of days where PM2.5 exceeds the WHO daily guideline of 15 µg/m³ (2021 update). High counts indicate chronic air-quality concern beyond brief seasonal spikes.',
+    th: 'จำนวนวันที่ค่า PM2.5 เกินค่าแนะนำขององค์การอนามัยโลก ต่อปี ค่าต่ำดีกว่า',
+  },
+  ind_population_density: {
+    en: 'Provincial population density in persons per square kilometre, from Department of Provincial Administration data. Scored on a parabolic curve: very low and very high density both reduce liveability (under-served rural at one end, over-crowded urban at the other); mid-density optimum.',
+    th: 'ความหนาแน่นประชากรจังหวัด (คน/ตร.กม.) ใช้เกณฑ์โค้งพาราโบลา จุดเหมาะสมที่ความหนาแน่นปานกลาง',
+  },
+  ind_public_transport_access: {
+    en: 'Public transport access proxy — count of transit nodes (bus stops, BTS/MRT stations, rail stops) within a 30 km radius of the provincial centroid, from OpenStreetMap. Higher density reduces car-dependence.',
+    th: 'การเข้าถึงระบบขนส่งสาธารณะ (พร็อกซี Overpass) ค่าสูงดีกว่า',
+  },
+  ind_rail_access: {
+    en: 'Provincial rail-network access score, derived from State Railway of Thailand and metro/sky-train station presence. Higher access supports inter-provincial mobility and tourism.',
+    th: 'การเข้าถึงทางรถไฟของจังหวัด ค่าสูงดีกว่า',
+  },
+  ind_rainfall_days_per_year: {
+    en: 'Annual count of wet days (≥1 mm precipitation) from NASA POWER bias-corrected reanalysis. Scored on a parabolic curve: too few days suggests drought stress; too many disrupts outdoor activity and increases flood risk; mid-range optimum.',
+    th: 'จำนวนวันที่มีฝนตก (≥1 มม.) ต่อปี ใช้เกณฑ์โค้งพาราโบลา จุดเหมาะสมที่ค่ากลาง',
+  },
+  ind_rpsto_per_10k_total: {
+    en: "Sub-district health-promotion hospitals (โรงพยาบาลส่งเสริมสุขภาพตำบล / รพ.สต.) per 10,000 residents — Thailand's primary-care frontline in rural sub-districts. Higher density indicates better last-mile access to basic healthcare.",
+    th: 'โรงพยาบาลส่งเสริมสุขภาพตำบล (รพ.สต.) ต่อประชากร 10,000 คน ค่าสูงดีกว่า',
+  },
+  ind_tat_events_per_100k: {
+    en: 'Tourism Authority of Thailand registered tourism and cultural events per 100,000 residents per year. A higher event density indicates active cultural calendar (festivals, fairs, traditional ceremonies) that contributes to community life and tourism economy.',
+    th: 'จำนวนงานท่องเที่ยวและวัฒนธรรมที่ขึ้นทะเบียนกับ ททท. ต่อประชากร 100,000 คน ต่อปี ค่าสูงดีกว่า',
+  },
+  ind_tree_canopy_pct: {
+    en: 'Percentage of provincial land area covered by tree canopy, from Hansen Global Forest Change v1.12 satellite data (University of Maryland GLAD lab). Tree canopy supports cooling, air filtration, biodiversity, and storm-water management.',
+    th: 'สัดส่วนพื้นที่ที่มีเรือนยอดต้นไม้ปกคลุมจังหวัด ค่าสูงดีกว่า',
+  },
+  ind_unesco_whs_count: {
+    en: 'Number of UNESCO World Heritage sites inscribed within the province. Display-only — not part of the composite score; UNESCO inscription is a narrow signal that misses provinces with strong national heritage but no UNESCO listing (Bangkok, Chiang Mai). Methodology v1.2 replaces with the FAD national heritage registry.',
+    th: 'จำนวนแหล่งมรดกโลก UNESCO ในจังหวัด แสดงเพื่อความครบถ้วน ไม่นำไปคำนวณคะแนนรวม',
+  },
+  ind_walkability_score: {
+    en: "Composite walkability score derived from OpenStreetMap pedestrian-network density and street-grid connectivity around the province's urban centroid. Higher walkability supports daily activity, retail clustering, and reduces car-dependence.",
+    th: 'คะแนนความสามารถในการเดินเท้า ค่าสูงดีกว่า',
+  },
+  ind_waste_management_score: {
+    en: 'Provincial solid-waste management performance — share of waste properly collected and processed, from Pollution Control Department data. Higher values reduce open dumping, water-pollution risk, and disease vectors.',
+    th: 'ประสิทธิภาพการจัดการขยะของจังหวัด ค่าสูงดีกว่า',
+  },
+};
+
+export function indicatorDescription(id: string, locale: Locale): string {
+  const desc = INDICATOR_PLAIN_DESCRIPTIONS[id];
+  if (!desc) return '';
+  return locale === 'th' ? desc.th : desc.en;
+}

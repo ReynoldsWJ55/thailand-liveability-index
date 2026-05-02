@@ -793,10 +793,19 @@ main {
   color: var(--ink-3);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 .tli-map__legend__coverage .tli-num {
   color: var(--ink);
   font-weight: var(--fw-semibold);
+}
+.tli-map__legend__floored-count {
+  display: block;
+  font-size: 9px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
 }
 
 /* Map tooltip */
@@ -1973,3 +1982,50 @@ main {
 .ind-block .tli-table td:nth-child(4) { width: 22%; }
 .ind-block .tli-table th:nth-child(5),
 .ind-block .tli-table td:nth-child(5) { width: 12%; white-space: nowrap; }
+
+/* ============================================================================
+   Methodology references — outbound DOI links + callout box (punchlist 2026-05-02)
+   ============================================================================ */
+.methodology__refs-list li {
+  margin-bottom: var(--sp-3);
+  line-height: var(--lh-base);
+}
+.methodology__refs-list a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+.methodology__refs-list a:hover { color: var(--brand-ink); }
+.methodology__refs-doi {
+  display: inline-block;
+  margin-left: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  color: var(--ink-3);
+  text-decoration: none !important;
+  border-bottom: 1px dashed var(--rule);
+}
+.methodology__refs-doi:hover { color: var(--brand); border-color: var(--brand); }
+.methodology__refs-callout {
+  margin-top: var(--sp-7);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--brand);
+  border-radius: var(--r-2);
+}
+.methodology__refs-callout-head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.methodology__refs-callout-icon { color: var(--brand); }
+.methodology__refs-callout-head h3 {
+  margin: 0;
+  font: var(--fw-semibold) var(--fs-16)/1.3 var(--font-sans);
+  color: var(--ink);
+}
+.methodology__refs-callout p { margin: var(--sp-2) 0; line-height: var(--lh-base); }
+.methodology__refs-callout-cta { margin-top: var(--sp-3); }
