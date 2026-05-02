@@ -1,0 +1,198 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * /en/developers/ — single-page hub for API consumers, embedders, and
+ * technical integrators. Per Block 7 partial: ships pre-MVP with placeholder
+ * content for surfaces not yet built (API endpoints, embed widget, status
+ * page). Sub-page split happens after first real implementation.
+ */
+import Site from '../../../layouts/Site.astro';
+import scoresData from '../../../data/scores.json';
+import type { ScoresFile } from '../../../data/types';
+
+const data = scoresData as ScoresFile;
+const lastRefresh = data.generated_at;
+
+// TechArticle schema — developer hub gets this so AI search treats it as
+// authoritative documentation reference.
+const developersSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'Developers · Thailand Liveability Index',
+  description: 'API endpoints, embeddable widget, code examples, and status for the Thailand Liveability Index.',
+  url: 'https://thailandliveabilityindex.com/en/developers/',
+  inLanguage: 'en',
+  author: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  about: { '@type': 'Dataset', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: ['TLI API', 'Thailand liveability API', 'embed widget', 'liveability score JSON', 'province data API'],
+};
+---
+<Site
+  title="Developers · Thailand Liveability Index"
+  description="API endpoints, embeddable widget, code examples, and status for the Thailand Liveability Index."
+  locale="en"
+  canonicalPath="/en/developers/"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(developersSchema)} />
+
+  <main class="container devhub">
+    <header class="devhub__head">
+      <p class="tli-eyebrow">Developers</p>
+      <h1>Build with TLI data</h1>
+      <p class="lede">
+        TLI's province scores and indicator-level data are available as a JSON API and an embeddable widget.
+        Free for non-commercial use under <a href="/en/licensing/">CC BY-NC 4.0</a>; commercial use requires a
+        <a href="/en/licensing/">commercial license</a>.
+      </p>
+      <nav class="devhub__nav" aria-label="Developer hub sections">
+        <a href="#api">API</a>
+        <a href="#embed">Embed widget</a>
+        <a href="#data">Bulk data</a>
+        <a href="#status">Status</a>
+        <a href="#changelog">Changelog</a>
+      </nav>
+    </header>
+
+    <section class="devhub__section" id="api">
+      <h2>API</h2>
+      <p class="tli-eyebrow">Status: in development · target ship Q3 2026</p>
+      <p>
+        The TLI API serves province-level and indicator-level liveability data as JSON. Free tier:
+        1,000 calls/day per API key. Higher tiers via commercial license.
+      </p>
+
+      <h3>Planned endpoints</h3>
+      <ul class="devhub__endpoints">
+        <li><code>GET /api/v1/province/{`{id}`}</code> — composite + 7 categories + indicators for one province</li>
+        <li><code>GET /api/v1/indicator/{`{id}`}</code> — distribution across all 77 provinces for one indicator</li>
+        <li><code>GET /api/v1/composite</code> — all 77 provinces with composite + category scores (compact)</li>
+      </ul>
+
+      <h3>Sample response shape (preview)</h3>
+      <pre class="devhub__pre"><code>{`{
+  "id": "bangkok",
+  "name_en": "Bangkok",
+  "name_th": "กรุงเทพมหานคร",
+  "composite": 64.9,
+  "rank": 35,
+  "categories": {
+    "climate": { "score": 40, "indicator_count": 9, ... },
+    "healthcare": { "score": 78, ... },
+    ...
+  },
+  "as_of": "${lastRefresh.slice(0, 10)}",
+  "license": "CC-BY-NC-4.0"
+}`}</code></pre>
+
+      <h3>Get an API key</h3>
+      <p>
+        API key signup ships when the API does. Until then, register interest at
+        <a href="mailto:development@thailandliveabilityindex.com">development@thailandliveabilityindex.com</a>
+        — academic, journalist, civic, and commercial inquiries all welcome (commercial gets routed to
+        <a href="/en/licensing/">licensing</a>).
+      </p>
+    </section>
+
+    <section class="devhub__section" id="embed">
+      <h2>Embed widget</h2>
+      <p class="tli-eyebrow">Status: in development · target ship Q3 2026</p>
+      <p>
+        Drop a TLI province card on any page. Web Component, Shadow DOM,
+        no React/framework dependency. Free embedding for non-commercial use; white-label for commercial license-holders.
+      </p>
+
+      <h3>Snippet preview</h3>
+      <pre class="devhub__pre"><code>{`<script src="https://embed.thailandliveabilityindex.com/v1/tli.js"><\/script>
+<tli-widget province="bangkok" lang="en" size="auto"></tli-widget>`}</code></pre>
+
+      <p>
+        Approved attributes (v1 free tier): <code>province</code>, <code>size</code> (<code>auto</code> | <code>320</code> | <code>480</code> | <code>800</code>), <code>lang</code> (<code>en</code> | <code>th</code>).
+        Brand color, typography, footer attribution, and methodology link are locked at v1 (Walk Score-shaped uniformity).
+      </p>
+      <p>
+        White-label customization (your brand color + your wordmark instead of TLI's) is available via the <code>partner-id</code>
+        attribute, gated by commercial license. See <a href="/en/licensing/">licensing</a>.
+      </p>
+    </section>
+
+    <section class="devhub__section" id="data">
+      <h2>Bulk data</h2>
+      <p>
+        For research, journalism, and civic use, the full TLI dataset (77 provinces × 25 indicators with
+        scoring and provenance) is available as parquet + CSV via an email-gate form.
+      </p>
+      <p>
+        Form ships pre-MVP. Until then, request access at
+        <a href="mailto:research@thailandliveabilityindex.com">research@thailandliveabilityindex.com</a>
+        with: your name, affiliation, intended use, and acknowledgment of CC BY-NC 4.0 attribution.
+      </p>
+    </section>
+
+    <section class="devhub__section" id="status">
+      <h2>Status</h2>
+      <dl class="devhub__status">
+        <dt>Last data refresh</dt>
+        <dd><time datetime={lastRefresh}>{lastRefresh.slice(0, 10)}</time></dd>
+        <dt>Pipeline cadence</dt>
+        <dd>Tier A daily (PM2.5, heat, rainfall, conflict, transit) · Tier B monthly (TAT events, MOTS arrivals, hospital data) · Tier C annual (population, GPP, CPI)</dd>
+        <dt>API uptime</dt>
+        <dd>n/a (API not yet shipped)</dd>
+        <dt>Embed widget uptime</dt>
+        <dd>n/a (widget not yet shipped)</dd>
+      </dl>
+    </section>
+
+    <section class="devhub__section" id="changelog">
+      <h2>Changelog</h2>
+      <p>
+        TLI methodology changes are versioned and DOI-stamped. See the full
+        <a href="https://github.com/ReynoldsWJ55/thailand-liveability-index/blob/main/CHANGELOG.md" target="_blank" rel="noopener">CHANGELOG</a>
+        on GitHub for site changes; the <a href="/en/methodology/">methodology page</a> tracks scoring changes.
+      </p>
+      <p>API + widget version history will appear here once they ship.</p>
+    </section>
+
+    <section class="devhub__section">
+      <h2>Versioning &amp; deprecation policy</h2>
+      <p>
+        API and widget releases follow semantic versioning. Breaking changes land in a new major version
+        (<code>/api/v2/</code>, <code>/v2/tli.js</code>); the prior major version continues serving for
+        <strong>12 months after the new major reaches GA</strong> before deprecation. CORS posture:
+        <code>Access-Control-Allow-Origin: *</code> on all read endpoints.
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .devhub { max-width: 880px; padding-block: var(--sp-7); }
+  .devhub__head { margin-bottom: var(--sp-10); padding-bottom: var(--sp-6); border-bottom: 1px solid var(--rule); }
+  .devhub__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-3); }
+  .devhub__nav { display: flex; gap: var(--sp-4); margin-top: var(--sp-5); flex-wrap: wrap; font-size: var(--fs-13); }
+  .devhub__nav a { color: var(--brand); text-decoration: none; }
+  .devhub__nav a:hover { text-decoration: underline; }
+  .devhub__section { margin-bottom: var(--sp-10); padding-bottom: var(--sp-7); border-bottom: 1px solid var(--rule); scroll-margin-top: var(--sp-7); }
+  .devhub__section:last-child { border-bottom: 0; }
+  .devhub__section h2 { margin-bottom: var(--sp-3); }
+  .devhub__section h3 { margin-top: var(--sp-5); margin-bottom: var(--sp-2); font-size: var(--fs-16); }
+  .devhub__section p { margin-bottom: var(--sp-3); line-height: var(--lh-base); }
+  .devhub__endpoints { list-style: none; padding: 0; margin: var(--sp-3) 0; }
+  .devhub__endpoints li { padding: var(--sp-2) 0; border-bottom: 1px dashed var(--rule); }
+  .devhub__endpoints code { font-family: var(--font-mono); font-size: var(--fs-13); color: var(--brand); }
+  .devhub__pre { background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-2); padding: var(--sp-4); margin: var(--sp-3) 0; overflow-x: auto; }
+  .devhub__pre code { font-family: var(--font-mono); font-size: var(--fs-13); line-height: var(--lh-base); white-space: pre; }
+  .devhub__status { display: grid; grid-template-columns: max-content 1fr; gap: var(--sp-2) var(--sp-5); margin: var(--sp-3) 0; }
+  .devhub__status dt { font-weight: var(--fw-semibold); font-size: var(--fs-13); color: var(--ink-3); }
+  .devhub__status dd { margin: 0; font-size: var(--fs-15); }
+  @media (max-width: 600px) {
+    .devhub__status { grid-template-columns: 1fr; gap: var(--sp-1); }
+    .devhub__status dt { margin-top: var(--sp-3); }
+  }
+</style>
