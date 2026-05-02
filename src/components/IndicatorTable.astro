@@ -26,11 +26,61 @@
  */
 import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank } from '../data/lookups';
 import { getApplicabilityOverride } from '../data/applicability_overrides';
-import type { CategoryScore, Indicator, Locale } from '../data/types';
+import type { CategoryScore, Indicator, Locale, ScoresFile } from '../data/types';
+import scoresData from '../data/scores.json';
 import Lucide from './Lucide.astro';
 import ScorePrimitive from './ScorePrimitive.astro';
 import ProvenanceChip from './ProvenanceChip.astro';
 import CitationRow from './CitationRow.astro';
+
+// Compute per-indicator distribution stats ONCE at module load (cached for
+// the whole build). Each render reuses the cached map. Stats power the
+// "Where this province falls" detail block (rank + min/max/median range).
+type IndStat = { values: { id: string; value: number; raw_score: number }[]; min: number; max: number; median: number };
+const _allData = scoresData as ScoresFile;
+const _indStats = new Map<string, IndStat>();
+for (const p of _allData.provinces) {
+  for (const cat of Object.values(p.categories)) {
+    for (const ind of cat.indicators) {
+      if (ind.quality_flag === 'missing' || typeof ind.value !== 'number') continue;
+      const stat = _indStats.get(ind.id) ?? { values: [], min: Infinity, max: -Infinity, median: 0 };
+      stat.values.push({ id: p.id, value: ind.value, raw_score: ind.raw_score });
+      _indStats.set(ind.id, stat);
+    }
+  }
+}
+for (const stat of _indStats.values()) {
+  const sorted = [...stat.values].sort((a, b) => a.value - b.value);
+  stat.min = sorted[0].value;
+  stat.max = sorted[sorted.length - 1].value;
+  stat.median = sorted[Math.floor(sorted.length / 2)].value;
+  stat.values = sorted;
+}
+
+function fmtNum(n: number): string {
+  if (Number.isInteger(n)) return n.toLocaleString('en-US');
+  return n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+/**
+ * Distribution stats for a single (province, indicator). Computes rank by
+ * raw_score (higher = better rank since score is already normalized for
+ * direction). Returns undefined when no values exist.
+ */
+function distributionFor(provinceId: string, indicatorId: string) {
+  const stat = _indStats.get(indicatorId);
+  if (!stat) return undefined;
+  // Sort by raw_score DESCENDING (highest score = rank 1)
+  const byScore = [...stat.values].sort((a, b) => b.raw_score - a.raw_score);
+  const rank = byScore.findIndex((v) => v.id === provinceId) + 1;
+  return {
+    rank: rank > 0 ? rank : undefined,
+    n: stat.values.length,
+    min: stat.min,
+    max: stat.max,
+    median: stat.median,
+  };
+}
 
 interface Props {
   category: CategoryScore;
@@ -73,31 +123,39 @@ function scoreBandText(score: number, loc: Locale): string {
   return bands.find((b) => score < b.max)?.text ?? '';
 }
 
-const sortedIndicators = [...category.indicators].sort(
-  (a, b) => indicatorDisplayRank(a.id) - indicatorDisplayRank(b.id),
-);
+// Sort N/A indicators to the bottom of the category for cleaner default view.
+// Within applicable + N/A buckets, preserve the topical pairing from
+// indicatorDisplayRank.
+const sortedIndicators = [...category.indicators].sort((a, b) => {
+  const aOverride = getApplicabilityOverride(provinceId, a.id);
+  const bOverride = getApplicabilityOverride(provinceId, b.id);
+  // N/A goes after applicable
+  if (!!aOverride !== !!bOverride) return aOverride ? 1 : -1;
+  // Within bucket, use display rank
+  return indicatorDisplayRank(a.id) - indicatorDisplayRank(b.id);
+});
 const sources = Array.from(new Set(sortedIndicators.map((i) => i.source)));
 
 const labels = locale === 'th'
   ? {
       whatThisMeasures: 'ตัวชี้วัดนี้วัดอะไร',
       howToReadScore: 'วิธีอ่านคะแนนนี้',
+      whereThisFalls: 'จังหวัดนี้อยู่ในช่วงใดของไทย',
+      rankOfN: (rank: number, n: number) => `อันดับ ${rank} จาก ${n}`,
+      rangeText: (min: string, median: string, max: string, unit: string) =>
+        `ค่าต่ำสุด-สูงสุดของไทย: ${min}–${max} ${unit} (มัธยฐาน ${median})`,
       sourceHeading: 'แหล่งข้อมูล',
-      methodologyHeading: 'ระเบียบวิธี',
-      methodologyLink: 'ดูระเบียบวิธีของ TLI',
-      viewSourceLink: 'ไปที่แหล่งข้อมูล',
-      expandHint: 'แสดงรายละเอียด',
-      collapseHint: 'ซ่อนรายละเอียด',
+      whyNa: 'ทำไมจึงเป็น N/A',
     }
   : {
       whatThisMeasures: 'What this measures',
       howToReadScore: 'How to read this score',
+      whereThisFalls: 'Where this province falls',
+      rankOfN: (rank: number, n: number) => `Rank ${rank} of ${n} provinces`,
+      rangeText: (min: string, median: string, max: string, unit: string) =>
+        `Thailand range: ${min}–${max} ${unit} (median ${median})`,
       sourceHeading: 'Source',
-      methodologyHeading: 'Methodology',
-      methodologyLink: 'See full TLI methodology',
-      viewSourceLink: 'Visit source',
-      expandHint: 'Show details',
-      collapseHint: 'Hide details',
+      whyNa: 'Why N/A here',
     };
 ---
 <section class="section" id={CATEGORY_ANCHOR[category.id]}>
@@ -121,7 +179,6 @@ const labels = locale === 'th'
         <span class="ind-cards__col-name" {...locale === 'th' ? { lang: 'th' } : {}}>{C.indicator}</span>
         <span class="ind-cards__col-value" {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</span>
         <span class="ind-cards__col-score" {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</span>
-        <span class="ind-cards__col-source" {...locale === 'th' ? { lang: 'th' } : {}}>{C.source}</span>
         <span class="ind-cards__col-asof" {...locale === 'th' ? { lang: 'th' } : {}}>{C.asOfHeader}</span>
         <span class="ind-cards__col-chevron" aria-hidden="true"></span>
       </div>
@@ -174,11 +231,6 @@ const labels = locale === 'th'
                   />
                 )}
               </span>
-              <span class="ind-card__source-summary">
-                <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-                  {ind.source}
-                </a>
-              </span>
               <span class="ind-card__asof">{ind.as_of}</span>
               <span class="ind-card__chevron" aria-hidden="true">
                 <Lucide name="info" size={14} />
@@ -188,53 +240,61 @@ const labels = locale === 'th'
             <div class="ind-card__detail">
               <script type="application/ld+json" set:html={JSON.stringify(definedTermSchema)} />
 
-              <div class="ind-card__detail-grid">
-                <section class="ind-card__detail-block">
-                  <h4>{labels.whatThisMeasures}</h4>
-                  <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                    {indicatorLabel(ind)} ({ind.unit}). {locale === 'th'
-                      ? 'รายละเอียดระเบียบวิธีต่อตัวชี้วัด รวมถึงค่ามาตรฐาน 0/100 และทิศทางที่ดีกว่า มีอยู่ในหน้าระเบียบวิธี'
-                      : 'See the methodology page for the goalposts (where 0 and 100 sit), the direction (higher- or lower-is-better), and the indicator-specific data quality notes.'}
-                  </p>
-                </section>
+              {(() => {
+                const dist = !override && !isMissing ? distributionFor(provinceId, ind.id) : undefined;
+                return (
+                  <div class="ind-card__detail-grid">
+                    <section class="ind-card__detail-block">
+                      <h4>{labels.whatThisMeasures}</h4>
+                      <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                        {indicatorLabel(ind)} ({ind.unit}). {locale === 'th'
+                          ? 'รายละเอียดระเบียบวิธีต่อตัวชี้วัด รวมถึงค่ามาตรฐาน 0/100 และทิศทางที่ดีกว่า มีอยู่ในหน้าระเบียบวิธี'
+                          : 'See the methodology page for the goalposts (where 0 and 100 sit), the direction (higher- or lower-is-better), and the indicator-specific data quality notes.'}
+                      </p>
+                    </section>
 
-                {!override && !isMissing && (
-                  <section class="ind-card__detail-block">
-                    <h4>{labels.howToReadScore}</h4>
-                    <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                      {scoreBandText(ind.raw_score, locale)}
-                    </p>
-                  </section>
-                )}
+                    {!override && !isMissing && (
+                      <section class="ind-card__detail-block">
+                        <h4>{labels.howToReadScore}</h4>
+                        <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                          {scoreBandText(ind.raw_score, locale)}
+                        </p>
+                      </section>
+                    )}
 
-                {override && (
-                  <section class="ind-card__detail-block ind-card__detail-block--note">
-                    <h4>{locale === 'th' ? 'ทำไมจึงเป็น N/A' : 'Why N/A here'}</h4>
-                    <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                      {locale === 'th' ? override.rationale_th : override.rationale_en}
-                    </p>
-                  </section>
-                )}
+                    {dist && dist.rank && (
+                      <section class="ind-card__detail-block ind-card__detail-block--wide">
+                        <h4>{labels.whereThisFalls}</h4>
+                        <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                          <strong>{labels.rankOfN(dist.rank, dist.n)}</strong>
+                          {' · '}
+                          {labels.rangeText(fmtNum(dist.min), fmtNum(dist.median), fmtNum(dist.max), ind.unit)}
+                        </p>
+                      </section>
+                    )}
 
-                <section class="ind-card__detail-block">
-                  <h4>{labels.sourceHeading}</h4>
-                  <p>
-                    <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
-                      {ind.source} ↗
-                    </a>
-                  </p>
-                  <p class="tli-caption">{labels.viewSourceLink}</p>
-                </section>
+                    {override && (
+                      <section class="ind-card__detail-block ind-card__detail-block--note">
+                        <h4>{labels.whyNa}</h4>
+                        <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                          {locale === 'th' ? override.rationale_th : override.rationale_en}
+                        </p>
+                      </section>
+                    )}
 
-                <section class="ind-card__detail-block">
-                  <h4>{labels.methodologyHeading}</h4>
-                  <p>
-                    <a href={`/${locale}/methodology/`} class="tli-link">
-                      {labels.methodologyLink} →
-                    </a>
-                  </p>
-                </section>
-              </div>
+                    <section class="ind-card__detail-block ind-card__detail-block--wide">
+                      <h4>{labels.sourceHeading}</h4>
+                      <p>
+                        <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
+                          {ind.source} ↗
+                        </a>
+                        {' · '}
+                        <span class="tli-caption">{C.asOf} {ind.as_of}</span>
+                      </p>
+                    </section>
+                  </div>
+                );
+              })()}
             </div>
           </details>
         );
@@ -255,7 +315,7 @@ const labels = locale === 'th'
 
   .ind-cards__header {
     display: grid;
-    grid-template-columns: minmax(0, 42%) 10% 14% minmax(0, 22%) 12%;
+    grid-template-columns: minmax(0, 1fr) 14% 16% 14% 28px;
     gap: var(--sp-3);
     padding: var(--sp-2) var(--sp-3);
     align-items: center;
@@ -274,7 +334,7 @@ const labels = locale === 'th'
 
   .ind-card__summary {
     display: grid;
-    grid-template-columns: minmax(0, 42%) 10% 14% minmax(0, 22%) 12% auto;
+    grid-template-columns: minmax(0, 1fr) 14% 16% 14% 28px;
     gap: var(--sp-3);
     padding: var(--sp-3);
     align-items: center;
@@ -321,6 +381,7 @@ const labels = locale === 'th'
   }
   .ind-card__detail-block p { margin: 0 0 var(--sp-2) 0; line-height: var(--lh-base); color: var(--ink); }
   .ind-card__detail-block--note { grid-column: 1 / -1; padding: var(--sp-3) var(--sp-4); background: var(--paper-2); border-left: 3px solid var(--ink-3); border-radius: var(--r-1); }
+  .ind-card__detail-block--wide { grid-column: 1 / -1; }
 
   /* Mobile: stack to single column with key:value pairs in summary */
   @media (max-width: 720px) {
@@ -329,15 +390,12 @@ const labels = locale === 'th'
       grid-template-columns: 1fr auto auto;
       grid-template-areas:
         "name score chevron"
-        "value asof asof"
-        "source source source";
+        "value asof asof";
       gap: var(--sp-2);
     }
     .ind-card__name { grid-area: name; }
     .ind-card__value { grid-area: value; text-align: left; font-size: var(--fs-15); }
-    .ind-card__value::before { content: attr(data-label); font-size: var(--fs-12); color: var(--ink-3); margin-right: var(--sp-2); }
     .ind-card__score { grid-area: score; justify-content: flex-end; }
-    .ind-card__source-summary { grid-area: source; white-space: normal; overflow: visible; text-overflow: clip; }
     .ind-card__asof { grid-area: asof; text-align: right; }
     .ind-card__chevron { grid-area: chevron; }
     .ind-card__detail-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
