@@ -1,0 +1,168 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Zone page (Thai locale) — /th/[province]/[zone]/.
+ * Mirrors /en/[province]/[zone].astro; renders parent-province scores
+ * with zone branding + Thai-locale chrome.
+ */
+import Site from '../../../layouts/Site.astro';
+import CategoryCard from '../../../components/CategoryCard.astro';
+import IndicatorTable from '../../../components/IndicatorTable.astro';
+import UrbanNaNote from '../../../components/UrbanNaNote.astro';
+import Lucide from '../../../components/Lucide.astro';
+import { CATEGORY_ORDER, CHROME } from '../../../data/lookups';
+import scoresData from '../../../data/scores.json';
+import { ZONES, zonesForProvince } from '../../../data/zones';
+import type { Province, ScoresFile } from '../../../data/types';
+
+export function getStaticPaths() {
+  const data = scoresData as ScoresFile;
+  const provinces = new Map(data.provinces.map((p) => [p.id, p]));
+  return ZONES.map((zone) => {
+    const province = provinces.get(zone.parentProvinceId);
+    return {
+      params: { province: zone.parentProvinceId, zone: zone.slug },
+      props: { zone, province },
+    };
+  }).filter((entry) => entry.props.province !== undefined);
+}
+
+const { zone, province } = Astro.props as { zone: typeof ZONES[0]; province: Province };
+const locale = 'th' as const;
+const C = CHROME[locale];
+
+const cats = CATEGORY_ORDER.map((id) => province.categories[id]);
+const totalIndicators = cats.reduce((acc, c) => acc + c.indicator_count, 0);
+const freshestAsOf = cats.map((c) => c.freshest_as_of).sort().reverse()[0];
+
+const inheritanceNote = zone.requiresCustomPolygon
+  ? `ขอบเขตเป็นค่าประมาณ — ${zone.labelEn} อยู่ในตำบลที่ใช้ร่วมกับโซนข้างเคียง รูปหลายเหลี่ยมเฉพาะโซนจะมีในเฟส 4 ปัจจุบันคะแนนใช้ค่าจาก${province.name_th}`
+  : `คะแนนใช้ค่าจาก${province.name_th} — การให้คะแนนระดับโซนจะเริ่มเมื่อ pipeline ต้นทางส่งค่าระดับโซน (ระเบียบวิธี v1.2)`;
+
+const zoneTitle = `${zone.labelEn} · ${province.name_th} — TLI`;
+const zoneDescription = `${zone.labelEn} ใน${province.name_th} คะแนนคุณภาพการอยู่อาศัย ${province.composite ?? '—'} จาก 100 อันดับ ${province.rank} จาก 77 จังหวัด`;
+
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `${zone.labelEn} liveability score`,
+  alternateName: `${zone.labelEn} ในจังหวัด${province.name_th}`,
+  description: zoneDescription,
+  url: `https://thailandliveabilityindex.com/th/${zone.parentProvinceId}/${zone.slug}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: `${province.name_en} liveability scores`,
+    url: `https://thailandliveabilityindex.com/th/${province.id}/`,
+  },
+  spatialCoverage: {
+    '@type': 'Place',
+    name: `${zone.labelEn}, ${province.name_en}, Thailand`,
+    ...(zone.landmarkLat && zone.landmarkLng ? {
+      geo: { '@type': 'GeoCoordinates', latitude: zone.landmarkLat, longitude: zone.landmarkLng },
+    } : {}),
+  },
+  temporalCoverage: freshestAsOf || '2024',
+  creator: { '@type': 'Person', name: 'William J. Reynolds', sameAs: 'https://orcid.org/0009-0005-1217-7465' },
+  publisher: { '@type': 'Organization', name: 'Thailand Liveability Index', url: 'https://thailandliveabilityindex.com/' },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: ['Thailand', 'liveability', province.name_en, province.name_th, zone.labelEn, ...zone.aliases],
+};
+---
+<Site
+  title={zoneTitle}
+  description={zoneDescription}
+  locale={locale}
+  canonicalPath={`/th/${zone.parentProvinceId}/${zone.slug}/`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
+
+  <main class="container zone-page">
+    <nav class="breadcrumb" aria-label="เส้นทาง">
+      <a href="/th/">หน้าหลัก</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href={`/th/${province.id}/`}>{province.name_th}</a>
+      <span class="breadcrumb__sep">/</span>
+      <span lang="th">{zone.labelEn}</span>
+    </nav>
+
+    <header class="zone-page__head">
+      <p class="tli-eyebrow" lang="th">โซน · {province.name_th}</p>
+      <h1>{zone.labelEn}</h1>
+      <p class="zone-page__sub" lang="th">
+        {zone.aliases.length > 0 && (
+          <>เป็นที่รู้จักในชื่อ: {zone.aliases.map((a) => a.replace(/-/g, ' ')).join(', ')}</>
+        )}
+      </p>
+      <aside class="zone-page__inheritance" lang="th">
+        <Lucide name="info" size={16} class="zone-page__inheritance-icon" />
+        <p>{inheritanceNote}</p>
+      </aside>
+    </header>
+
+    <section class="section" aria-labelledby="zone-cat-title">
+      <div class="section__head">
+        <h2 class="section__title" id="zone-cat-title" lang="th">{C.byCategory}</h2>
+        <span class="section__sub">
+          <span lang="th">7 หมวด · {totalIndicators} ตัวชี้วัด (ใช้ค่าจาก{province.name_th})</span>
+        </span>
+      </div>
+      <div class="cat-grid">
+        {cats.map((cat) => (
+          <CategoryCard
+            category={cat}
+            locale={locale}
+            isFloor={province.floored && province.floored_by === cat.id}
+          />
+        ))}
+      </div>
+    </section>
+
+    <UrbanNaNote province={province} locale={locale} />
+
+    {cats.map((cat) => (
+      <IndicatorTable
+        category={cat}
+        locale={locale}
+        isFloor={province.floored && province.floored_by === cat.id}
+        provinceId={province.id}
+      />
+    ))}
+
+    <section class="zone-page__sibling">
+      <h2 lang="th">โซนอื่นใน{province.name_th}</h2>
+      <ul class="zone-page__sibling-list">
+        {zonesForProvince(province.id)
+          .filter((z) => z.id !== zone.id)
+          .map((z) => (
+            <li>
+              <a href={`/th/${z.parentProvinceId}/${z.slug}/`}>{z.labelEn}</a>
+            </li>
+          ))}
+      </ul>
+      <p class="zone-page__sibling-sub" lang="th">
+        ดูข้อมูลเต็มใน <a href={`/th/${province.id}/`}>{province.name_th}</a>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .zone-page { max-width: 880px; padding-block: var(--sp-7); }
+  .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); margin-bottom: var(--sp-5); color: var(--ink-3); }
+  .breadcrumb a { color: var(--ink-2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb__sep { color: var(--ink-3); }
+  .zone-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
+  .zone-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
+  .zone-page__sub { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .zone-page__inheritance { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-3) var(--sp-4); margin-top: var(--sp-3); background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-2); font-size: var(--fs-13); color: var(--ink-2); line-height: var(--lh-base); }
+  .zone-page__inheritance-icon { flex-shrink: 0; color: var(--ink-3); margin-top: 2px; }
+  .zone-page__inheritance p { margin: 0; }
+  .zone-page__sibling { margin-top: var(--sp-10); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+  .zone-page__sibling-list { list-style: none; padding: 0; margin: var(--sp-3) 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+  @media (max-width: 600px) { .zone-page__sibling-list { grid-template-columns: 1fr; } }
+  .zone-page__sibling-list a { color: var(--brand); text-decoration: none; }
+  .zone-page__sibling-list a:hover { text-decoration: underline; }
+  .zone-page__sibling-sub { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); }
+</style>

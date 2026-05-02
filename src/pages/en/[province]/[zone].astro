@@ -1,0 +1,185 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Zone page — /en/[province]/[zone]/.
+ *
+ * Renders the parent province's category scores under the zone's brand
+ * (zone label, aliases for SEO, methodology-honest "inherited from province"
+ * disclosure). Zone-grain scoring lands in v1.2 when upstream transforms
+ * emit zone-level values; until then, every zone inherits.
+ */
+import Site from '../../../layouts/Site.astro';
+import CategoryCard from '../../../components/CategoryCard.astro';
+import IndicatorTable from '../../../components/IndicatorTable.astro';
+import UrbanNaNote from '../../../components/UrbanNaNote.astro';
+import Lucide from '../../../components/Lucide.astro';
+import { CATEGORY_ORDER, CHROME } from '../../../data/lookups';
+import scoresData from '../../../data/scores.json';
+import { ZONES, zoneByPath, zonesForProvince } from '../../../data/zones';
+import type { Province, ScoresFile } from '../../../data/types';
+
+export function getStaticPaths() {
+  const data = scoresData as ScoresFile;
+  const provinces = new Map(data.provinces.map((p) => [p.id, p]));
+  return ZONES.map((zone) => {
+    const province = provinces.get(zone.parentProvinceId);
+    return {
+      params: { province: zone.parentProvinceId, zone: zone.slug },
+      props: { zone, province },
+    };
+  }).filter((entry) => entry.props.province !== undefined);
+}
+
+const { zone, province } = Astro.props as { zone: typeof ZONES[0]; province: Province };
+const locale = 'en' as const;
+const C = CHROME[locale];
+
+const cats = CATEGORY_ORDER.map((id) => province.categories[id]);
+const totalIndicators = cats.reduce((acc, c) => acc + c.indicator_count, 0);
+const freshestAsOf = cats.map((c) => c.freshest_as_of).sort().reverse()[0];
+
+const inheritanceNote = zone.requiresCustomPolygon
+  ? `Boundaries are approximate — ${zone.labelEn} sits within a tambon shared with neighbouring zones; per-zone polygons land in Phase 4. Scores currently inherit from ${province.name_en}.`
+  : `Scores inherit from ${province.name_en} — zone-grain scoring activates when upstream transforms emit zone-level values (methodology v1.2).`;
+
+const zoneTitle = `${zone.labelEn} · ${province.name_en} Liveability — TLI`;
+const zoneDescription = `${zone.labelEn} liveability scores: ${province.composite ?? '—'} composite (rank ${province.rank} of 77 Thai provinces). ${inheritanceNote.split('.')[0]}.`;
+
+// JSON-LD Dataset schema for AI/SEO citability. Includes aliases as keywords
+// so AI search engines (Perplexity, ChatGPT browse, Claude) can match this
+// zone against searches for the alias names (asoke, silom, jomtien, etc.).
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `${zone.labelEn} liveability score`,
+  description: zoneDescription,
+  url: `https://thailandliveabilityindex.com/en/${zone.parentProvinceId}/${zone.slug}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: `${province.name_en} liveability scores`,
+    url: `https://thailandliveabilityindex.com/en/${province.id}/`,
+  },
+  spatialCoverage: {
+    '@type': 'Place',
+    name: `${zone.labelEn}, ${province.name_en}, Thailand`,
+    ...(zone.landmarkLat && zone.landmarkLng ? {
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: zone.landmarkLat,
+        longitude: zone.landmarkLng,
+      },
+    } : {}),
+  },
+  temporalCoverage: freshestAsOf || '2024',
+  creator: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: ['Thailand', 'liveability', province.name_en, zone.labelEn, ...zone.aliases],
+};
+---
+<Site
+  title={zoneTitle}
+  description={zoneDescription}
+  locale={locale}
+  canonicalPath={`/en/${zone.parentProvinceId}/${zone.slug}/`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
+
+  <main class="container zone-page">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/en/">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href={`/en/${province.id}/`}>{province.name_en}</a>
+      <span class="breadcrumb__sep">/</span>
+      <span>{zone.labelEn}</span>
+    </nav>
+
+    <header class="zone-page__head">
+      <p class="tli-eyebrow">Zone · {province.name_en}</p>
+      <h1>{zone.labelEn}</h1>
+      <p class="zone-page__sub">
+        {zone.aliases.length > 0 && (
+          <>Also known as: {zone.aliases.map((a) => a.replace(/-/g, ' ')).join(', ')}.</>
+        )}
+      </p>
+      <aside class="zone-page__inheritance">
+        <Lucide name="info" size={16} class="zone-page__inheritance-icon" />
+        <p>{inheritanceNote}</p>
+      </aside>
+    </header>
+
+    <section class="section" aria-labelledby="zone-cat-title">
+      <div class="section__head">
+        <h2 class="section__title" id="zone-cat-title">{C.byCategory}</h2>
+        <span class="section__sub">
+          7 categories · {totalIndicators} indicator{totalIndicators === 1 ? '' : 's'} (inherited from {province.name_en})
+        </span>
+      </div>
+      <div class="cat-grid">
+        {cats.map((cat) => (
+          <CategoryCard
+            category={cat}
+            locale={locale}
+            isFloor={province.floored && province.floored_by === cat.id}
+          />
+        ))}
+      </div>
+    </section>
+
+    <UrbanNaNote province={province} locale={locale} />
+
+    {cats.map((cat) => (
+      <IndicatorTable
+        category={cat}
+        locale={locale}
+        isFloor={province.floored && province.floored_by === cat.id}
+        provinceId={province.id}
+      />
+    ))}
+
+    <section class="zone-page__sibling">
+      <h2>Other zones in {province.name_en}</h2>
+      <ul class="zone-page__sibling-list">
+        {zonesForProvince(province.id)
+          .filter((z) => z.id !== zone.id)
+          .map((z) => (
+            <li>
+              <a href={`/en/${z.parentProvinceId}/${z.slug}/`}>{z.labelEn}</a>
+            </li>
+          ))}
+      </ul>
+      <p class="zone-page__sibling-sub">
+        See the full <a href={`/en/${province.id}/`}>{province.name_en} province card</a> for the parent context and methodology.
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .zone-page { max-width: 880px; padding-block: var(--sp-7); }
+  .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); margin-bottom: var(--sp-5); color: var(--ink-3); }
+  .breadcrumb a { color: var(--ink-2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb__sep { color: var(--ink-3); }
+  .zone-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
+  .zone-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
+  .zone-page__sub { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .zone-page__inheritance { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-3) var(--sp-4); margin-top: var(--sp-3); background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-2); font-size: var(--fs-13); color: var(--ink-2); line-height: var(--lh-base); }
+  .zone-page__inheritance-icon { flex-shrink: 0; color: var(--ink-3); margin-top: 2px; }
+  .zone-page__inheritance p { margin: 0; }
+  .zone-page__sibling { margin-top: var(--sp-10); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+  .zone-page__sibling-list { list-style: none; padding: 0; margin: var(--sp-3) 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+  @media (max-width: 600px) { .zone-page__sibling-list { grid-template-columns: 1fr; } }
+  .zone-page__sibling-list a { color: var(--brand); text-decoration: none; }
+  .zone-page__sibling-list a:hover { text-decoration: underline; }
+  .zone-page__sibling-sub { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); }
+</style>
