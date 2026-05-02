@@ -6,6 +6,42 @@ import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import Lucide from '../../../components/Lucide.astro';
 
 const lastUpdated = 'April 2026';
+
+// TechArticle schema for AI/SEO citability — methodology pages get the
+// scholarly-article treatment so academic search (Google Scholar) and
+// AI search engines treat this as the canonical method reference.
+const methodologyArticleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: 'How the Thailand Liveability Index is built — methodology v1.0',
+  description: "How TLI is built — the seven categories, the composite math, why some provinces score 0, and how weighting works.",
+  url: 'https://thailandliveabilityindex.com/en/methodology/',
+  inLanguage: 'en',
+  datePublished: '2026-04-30',
+  dateModified: '2026-05-02',
+  author: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  about: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: [
+    'composite indicator methodology', 'liveability index methodology',
+    'geometric mean composite', 'non-substitutability', 'OECD composite indicator',
+    'urban liveability index', 'Thailand provinces methodology',
+    'goalposts normalization', 'min-max scaling',
+  ],
+};
 ---
 <Site
   title="Methodology · Thailand Liveability Index"
@@ -14,6 +50,7 @@ const lastUpdated = 'April 2026';
   canonicalPath="/en/methodology/"
   ogImage="/og/methodology.png"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(methodologyArticleSchema)} />
   <article class="methodology">
     <header class="methodology__head">
       <p class="tli-eyebrow">Methodology · v1.0</p>

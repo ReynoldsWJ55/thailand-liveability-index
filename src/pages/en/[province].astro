@@ -35,6 +35,57 @@ const description =
   province.composite === null || province.floored
     ? `${province.name_en} (rank ${province.rank} of 77). Composite floored at 0 by ${province.floored_by ?? 'an indicator'} — non-substitutability locks the geometric mean.`
     : `${province.name_en} composite liveability score ${province.composite} of 100, rank ${province.rank} of 77, ${province.category_count_full}/7 categories with full coverage.`;
+
+// JSON-LD Dataset schema for AI/SEO citability — same pattern as zone + indicator pages.
+// Carries province name in EN + TH plus category labels as keywords so AI search
+// engines (Perplexity, ChatGPT browse, Claude, Gemini) can match queries against
+// this province's data offering.
+const provinceDatasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: `${province.name_en} liveability score — Thailand Liveability Index`,
+  alternateName: `${province.name_th} ดัชนีคุณภาพการอยู่อาศัย`,
+  description,
+  url: `https://thailandliveabilityindex.com/en/${province.id}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  variableMeasured: cats.map((cat) => ({
+    '@type': 'PropertyValue',
+    name: cat.id,
+    value: cat.score,
+    description: `${cat.id} category score (0-100)`,
+  })),
+  spatialCoverage: {
+    '@type': 'Place',
+    name: `${province.name_en}, Thailand`,
+    alternateName: province.name_th,
+  },
+  temporalCoverage: freshestAsOf || '2024',
+  creator: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  keywords: [
+    'Thailand', 'liveability', 'province',
+    province.name_en, province.name_th,
+    `${province.name_en} air quality`,
+    `${province.name_en} healthcare`,
+    `${province.name_en} cost of living`,
+    `${province.name_en} safety`,
+    `living in ${province.name_en}`,
+    `${province.name_en} composite score`,
+  ],
+};
 ---
 <Site
   title={`${province.name_en} · Thailand Liveability Index`}
@@ -43,6 +94,7 @@ const description =
   canonicalPath={`/en/${province.id}/`}
   ogImage={`/og/${province.id}.png`}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(provinceDatasetSchema)} />
   <Hero province={province} locale={locale} asOf={freshestAsOf} />
 
   <section class="section" aria-labelledby="cat-title">
