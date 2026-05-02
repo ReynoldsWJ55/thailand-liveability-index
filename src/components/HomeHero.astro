@@ -6,9 +6,11 @@
  * Single-column wide hero with the title, lede, and the eyebrow row of
  * "77 Provinces · 7 Categories · Composite 0–100" plus an AS OF chip.
  */
-import { CHROME } from '../data/lookups';
+import { CHROME, dynamicHomeLede } from '../data/lookups';
 import type { Locale } from '../data/types';
 import ProvenanceChip from './ProvenanceChip.astro';
+import scoresData from '../data/scores.json';
+import type { ScoresFile } from '../data/types';
 
 interface Props {
   locale: Locale;
@@ -17,6 +19,18 @@ interface Props {
 }
 const { locale, asOf } = Astro.props;
 const C = CHROME[locale];
+
+// Compute live indicator count once at build — passed into dynamicHomeLede
+// so the lede sentence auto-updates when indicators are wired/removed and
+// the seven category labels stay in sync with CATEGORY_ORDER.
+const _indicatorIds = new Set<string>();
+for (const p of (scoresData as ScoresFile).provinces) {
+  for (const cat of Object.values(p.categories)) {
+    for (const ind of cat.indicators) _indicatorIds.add(ind.id);
+  }
+}
+const indicatorCount = _indicatorIds.size;
+const homeLede = dynamicHomeLede(indicatorCount, locale);
 ---
 <section class="home-hero">
   <p class="tli-eyebrow home-hero__release">
@@ -28,7 +42,7 @@ const C = CHROME[locale];
       : "How liveable is each of Thailand’s 77 provinces, on the data?"}
   </h1>
   <p class="home-hero__lede" {...locale === 'th' ? { lang: 'th' } : {}}>
-    {C.homeLede}
+    {homeLede}
   </p>
   <div class="home-hero__eyebrow-row">
     {C.homeEyebrow.map((label, i) => (

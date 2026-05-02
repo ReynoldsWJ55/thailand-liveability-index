@@ -2,8 +2,10 @@
 // Copyright (c) 2026 Will Reynolds
 // SPDX-License-Identifier: MIT
 import scoresData from '../data/scores.json';
-import type { ScoresFile } from '../data/types';
-import { regionLabel } from '../data/lookups';
+import indicatorMeta from '../data/indicator-meta.json';
+import type { ScoresFile, CategoryId } from '../data/types';
+import { regionLabel, SLUG_MAP, CATEGORIES } from '../data/lookups';
+import { IN_DEVELOPMENT_INDICATORS } from '../data/in-development-indicators';
 import Lucide from './Lucide.astro';
 
 interface Props {
@@ -15,26 +17,80 @@ const { locale, pathInLocale = '/' } = Astro.props;
 const enHref = `/en${pathInLocale}`;
 const thHref = `/th${pathInLocale}`;
 
-// Province search index — inlined into the page so the combobox is fully
-// client-side without a fetch. ~50 bytes per province; fine even at 77.
-// We index id, EN name, TH name, and a normalized region label per locale
-// so the matcher can hit any of those.
+// Combined search index — provinces + indicators, both inlined into the page
+// so the combobox is fully client-side without a fetch. Each entry has a
+// `kind` discriminator so the renderer can label and route appropriately.
 const data = scoresData as ScoresFile;
 const provinceIndex = data.provinces.map((p) => ({
+  kind: 'province' as const,
   id: p.id,
   name_en: p.name_en,
   name_th: p.name_th,
-  region: regionLabel(p.region, locale),
+  meta: regionLabel(p.region, locale),
   score: p.floored ? 0 : (p.composite ?? 0),
   floored: p.floored,
+  href: `/${locale}/${p.id}/`,
 }));
-const indexJson = JSON.stringify(provinceIndex);
 
-const placeholder = locale === 'th' ? 'ค้นหาจังหวัด…' : 'Find a province…';
+// Indicator entries — keyed by SLUG_MAP for SEO-friendly URLs.
+interface IndicatorMetaShape {
+  id: string;
+  label_en: string;
+  label_th: string;
+  unit: string;
+  category: CategoryId;
+}
+const indicatorIndex = Object.values(indicatorMeta as Record<string, IndicatorMetaShape>).map((m) => ({
+  kind: 'indicator' as const,
+  id: m.id,
+  name_en: m.label_en,
+  name_th: m.label_th,
+  meta: locale === 'th' ? CATEGORIES[m.category].label_th : CATEGORIES[m.category].label_en,
+  score: 0,
+  floored: false,
+  href: `/${locale}/indicators/${SLUG_MAP[m.id] ?? m.id}/`,
+}));
+
+// In-development indicators are searchable too — they have stable URLs.
+const inDevIndex = IN_DEVELOPMENT_INDICATORS.map((m) => ({
+  kind: 'indicator-dev' as const,
+  id: m.id,
+  name_en: m.label_en,
+  name_th: m.label_th,
+  meta: locale === 'th'
+    ? `${CATEGORIES[m.category].label_th} · พัฒนา`
+    : `${CATEGORIES[m.category].label_en} · in dev`,
+  score: 0,
+  floored: false,
+  href: `/${locale}/indicators/in-development/${m.slug}/`,
+}));
+
+const indexJson = JSON.stringify([...provinceIndex, ...indicatorIndex, ...inDevIndex]);
+
+const placeholder = locale === 'th' ? 'ค้นหาจังหวัดหรือตัวชี้วัด…' : 'Find a province or indicator…';
 const clearLabel = locale === 'th' ? 'ล้าง' : 'Clear';
 const searchLabel = locale === 'th' ? 'ค้นหาจังหวัด' : 'Find a province';
 const noResults = locale === 'th' ? 'ไม่พบจังหวัด' : 'No provinces match';
 const totalLabel = locale === 'th' ? `${data.provinces.length} จังหวัด` : `${data.provinces.length} provinces`;
+
+// Primary nav links — kept terse so the bar still reads cleanly with the
+// province search. Indicators is the most useful sibling to province pages
+// (cross-section view); methodology answers "how is this scored" for any
+// page; developers is the data/embed hub.
+const navItems = locale === 'th'
+  ? [
+      { href: '/th/indicators/', label: 'ตัวชี้วัด', match: '/indicators' },
+      { href: '/th/methodology/', label: 'ระเบียบวิธี', match: '/methodology' },
+      { href: '/th/developers/', label: 'นักพัฒนา', match: '/developers' },
+    ]
+  : [
+      { href: '/en/indicators/', label: 'Indicators', match: '/indicators' },
+      { href: '/en/methodology/', label: 'Methodology', match: '/methodology' },
+      { href: '/en/developers/', label: 'Developers', match: '/developers' },
+    ];
+function isCurrent(match: string) {
+  return pathInLocale.startsWith(match);
+}
 ---
 <header class="tli-nav">
   <div class="tli-nav__inner">
@@ -86,6 +142,19 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       <span data-total-text hidden>{totalLabel}</span>
     </form>
 
+    <nav class="tli-nav__primary" aria-label={locale === 'th' ? 'เมนูหลัก' : 'Primary'}>
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class={`tli-nav__primary-link${isCurrent(item.match) ? ' is-current' : ''}`}
+          aria-current={isCurrent(item.match) ? 'page' : 'false'}
+          {...locale === 'th' ? { lang: 'th' } : {}}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
     <nav class="tli-nav__lang" aria-label="Language">
       <a href={enHref} aria-current={locale === 'en' ? 'true' : 'false'}>EN</a>
       <a href={thHref} aria-current={locale === 'th' ? 'true' : 'false'}>TH</a>
@@ -103,13 +172,15 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
   //   4. contains match
   //   5. region-name match (lowest weight)
   // No external lib — fast enough for 77 entries.
-  type Province = {
+  type Entry = {
+    kind: 'province' | 'indicator' | 'indicator-dev';
     id: string;
     name_en: string;
     name_th: string;
-    region: string;
+    meta: string;
     score: number;
     floored: boolean;
+    href: string;
   };
 
   document.querySelectorAll<HTMLFormElement>('[data-component="province-search"]').forEach((root) => {
@@ -122,15 +193,15 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
     const noResultsText = root.querySelector<HTMLElement>('[data-no-results-text]')?.textContent ?? 'No matches';
     if (!input || !list || !indexEl) return;
 
-    const provinces: Province[] = JSON.parse(indexEl.textContent ?? '[]');
+    const entries: Entry[] = JSON.parse(indexEl.textContent ?? '[]');
     let activeIndex = -1;
-    let currentMatches: Province[] = [];
+    let currentMatches: Entry[] = [];
 
-    function score(p: Province, q: string): number {
+    function score(p: Entry, q: string): number {
       const ql = q.toLowerCase();
       const en = p.name_en.toLowerCase();
       const th = p.name_th;
-      const region = p.region.toLowerCase();
+      const meta = p.meta.toLowerCase();
       // Exact match either locale
       if (en === ql || th === q) return 100;
       // Starts-with — preferred locale first
@@ -144,14 +215,14 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       // Contains
       if (en.includes(ql)) return 50;
       if (th.includes(q)) return 50;
-      // Region (low weight, only if nothing else)
-      if (region.includes(ql)) return 20;
+      // Region/category meta (low weight, only if nothing else)
+      if (meta.includes(ql)) return 20;
       return 0;
     }
 
-    function rank(q: string): Province[] {
+    function rank(q: string): Entry[] {
       if (!q.trim()) return [];
-      const matches = provinces
+      const matches = entries
         .map((p) => ({ p, s: score(p, q.trim()) }))
         .filter((m) => m.s > 0)
         .sort((a, b) => b.s - a.s || a.p.name_en.localeCompare(b.p.name_en))
@@ -160,7 +231,7 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       return matches;
     }
 
-    function bandClassFor(p: Province): string {
+    function bandClassFor(p: Entry): string {
       if (p.floored) return 'score-0';
       if (p.score >= 80) return 'score-4';
       if (p.score >= 60) return 'score-3';
@@ -169,7 +240,7 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       return 'score-0';
     }
 
-    function render(matches: Province[]) {
+    function render(matches: Entry[]) {
       currentMatches = matches;
       activeIndex = -1;
       input!.setAttribute('aria-expanded', matches.length > 0 ? 'true' : 'false');
@@ -188,17 +259,37 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
         .map((p, i) => {
           const name = locale === 'th' ? p.name_th : p.name_en;
           const sub = locale === 'th' ? p.name_en : p.name_th;
+          const kindLabel = p.kind === 'indicator-dev'
+            ? (locale === 'th' ? 'ตัวชี้วัด · พัฒนา' : 'INDICATOR · IN DEV')
+            : p.kind === 'indicator'
+              ? (locale === 'th' ? 'ตัวชี้วัด' : 'INDICATOR')
+              : (locale === 'th' ? 'จังหวัด' : 'PROVINCE');
+          if (p.kind === 'indicator' || p.kind === 'indicator-dev') {
+            const klass = p.kind === 'indicator-dev'
+              ? 'tli-nav__search-item tli-nav__search-item--indicator tli-nav__search-item--dev'
+              : 'tli-nav__search-item tli-nav__search-item--indicator';
+            return `<li
+              class="${klass}"
+              role="option"
+              id="tli-search-suggestion-${i}"
+              data-href="${p.href}"
+              aria-selected="false"
+            >
+              <span class="tli-nav__search-item-name">${name}</span>
+              <span class="tli-nav__search-item-sub">${kindLabel} · ${p.meta}</span>
+            </li>`;
+          }
           const band = bandClassFor(p);
           const scoreDisplay = p.floored ? '0' : String(p.score);
           return `<li
             class="tli-nav__search-item"
             role="option"
-            id="tli-province-suggestion-${i}"
-            data-id="${p.id}"
+            id="tli-search-suggestion-${i}"
+            data-href="${p.href}"
             aria-selected="false"
           >
             <span class="tli-nav__search-item-name">${name}</span>
-            <span class="tli-nav__search-item-sub">${sub} · ${p.region}</span>
+            <span class="tli-nav__search-item-sub">${kindLabel} · ${sub} · ${p.meta}</span>
             <span class="tli-nav__search-item-score tli-num ${band}">${scoreDisplay}</span>
           </li>`;
         })
@@ -207,7 +298,7 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       list!.querySelectorAll<HTMLLIElement>('[role="option"]').forEach((li) => {
         li.addEventListener('mousedown', (e) => {
           e.preventDefault();
-          go(li.dataset.id);
+          goHref(li.dataset.href);
         });
         li.addEventListener('mouseenter', () => {
           const i = Array.from(list!.children).indexOf(li);
@@ -231,9 +322,9 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       }
     }
 
-    function go(id: string | undefined) {
-      if (!id) return;
-      window.location.href = `/${locale}/${id}/`;
+    function goHref(href: string | undefined) {
+      if (!href) return;
+      window.location.href = href;
     }
 
     function close() {
@@ -265,7 +356,7 @@ const totalLabel = locale === 'th' ? `${data.provinces.length} จังหว�
       } else if (e.key === 'Enter') {
         e.preventDefault();
         const target = activeIndex >= 0 ? currentMatches[activeIndex] : currentMatches[0];
-        if (target) go(target.id);
+        if (target) goHref(target.href);
       } else if (e.key === 'Escape') {
         if (input.value) {
           input.value = '';

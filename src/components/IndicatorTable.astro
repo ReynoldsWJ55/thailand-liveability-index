@@ -24,7 +24,7 @@
  * Block 10 wk 6 alongside the v1.2 methodology spike. v0.1 content uses
  * indicator-meta.source_description + score-band interpretation as scaffold.
  */
-import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank, indicatorDescription } from '../data/lookups';
+import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank, indicatorDescription, indicatorDirection, directionPhrase } from '../data/lookups';
 import { getApplicabilityOverride } from '../data/applicability_overrides';
 import type { CategoryScore, Indicator, Locale, ScoresFile } from '../data/types';
 import scoresData from '../data/scores.json';
@@ -105,24 +105,28 @@ function fmtValue(ind: Indicator): string {
   return ind.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
-/** Score-band interpretation. EN+TH map. Same band thresholds as ScorePrimitive. */
-function scoreBandText(score: number, loc: Locale): string {
+/** Score-band interpretation. EN+TH map. Same band thresholds as ScorePrimitive.
+ *  Returns the band name + description as separate fields so the rendering
+ *  template can apply brand-color emphasis to the band name (matching the
+ *  Scoring direction styling). */
+function scoreBandParts(score: number, loc: Locale): { band: string; description: string } {
   const bands = loc === 'th'
     ? [
-        { max: 20, text: 'ห้าส่วนล่าง — ห่างจากเกณฑ์ระเบียบวิธีอย่างมีนัยสำคัญ' },
-        { max: 40, text: 'ต่ำกว่าค่าเฉลี่ย' },
-        { max: 60, text: 'ระดับกลาง' },
-        { max: 80, text: 'สูงกว่าค่าเฉลี่ย' },
-        { max: 101, text: 'ห้าส่วนบน — ถึงหรือเกินเกณฑ์ระเบียบวิธี' },
+        { max: 20,  band: 'ห้าส่วนล่าง',   description: 'ห่างจากเกณฑ์ระเบียบวิธีอย่างมีนัยสำคัญ' },
+        { max: 40,  band: 'ต่ำกว่าค่าเฉลี่ย', description: 'มีโอกาสปรับปรุง' },
+        { max: 60,  band: 'ระดับกลาง',      description: 'ค่ากลางของจังหวัดไทย' },
+        { max: 80,  band: 'สูงกว่าค่าเฉลี่ย', description: 'ผ่านเกณฑ์ระเบียบวิธี' },
+        { max: 101, band: 'ห้าส่วนบน',      description: 'ถึงหรือเกินเกณฑ์ระเบียบวิธี' },
       ]
     : [
-        { max: 20, text: 'Bottom quintile — significant gap vs. methodology benchmarks' },
-        { max: 40, text: 'Below average — room for improvement' },
-        { max: 60, text: 'Mid-range — typical for Thai provinces' },
-        { max: 80, text: 'Above average — meets methodology benchmarks' },
-        { max: 101, text: 'Top quintile — meets or exceeds methodology benchmarks' },
+        { max: 20,  band: 'Bottom quintile', description: 'significant gap vs. methodology benchmarks' },
+        { max: 40,  band: 'Below average',   description: 'room for improvement' },
+        { max: 60,  band: 'Mid-range',       description: 'typical for Thai provinces' },
+        { max: 80,  band: 'Above average',   description: 'meets methodology benchmarks' },
+        { max: 101, band: 'Top quintile',    description: 'meets or exceeds methodology benchmarks' },
       ];
-  return bands.find((b) => score < b.max)?.text ?? '';
+  const hit = bands.find((b) => score < b.max);
+  return hit ? { band: hit.band, description: hit.description } : { band: '', description: '' };
 }
 
 // Sort N/A indicators to the bottom of the category for cleaner default view.
@@ -148,6 +152,8 @@ const labels = locale === 'th'
         `ค่าต่ำสุด-สูงสุดของไทย: ${min}–${max} ${unit} (มัธยฐาน ${median})`,
       sourceHeading: 'แหล่งข้อมูล',
       whyNa: 'ทำไมจึงเป็น N/A',
+      scoringDirection: 'ทิศทางการให้คะแนน',
+      thisProvinceBand: 'ช่วงคะแนนของจังหวัดนี้',
     }
   : {
       whatThisMeasures: 'What this measures',
@@ -158,6 +164,8 @@ const labels = locale === 'th'
         `Thailand range: ${min}–${max} ${unit} (median ${median})`,
       sourceHeading: 'Source',
       whyNa: 'Why N/A here',
+      scoringDirection: 'Scoring direction',
+      thisProvinceBand: "This province's band",
     };
 ---
 <section class="section" id={CATEGORY_ANCHOR[category.id]}>
@@ -179,8 +187,8 @@ const labels = locale === 'th'
     <div class="ind-cards" role="list">
       <div class="ind-cards__header" aria-hidden="true">
         <span class="ind-cards__col-name" {...locale === 'th' ? { lang: 'th' } : {}}>{C.indicator}</span>
-        <span class="ind-cards__col-value" {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</span>
-        <span class="ind-cards__col-score" {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</span>
+        <span class="ind-cards__col-value" title={C.howToReadValueBody} {...locale === 'th' ? { lang: 'th' } : {}}>{C.value}</span>
+        <span class="ind-cards__col-score" title={C.howToReadScoreBody} {...locale === 'th' ? { lang: 'th' } : {}}>{C.score0to100}</span>
         <span class="ind-cards__col-asof" {...locale === 'th' ? { lang: 'th' } : {}}>{C.asOfHeader}</span>
         <span class="ind-cards__col-chevron" aria-hidden="true"></span>
       </div>
@@ -233,7 +241,9 @@ const labels = locale === 'th'
                   />
                 )}
               </span>
-              <span class="ind-card__asof">{ind.as_of}</span>
+              <span class="ind-card__asof" title={!ind.as_of ? (locale === 'th' ? 'ยังไม่ได้บันทึกวันที่ในชุดข้อมูลปัจจุบัน' : 'Date not yet captured in this build') : undefined}>
+                {ind.as_of || '—'}
+              </span>
               <span class="ind-card__chevron" aria-hidden="true">
                 <Lucide name="info" size={14} />
               </span>
@@ -289,14 +299,16 @@ const labels = locale === 'th'
                       })()}
                     </section>
 
-                    {!override && !isMissing && (
-                      <section class="ind-card__detail-block">
-                        <h4>{labels.howToReadScore}</h4>
-                        <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                          {scoreBandText(ind.raw_score, locale)}
-                        </p>
-                      </section>
-                    )}
+                    {/* Order: What this measures → Source → Where this province falls → How to read this score → (N/A note if applicable). */}
+                    <section class="ind-card__detail-block ind-card__detail-block--wide">
+                      <h4>{labels.sourceHeading}</h4>
+                      <p>
+                        <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
+                          {ind.source} ↗
+                        </a>
+                        {ind.as_of && <>{' · '}<span class="tli-caption">{C.asOf} {ind.as_of}</span></>}
+                      </p>
+                    </section>
 
                     {dist && dist.rank && (
                       <section class="ind-card__detail-block ind-card__detail-block--wide">
@@ -309,6 +321,42 @@ const labels = locale === 'th'
                       </section>
                     )}
 
+                    {!override && !isMissing && (
+                      <section class="ind-card__detail-block ind-card__detail-block--wide">
+                        <h4>{labels.howToReadScore}</h4>
+                        {(() => {
+                          const dir = indicatorDirection(ind.id);
+                          return (
+                            <dl class="ind-card__how">
+                              {dir && (
+                                <>
+                                  <dt {...locale === 'th' ? { lang: 'th' } : {}}>{labels.scoringDirection}</dt>
+                                  <dd class="ind-card__direction" {...locale === 'th' ? { lang: 'th' } : {}}>
+                                    <strong>{directionPhrase(dir, locale)}</strong>
+                                    {locale === 'th'
+                                      ? ' — เกณฑ์การให้คะแนนเป็นค่าคงที่ ดูที่หน้าระเบียบวิธี'
+                                      : ' — scored against fixed methodology goalposts (see the methodology page for the exact thresholds).'}
+                                  </dd>
+                                </>
+                              )}
+                              <dt {...locale === 'th' ? { lang: 'th' } : {}}>{labels.thisProvinceBand}</dt>
+                              <dd class="ind-card__direction" {...locale === 'th' ? { lang: 'th' } : {}}>
+                                {(() => {
+                                  const parts = scoreBandParts(ind.raw_score, locale);
+                                  return (
+                                    <>
+                                      <strong>{parts.band}</strong>
+                                      {parts.description ? (locale === 'th' ? ` — ${parts.description}` : ` — ${parts.description}`) : ''}
+                                    </>
+                                  );
+                                })()}
+                              </dd>
+                            </dl>
+                          );
+                        })()}
+                      </section>
+                    )}
+
                     {override && (
                       <section class="ind-card__detail-block ind-card__detail-block--note">
                         <h4>{labels.whyNa}</h4>
@@ -317,17 +365,6 @@ const labels = locale === 'th'
                         </p>
                       </section>
                     )}
-
-                    <section class="ind-card__detail-block ind-card__detail-block--wide">
-                      <h4>{labels.sourceHeading}</h4>
-                      <p>
-                        <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
-                          {ind.source} ↗
-                        </a>
-                        {' · '}
-                        <span class="tli-caption">{C.asOf} {ind.as_of}</span>
-                      </p>
-                    </section>
                   </div>
                 );
               })()}
@@ -416,6 +453,24 @@ const labels = locale === 'th'
     margin: 0 0 var(--sp-2) 0;
   }
   .ind-card__detail-block p { margin: 0 0 var(--sp-2) 0; line-height: var(--lh-base); color: var(--ink); }
+  .ind-card__direction strong { color: var(--brand); }
+  /* Definition list inside "How to read this score" — gives the band sentence
+     a clear sublabel ("This province's band") so it doesn't read as an
+     orphaned continuation of the direction line. */
+  .ind-card__how { display: grid; grid-template-columns: 160px 1fr; gap: var(--sp-2) var(--sp-4); margin: 0; }
+  .ind-card__how dt {
+    font: var(--fw-semibold) var(--fs-12)/1.3 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0;
+    padding-top: 2px;
+  }
+  .ind-card__how dd { margin: 0; line-height: var(--lh-base); color: var(--ink); }
+  @media (max-width: 600px) {
+    .ind-card__how { grid-template-columns: 1fr; gap: 2px var(--sp-3); }
+    .ind-card__how dd { margin-bottom: var(--sp-2); }
+  }
   .ind-card__detail-block--note { grid-column: 1 / -1; padding: var(--sp-3) var(--sp-4); background: var(--paper-2); border-left: 3px solid var(--ink-3); border-radius: var(--r-1); }
   .ind-card__detail-block--wide { grid-column: 1 / -1; }
 

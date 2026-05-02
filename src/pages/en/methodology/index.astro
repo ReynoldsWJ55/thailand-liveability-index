@@ -4,6 +4,7 @@
 import Site from '../../../layouts/Site.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 
 const lastUpdated = 'April 2026';
 
@@ -52,13 +53,16 @@ const methodologyArticleSchema = {
 >
   <script type="application/ld+json" set:html={JSON.stringify(methodologyArticleSchema)} />
   <article class="methodology">
+    <Breadcrumbs locale="en" items={[{ label: 'Methodology' }]} />
     <header class="methodology__head">
       <p class="tli-eyebrow">Methodology · v1.0</p>
-      <h1 class="methodology__title">How TLI is built</h1>
+      <h1 class="methodology__title">How the Thailand Liveability Index is built</h1>
       <p class="methodology__lede">
-        A composite 0–100 score across seven independent categories. Equal-weighted by default,
-        aggregated by <em>geometric mean</em> with a non-substitutability lock — so a province that
-        truly scores 0 in any one category is honestly floored at 0 overall, not averaged away.
+        The <strong>Thailand Liveability Index (TLI)</strong> is a composite 0–100 score
+        for all 77 Thai provinces, built from 25 indicators across seven independent
+        categories. Each province's composite is the <em>geometric mean</em> of its
+        seven category scores — chosen so a single category at zero floors the
+        composite at zero, preventing strong categories from masking weak ones.
       </p>
       <div class="methodology__meta">
         <ProvenanceChip variant="fresh" icon="calendar">AS OF {lastUpdated.toUpperCase()}</ProvenanceChip>
@@ -66,6 +70,57 @@ const methodologyArticleSchema = {
         <ProvenanceChip icon="book-open">CC BY-NC 4.0</ProvenanceChip>
       </div>
     </header>
+
+    <section class="methodology__section" id="how-calculated">
+      <h2 class="methodology__h2">How is the score calculated?</h2>
+      <p>
+        Each TLI indicator is min-max normalised to a 0–100 score against fixed
+        methodology goalposts (HDI precedent, UNDP 2020) — not against the
+        distribution of Thai provinces, which would make TLI a percentile ranking
+        rather than an absolute score. Indicator scores within a category are
+        averaged with optional weights (0.5–1.0) to produce the category score.
+        The seven category scores are then combined via geometric mean to produce
+        the province's 0–100 composite.
+      </p>
+      <p>
+        Worked example: a province scoring 80, 60, 40, 70, 90, 50, 65 across the
+        seven categories has a composite of (80 × 60 × 40 × 70 × 90 × 50 × 65)<sup>1/7</sup>
+        ≈ 62 of 100. Compare to the arithmetic mean of the same numbers (≈ 65):
+        the geometric mean penalises the weak category (40) more heavily than a
+        simple average would — that's the non-substitutability lock at work.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="why-geometric-mean">
+      <h2 class="methodology__h2">Why a geometric mean instead of a simple average?</h2>
+      <p>
+        A simple (arithmetic) mean lets strong categories compensate for weak ones —
+        a province with excellent healthcare and dangerous air pollution averages
+        out to "fine." That's not how liveability works. The geometric mean encodes
+        the substantive judgement that <em>categories are not substitutable</em>:
+        an exceptionally clean environment does not make up for an absent healthcare
+        system; an excellent transit network does not undo dangerous streets. If
+        any single category truly scores zero, the composite floors at zero — the
+        province is honestly flagged rather than averaged into the middle of the pack.
+      </p>
+    </section>
+
+    <section class="methodology__section" id="vs-percentile">
+      <h2 class="methodology__h2">What's the difference between TLI scores and a percentile ranking?</h2>
+      <p>
+        TLI scores are normalised against <strong>fixed methodology goalposts</strong>,
+        not against the distribution of Thai provinces. A province scoring 60 on
+        an indicator means it sits at the "good" benchmark — not that it scored
+        better than 60% of other provinces. This is a deliberate choice: it keeps
+        scores year-over-year comparable, so a 2026 score of 72 means the same
+        thing as a 2030 score of 72 even if the underlying distribution shifts.
+        The trade-off is that <strong>multiple provinces can share the score-100
+        ceiling</strong> when they all meet or exceed the upper goalpost (and
+        likewise share the score-0 floor at the lower goalpost) — those provinces
+        aren't separated further. Each indicator page shows the count of tied
+        leaders alongside the goalpost values.
+      </p>
+    </section>
 
     <section class="methodology__section" id="categories">
       <h2 class="methodology__h2">The seven categories</h2>

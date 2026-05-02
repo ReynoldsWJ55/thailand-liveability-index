@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
 import { CATEGORIES, CATEGORY_ORDER, SLUG_MAP } from '../../../data/lookups';
+import { IN_DEVELOPMENT_INDICATORS, inDevelopmentByCategory } from '../../../data/in-development-indicators';
 import type { CategoryId } from '../../../data/types';
 
 interface IndicatorMeta {
@@ -32,6 +34,7 @@ for (const m of all) {
 for (const list of Object.values(byCategory)) {
   list.sort((a, b) => a.label_en.localeCompare(b.label_en));
 }
+const devCount = IN_DEVELOPMENT_INDICATORS.length;
 ---
 <Site
   title="Indicators · Thailand Liveability Index"
@@ -40,6 +43,7 @@ for (const list of Object.values(byCategory)) {
   canonicalPath="/en/indicators/"
 >
   <main class="container indicators-index">
+    <Breadcrumbs locale="en" items={[{ label: 'Indicators' }]} />
     <header>
       <h1>Indicators</h1>
       <p class="lede">
@@ -48,31 +52,113 @@ for (const list of Object.values(byCategory)) {
         and a province-by-province distribution. Click into any indicator to see its full
         methodology, source provenance, and which Thai provinces score highest and lowest.
       </p>
+      <p class="lede-meta">
+        <strong>{all.length} live</strong>
+        <span class="lede-meta__sep">·</span>
+        <a href="#in-development"><strong>{devCount} in development</strong> for v1.2 (June 2026)</a>
+      </p>
     </header>
 
-    {CATEGORY_ORDER.map((catId) => (
-      <section class="indicators-cat">
-        <h2 class="indicators-cat__title">
-          <Lucide name={CATEGORIES[catId].icon} size={20} />
-          {CATEGORIES[catId].label_en}
-          <span class="indicators-cat__count">{byCategory[catId].length} {byCategory[catId].length === 1 ? 'indicator' : 'indicators'}</span>
-        </h2>
-        <ul class="indicators-cat__list">
-          {byCategory[catId].map((m) => (
-            <li>
-              <a href={`/en/indicators/${SLUG_MAP[m.id] ?? m.id}/`} class="indicator-card">
-                <span class="indicator-card__name">{m.label_en}</span>
-                <span class="indicator-card__meta">
-                  <span class="indicator-card__unit">{m.unit}</span>
-                  <span class="indicator-card__weight">weight {m.weight}</span>
-                </span>
-                <span class="indicator-card__source">{m.source}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
+    <details class="indicators-explainer">
+      <summary class="indicators-explainer__summary">
+        <Lucide name="info" size={14} />
+        How TLI scoring works
+      </summary>
+      <div class="indicators-explainer__body">
+        <dl>
+          <div>
+            <dt>Raw value</dt>
+            <dd>The measurement in the indicator's own units — μg/m³ for PM2.5, beds per 1,000 residents for hospital capacity, percent for forest cover. Units sit under each indicator name and on the indicator detail page.</dd>
+          </div>
+          <div>
+            <dt>Score 0–100</dt>
+            <dd>A normalisation of the raw value against fixed methodology goalposts. <strong>Not a percentile</strong> — a province scoring 60 means it sits at the "good" benchmark, not 60% of provinces. <strong>Higher is always better</strong>; indicators where lower-is-better in raw terms (e.g. PM2.5, conflict events) are inverted by the goalposts so the scored direction is consistent.</dd>
+          </div>
+          <div>
+            <dt>Bands</dt>
+            <dd>0–19 poor · 20–39 weak · 40–59 mixed · 60–79 good · 80–100 strong. The bands are colour-coded across the site.</dd>
+          </div>
+          <div>
+            <dt>Composite</dt>
+            <dd>The seven category scores combine via geometric mean — so a province scoring 0 in any single category is honestly floored at 0 overall, not averaged away. Within each category, indicators carry weights between 0.5 and 1.0 (headline = 1.0, cross-validation companion = 0.5).</dd>
+          </div>
+        </dl>
+        <p class="indicators-explainer__more">
+          For the full goalpost table, references, and reproducibility receipts, see the <a href="/en/methodology/">methodology page</a>.
+        </p>
+      </div>
+    </details>
+
+    {CATEGORY_ORDER.map((catId) => {
+      const liveList = byCategory[catId];
+      const devList = inDevelopmentByCategory(catId);
+      const totalCount = liveList.length + devList.length;
+      return (
+        <section class="indicators-cat" id={catId}>
+          <h2 class="indicators-cat__title">
+            <Lucide name={CATEGORIES[catId].icon} size={20} />
+            {CATEGORIES[catId].label_en}
+            <span class="indicators-cat__count">
+              {liveList.length} live{devList.length > 0 ? ` · ${devList.length} in dev` : ''} · {totalCount} total
+            </span>
+          </h2>
+          <ul class="indicators-cat__list">
+            {liveList.map((m) => (
+              <li>
+                <a href={`/en/indicators/${SLUG_MAP[m.id] ?? m.id}/`} class="indicator-card">
+                  <span class="indicator-card__name">{m.label_en}</span>
+                  <span class="indicator-card__meta">
+                    <span class="indicator-card__unit">{m.unit}</span>
+                    <span class="indicator-card__weight">weight {m.weight}</span>
+                  </span>
+                  <span class="indicator-card__source">{m.source}</span>
+                </a>
+              </li>
+            ))}
+            {devList.map((m) => (
+              <li>
+                <a href={`/en/indicators/in-development/${m.slug}/`} class="indicator-card indicator-card--dev">
+                  <span class="indicator-card__badge">In development · {m.target_eta}</span>
+                  <span class="indicator-card__name">{m.label_en}</span>
+                  <span class="indicator-card__meta">
+                    <span class="indicator-card__unit">{m.unit}</span>
+                    <span class="indicator-card__weight">weight {m.weight}</span>
+                  </span>
+                  <span class="indicator-card__source">{m.source}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      );
+    })}
+
+    <section class="indicators-meta indicators-roadmap" id="in-development" aria-labelledby="in-development-h">
+      <h2 id="in-development-h">In development</h2>
+      <p>
+        {devCount} additional indicators are scoped and source-onboarded but not yet wired into
+        the live composite. They land in the v1.2 indicator-spike scheduled for June 2026.
+        Each has its own page so the roadmap is concrete and citation-stable.
+      </p>
+      <ul class="indicators-roadmap__list">
+        {IN_DEVELOPMENT_INDICATORS.map((m) => (
+          <li>
+            <a href={`/en/indicators/in-development/${m.slug}/`} class="indicators-roadmap__link">
+              <strong>{m.label_en}</strong>
+              <span class="indicators-roadmap__cat">{CATEGORIES[m.category].label_en}</span>
+              <span class="indicators-roadmap__src">{m.source}</span>
+              <p>{m.description_en}</p>
+              <span class="indicators-roadmap__cta">Read the spec →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="indicators-roadmap__note">
+        Each spec page documents the source, license, target methodology version, and the
+        harmonisation questions the v1.2 spike will resolve. Want a heads-up when these go live?
+        <a href="/en/developers/#changelog">Watch the changelog</a>.
+      </p>
+    </section>
 
     <section class="indicators-meta">
       <h2>How indicators are weighted</h2>
@@ -117,4 +203,118 @@ for (const list of Object.values(byCategory)) {
   .indicator-card__meta { display: flex; gap: var(--sp-3); font-size: var(--fs-13); color: var(--ink-3); }
   .indicator-card__source { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-1); }
   .indicators-meta { margin-top: var(--sp-12); padding-top: var(--sp-7); border-top: 1px solid var(--rule); }
+  .indicators-roadmap__list {
+    list-style: none; padding: 0; margin: var(--sp-5) 0 var(--sp-5);
+    display: grid; gap: var(--sp-4); grid-template-columns: 1fr;
+  }
+  .indicators-roadmap__list > li {
+    padding: var(--sp-4);
+    border: 1px dashed var(--rule-strong, var(--rule));
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+  }
+  .indicators-roadmap__list > li > strong { font-size: var(--fs-15); color: var(--ink); display: block; }
+  .indicators-roadmap__cat,
+  .indicators-roadmap__src {
+    display: inline-block;
+    font: var(--fw-medium) var(--fs-12)/1 var(--font-sans);
+    letter-spacing: var(--tracking-wide);
+    color: var(--ink-3);
+    margin-right: var(--sp-2);
+  }
+  .indicators-roadmap__cat::before { content: "→ "; color: var(--ink-3); }
+  .indicators-roadmap__list > li > p,
+  .indicators-roadmap__link p { margin: var(--sp-2) 0 0 0; font-size: var(--fs-14); color: var(--ink-2); }
+  .indicators-roadmap__link {
+    display: block;
+    color: var(--ink);
+    text-decoration: none;
+    transition: transform 120ms ease;
+  }
+  .indicators-roadmap__link:hover { transform: translateX(2px); }
+  .indicators-roadmap__link:hover strong { color: var(--brand); text-decoration: underline; }
+  .indicators-roadmap__cta {
+    display: inline-block;
+    margin-top: var(--sp-3);
+    font: var(--fw-medium) var(--fs-13)/1 var(--font-sans);
+    color: var(--brand);
+  }
+  .indicators-roadmap__note { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); }
+  /* In-development card variant in the per-category lists */
+  .indicator-card--dev {
+    border-style: dashed !important;
+    background: var(--paper-2) !important;
+  }
+  /* Quiet eyebrow above the indicator name on in-dev cards — same scale as
+     the unit/weight meta line, just colored to flag status. */
+  .indicator-card__badge {
+    display: inline-block;
+    margin-bottom: 2px;
+    font: var(--fw-medium) var(--fs-11)/1 var(--font-sans);
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+  }
+  .indicator-card__badge::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--warning, var(--brand));
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .lede-meta {
+    display: flex; align-items: center; gap: var(--sp-3);
+    margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4);
+    background: var(--paper-2); border: 1px solid var(--rule);
+    border-radius: var(--r-2); font-size: var(--fs-14); color: var(--ink-2);
+  }
+  .lede-meta a { color: var(--brand); text-decoration: none; }
+  .lede-meta a:hover { text-decoration: underline; }
+  .lede-meta__sep { color: var(--ink-3); }
+  .indicators-explainer {
+    margin: 0 0 var(--sp-7) 0;
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper-2);
+    overflow: hidden;
+  }
+  .indicators-explainer__summary {
+    display: inline-flex; align-items: center; gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    font: var(--fw-semibold) var(--fs-14)/1 var(--font-sans);
+    color: var(--ink);
+  }
+  .indicators-explainer__summary::-webkit-details-marker { display: none; }
+  .indicators-explainer__summary::before { content: "▸"; color: var(--ink-3); margin-right: 2px; }
+  .indicators-explainer[open] .indicators-explainer__summary::before { content: "▾"; color: var(--brand); }
+  .indicators-explainer__body {
+    padding: var(--sp-3) var(--sp-5) var(--sp-5);
+    border-top: 1px dashed var(--rule);
+    background: var(--paper);
+  }
+  .indicators-explainer__body dl { display: grid; grid-template-columns: 110px 1fr; gap: var(--sp-3) var(--sp-4); margin: 0; padding: 0; }
+  .indicators-explainer__body > dl > div { display: contents; }
+  .indicators-explainer__body dt {
+    font: var(--fw-semibold) var(--fs-12)/1.2 var(--font-sans);
+    letter-spacing: var(--tracking-wider);
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0;
+  }
+  .indicators-explainer__body dd {
+    margin: 0;
+    font-size: var(--fs-14);
+    line-height: var(--lh-base);
+    color: var(--ink);
+  }
+  .indicators-explainer__more { margin: var(--sp-4) 0 0 0; font-size: var(--fs-13); color: var(--ink-3); }
+  .indicators-explainer__more a { color: var(--brand); }
+  @media (max-width: 720px) {
+    .indicators-explainer__body dl { grid-template-columns: 1fr; gap: var(--sp-1); }
+  }
 </style>

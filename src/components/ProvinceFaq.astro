@@ -1,0 +1,68 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Province FAQ section — renders 4 Q-A pairs derived from province data
+ * with FAQPage JSON-LD inline. Section title puts "Living in {Province}"
+ * up front so the AI-search target query ("living in Bangkok",
+ * "อาศัยอยู่ใน...") matches the heading.
+ *
+ * Position on the page: between IndicatorTable (per-category) and the
+ * Embed widget section. After data consumption, before action CTA.
+ */
+import type { Province, Locale } from '../data/types';
+import { provinceFaqEntries } from '../lib/province-faq';
+
+interface Props {
+  province: Province;
+  locale: Locale;
+  allProvinces: Province[];
+}
+const { province, locale, allProvinces } = Astro.props;
+const { entries, jsonLd } = provinceFaqEntries(province, locale, allProvinces);
+const name = locale === 'th' ? province.name_th : province.name_en;
+const sectionTitle = locale === 'th'
+  ? `ใช้ชีวิตใน${name} — ข้อมูลบอกอะไร`
+  : `Living in ${name}: what the data says`;
+const sectionSub = locale === 'th'
+  ? `4 คำถามที่พบบ่อย คำตอบดึงจากข้อมูล TLI`
+  : '4 frequently asked questions, answered from the TLI dataset';
+---
+<section class="section province-faq" aria-labelledby="province-faq-h">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <div class="section__head">
+    <h2 class="section__title" id="province-faq-h" {...locale === 'th' ? { lang: 'th' } : {}}>
+      {sectionTitle}
+    </h2>
+    <span class="section__sub" {...locale === 'th' ? { lang: 'th' } : {}}>{sectionSub}</span>
+  </div>
+  <dl class="province-faq__list">
+    {entries.map((e) => (
+      <div class="province-faq__row">
+        <dt class="province-faq__q" {...locale === 'th' ? { lang: 'th' } : {}}>{e.question}</dt>
+        <dd class="province-faq__a" {...locale === 'th' ? { lang: 'th' } : {}}>{e.answer}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .province-faq { margin-top: var(--sp-7); }
+  .province-faq__list { margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
+  .province-faq__row {
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+  }
+  .province-faq__q {
+    margin: 0 0 var(--sp-2) 0;
+    font: var(--fw-semibold) var(--fs-16)/1.35 var(--font-sans);
+    color: var(--ink);
+  }
+  .province-faq__a {
+    margin: 0;
+    font: var(--fw-regular) var(--fs-15)/var(--lh-base) var(--font-sans);
+    color: var(--ink-2);
+  }
+</style>

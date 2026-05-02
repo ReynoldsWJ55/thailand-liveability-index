@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
 import scoresData from '../../../data/scores.json';
-import { CATEGORIES, SLUG_MAP } from '../../../data/lookups';
+import { CATEGORIES, SLUG_MAP, indicatorDirection, directionPhrase } from '../../../data/lookups';
 import type { CategoryId, ScoresFile, Indicator } from '../../../data/types';
 
 interface IndicatorMetaShape {
@@ -42,6 +43,12 @@ export function getStaticPaths() {
 const { m, slug } = Astro.props as { m: IndicatorMetaShape; slug: string };
 const data = scoresData as ScoresFile;
 
+// Sibling indicators in the same category — for hub-and-spoke linking.
+const allMeta = indicatorMeta as Record<string, IndicatorMetaShape>;
+const siblings = Object.values(allMeta)
+  .filter((x) => x.category === m.category && x.id !== m.id)
+  .sort((a, b) => a.label_en.localeCompare(b.label_en));
+
 // Build the per-province distribution for this indicator.
 const rows: ProvinceRow[] = [];
 let freshestAsOf = '';
@@ -68,7 +75,44 @@ const bottom = sorted.slice(-5).reverse();
 const hasData = rows.length > 0;
 const median = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)].score : null;
 
+// Goalpost-ceiling and -floor counts — used in the explainer to make the
+// "multiple provinces share 100" or "multiple share 0" reality concrete.
+const ceilingCount = sorted.filter((r) => r.score === 100).length;
+const floorCount = sorted.filter((r) => r.score === 0).length;
+
+const dir = indicatorDirection(m.id);
 const cat = CATEGORIES[m.category];
+
+// Leader / laggard prose for the AI-citable answer block above Coverage.
+// Handles ties: when 2+ provinces share the score-100 ceiling (or score-0
+// floor), name up to 3 by raw-value extreme. AI-search lifts the answer
+// chunk that names the entity + score + raw value, so we put all three
+// inline.
+function fmtRaw(v: number): string {
+  return Number.isInteger(v) ? v.toLocaleString('en-US') : v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+let leaderProse = '';
+if (hasData) {
+  const ceilingProvinces = sorted.filter((r) => r.score === 100);
+  // For lower-is-better indicators, the "best raw value" is the smallest;
+  // for higher-is-better, the largest. Pick provinces tied at 100 by the
+  // direction-appropriate raw extreme.
+  const sortByRaw = (a: typeof sorted[0], b: typeof sorted[0]) =>
+    dir === 'lower' ? a.raw - b.raw : b.raw - a.raw;
+  const tiedTop = [...ceilingProvinces].sort(sortByRaw).slice(0, 3);
+  const bottomRow = sorted[sorted.length - 1];
+  const lastRow = sorted[0];
+
+  if (ceilingCount === 0) {
+    leaderProse = `${lastRow.name_en} leads Thailand on ${m.label_en} with a raw value of ${fmtRaw(lastRow.raw)} ${m.unit}, earning a TLI score of ${lastRow.score}/100. The bottom of the distribution is ${bottomRow.name_en} (${fmtRaw(bottomRow.raw)} ${m.unit}, score ${bottomRow.score}/100).`;
+  } else if (ceilingCount === 1) {
+    leaderProse = `${tiedTop[0].name_en} leads Thailand on ${m.label_en} with a raw value of ${fmtRaw(tiedTop[0].raw)} ${m.unit}, earning the maximum TLI score of 100/100. The bottom of the distribution is ${bottomRow.name_en} (${fmtRaw(bottomRow.raw)} ${m.unit}, score ${bottomRow.score}/100).`;
+  } else {
+    const names = tiedTop.map((r) => r.name_en);
+    const list = names.length === 2 ? `${names[0]} and ${names[1]}` : `${names[0]}, ${names[1]}, and ${names[2]}`;
+    leaderProse = `${ceilingCount} Thai provinces share the maximum TLI score of 100/100 on ${m.label_en}; the strongest by raw value are ${list} (raw values from ${fmtRaw(tiedTop[tiedTop.length - 1].raw)} to ${fmtRaw(tiedTop[0].raw)} ${m.unit}). The bottom of the distribution is ${bottomRow.name_en} (${fmtRaw(bottomRow.raw)} ${m.unit}, score ${bottomRow.score}/100).`;
+  }
+}
 const description = `${m.label_en}. Source: ${m.source}. ${m.unit ? `Unit: ${m.unit}.` : ''} Coverage: ${rows.length} of 77 Thai provinces.`;
 
 // JSON-LD Dataset schema for AI search citations.
@@ -120,23 +164,24 @@ const datasetSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
 
   <main class="container indicator-page">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/en/indicators/">Indicators</a>
-      <span class="breadcrumb__sep">/</span>
-      <span class={`tli-cat-chip ${cat.cssClass}`}>
-        <Lucide name={cat.icon} size={14} />
-        {cat.label_en}
-      </span>
-    </nav>
+    <Breadcrumbs locale="en" items={[
+      { label: 'Indicators', href: '/en/indicators/' },
+      { label: cat.label_en, href: `/en/indicators/#${m.category}`, chip: { icon: cat.icon, cssClass: cat.cssClass } },
+      { label: m.label_en },
+    ]} />
 
     <header class="indicator-page__head">
       <p class="tli-eyebrow">Indicator · TLI {m.id}</p>
       <h1>{m.label_en}</h1>
       <p class="indicator-page__th" lang="th">{m.label_th}</p>
       <div class="indicator-page__meta">
-        {freshestAsOf && (
+        {freshestAsOf ? (
           <ProvenanceChip variant="fresh" icon="calendar">
             {`AS OF ${freshestAsOf}`}
+          </ProvenanceChip>
+        ) : (
+          <ProvenanceChip variant="stale" icon="clock-alert">
+            AS OF — pending pipeline backfill
           </ProvenanceChip>
         )}
         <ProvenanceChip icon="book-open">{m.unit}</ProvenanceChip>
@@ -155,6 +200,13 @@ const datasetSchema = {
       {m.source_description && <p class="indicator-page__source-desc">{m.source_description}</p>}
     </section>
 
+    {hasData && (
+      <section class="indicator-page__leader" aria-labelledby="indicator-leader-h">
+        <h2 id="indicator-leader-h">Which Thai province leads on {m.label_en}?</h2>
+        <p>{leaderProse}</p>
+      </section>
+    )}
+
     <section class="indicator-page__coverage">
       <h2>Coverage</h2>
       <p>
@@ -170,10 +222,42 @@ const datasetSchema = {
 
     {hasData && (
       <section class="indicator-page__distribution">
+        <div class="indicator-page__columns-explainer" role="note">
+          <p>
+            <strong>Reading the columns.</strong>
+            <span class="indicator-page__columns-row">
+              <span class="indicator-page__columns-key">Raw value</span>
+              <span class="indicator-page__columns-val">the actual measurement in {m.unit}.</span>
+            </span>
+            <span class="indicator-page__columns-row">
+              <span class="indicator-page__columns-key">Score</span>
+              <span class="indicator-page__columns-val">
+                normalised 0–100 against fixed methodology goalposts (not a percentile).
+                {dir && <> <strong>{directionPhrase(dir, 'en')}</strong>.</>}
+              </span>
+            </span>
+            {(ceilingCount > 1 || floorCount > 1) && (
+              <span class="indicator-page__columns-row">
+                <span class="indicator-page__columns-key">Why ties?</span>
+                <span class="indicator-page__columns-val">
+                  {ceilingCount > 1 && <>{ceilingCount} provinces share the score-100 ceiling because their raw values meet or exceed the upper goalpost. </>}
+                  {floorCount > 1 && <>{floorCount} share the score-0 floor at the lower goalpost. </>}
+                  Provinces beyond the goalposts aren't separated further — that's the trade-off for fixed, year-over-year comparable scoring instead of percentiles.
+                </span>
+              </span>
+            )}
+          </p>
+        </div>
+
         <h2>Top scorers</h2>
         <table class="indicator-table">
           <thead>
-            <tr><th>Rank</th><th>Province</th><th>Raw value</th><th>Score</th></tr>
+            <tr>
+              <th>Rank</th>
+              <th>Province</th>
+              <th title={`Raw measurement in ${m.unit}.`}>Raw value <span class="indicator-table__unit">({m.unit})</span></th>
+              <th title="0–100 normalisation against fixed methodology goalposts. Higher is better.">Score</th>
+            </tr>
           </thead>
           <tbody>
             {top.map((row, i) => (
@@ -190,7 +274,12 @@ const datasetSchema = {
         <h2>Lowest scorers</h2>
         <table class="indicator-table">
           <thead>
-            <tr><th>Rank</th><th>Province</th><th>Raw value</th><th>Score</th></tr>
+            <tr>
+              <th>Rank</th>
+              <th>Province</th>
+              <th title={`Raw measurement in ${m.unit}.`}>Raw value <span class="indicator-table__unit">({m.unit})</span></th>
+              <th title="0–100 normalisation against fixed methodology goalposts. Higher is better.">Score</th>
+            </tr>
           </thead>
           <tbody>
             {bottom.map((row, i) => (
@@ -211,7 +300,12 @@ const datasetSchema = {
           </summary>
           <table class="indicator-table indicator-page__all-table">
             <thead>
-              <tr><th>Rank</th><th>Province</th><th>Raw value</th><th>Score</th></tr>
+              <tr>
+                <th>Rank</th>
+                <th>Province</th>
+                <th title={`Raw measurement in ${m.unit}.`}>Raw value <span class="indicator-table__unit">({m.unit})</span></th>
+                <th title="0–100 normalisation against fixed methodology goalposts. Higher is better.">Score</th>
+              </tr>
             </thead>
             <tbody>
               {sorted.map((row, i) => (
@@ -239,6 +333,28 @@ const datasetSchema = {
         Cite as: <em>"{m.label_en}." Thailand Liveability Index, 2026. CC BY-NC 4.0.</em>
       </p>
     </section>
+
+    {siblings.length > 0 && (
+      <section class="indicator-page__siblings" aria-labelledby="siblings-h">
+        <h2 id="siblings-h">Other indicators in {cat.label_en}</h2>
+        <ul class="indicator-page__siblings-list">
+          {siblings.map((s) => (
+            <li>
+              <a href={`/en/indicators/${SLUG_MAP[s.id] ?? s.id}/`}>
+                <span class="indicator-page__siblings-name">{s.label_en}</span>
+                <span class="indicator-page__siblings-meta">
+                  <span class="indicator-page__siblings-unit">{s.unit}</span>
+                  <span class="indicator-page__siblings-source">{s.source}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="indicator-page__siblings-more">
+          <a href="/en/indicators/">Browse all indicators →</a>
+        </p>
+      </section>
+    )}
   </main>
 </Site>
 
@@ -268,4 +384,83 @@ const datasetSchema = {
   .indicator-page__all[open] > summary .indicator-page__all-label::before { content: "▾ "; }
   .indicator-page__all-hint { font-size: var(--fs-12); color: var(--ink-3); }
   .indicator-page__all-table { margin-top: var(--sp-3); }
+
+  /* Siblings — hub-and-spoke link rail */
+  .indicator-page__siblings { margin-top: var(--sp-7); padding-top: var(--sp-6); border-top: 1px solid var(--rule); }
+  .indicator-page__siblings h2 { margin-bottom: var(--sp-4); font-size: var(--fs-18); }
+  .indicator-page__siblings-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-2); grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .indicator-page__siblings-list { grid-template-columns: 1fr 1fr; } }
+  .indicator-page__siblings-list a {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .indicator-page__siblings-list a:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .indicator-page__siblings-name { font-weight: var(--fw-medium); line-height: var(--lh-tight); }
+  .indicator-page__siblings-meta { display: flex; gap: var(--sp-3); font-size: var(--fs-12); color: var(--ink-3); flex-wrap: wrap; }
+  .indicator-page__siblings-more { margin-top: var(--sp-4); font-size: var(--fs-14); }
+  .indicator-page__siblings-more a { color: var(--brand); text-decoration: none; }
+  .indicator-page__siblings-more a:hover { text-decoration: underline; }
+
+  /* Reading-the-columns explainer above the distribution tables */
+  .indicator-page__columns-explainer {
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-5);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    font-size: var(--fs-13);
+    line-height: var(--lh-base);
+    color: var(--ink-2);
+  }
+  .indicator-page__columns-explainer p { margin: 0; }
+  .indicator-page__columns-explainer strong { color: var(--ink); }
+  .indicator-page__columns-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--sp-3);
+    margin-top: var(--sp-2);
+    align-items: start;
+  }
+  .indicator-page__columns-key {
+    font: var(--fw-semibold) var(--fs-12)/1.2 var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-3);
+  }
+  @media (max-width: 600px) {
+    .indicator-page__columns-row { grid-template-columns: 1fr; gap: 2px; }
+  }
+  .indicator-table__unit {
+    display: inline-block;
+    margin-left: 4px;
+    font-weight: var(--fw-regular);
+    color: var(--ink-3);
+    font-size: var(--fs-12);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* "Which Thai province leads on..." section — top-of-page AI-citable
+     answer block. Styled as a featured callout so the question + answer
+     reads as a deliberate Q-A pair. */
+  .indicator-page__leader {
+    margin-bottom: var(--sp-7);
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--brand-tint);
+    border-left: 3px solid var(--brand);
+    border-radius: var(--r-2);
+  }
+  .indicator-page__leader h2 {
+    margin: 0 0 var(--sp-2) 0;
+    font-size: var(--fs-18);
+    line-height: var(--lh-tight);
+    color: var(--ink);
+  }
+  .indicator-page__leader p { margin: 0; color: var(--ink-2); line-height: var(--lh-base); }
 </style>

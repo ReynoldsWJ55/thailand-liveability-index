@@ -11,6 +11,7 @@ import CategoryCard from '../../../components/CategoryCard.astro';
 import IndicatorTable from '../../../components/IndicatorTable.astro';
 import UrbanNaNote from '../../../components/UrbanNaNote.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import { CATEGORY_ORDER, CHROME } from '../../../data/lookups';
 import scoresData from '../../../data/scores.json';
 import { ZONES, zonesForProvince } from '../../../data/zones';
@@ -78,17 +79,19 @@ const datasetSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
 
   <main class="container zone-page">
-    <nav class="breadcrumb" aria-label="เส้นทาง">
-      <a href="/th/">หน้าหลัก</a>
-      <span class="breadcrumb__sep">/</span>
-      <a href={`/th/${province.id}/`}>{province.name_th}</a>
-      <span class="breadcrumb__sep">/</span>
-      <span lang="th">{zone.labelEn}</span>
-    </nav>
+    <Breadcrumbs locale="th" items={[
+      { label: province.name_th, href: `/th/${province.id}/`, lang: 'th' },
+      { label: zone.labelEn, lang: 'en' },
+    ]} />
 
     <header class="zone-page__head">
       <p class="tli-eyebrow" lang="th">โซน · {province.name_th}</p>
       <h1>{zone.labelEn}</h1>
+      <p class="zone-page__lede" lang="th">
+        {zone.labelEn} เป็นพื้นที่ระดับย่อยภายในจังหวัด{province.name_th} ประเทศไทย
+        {zone.labelEn}ใช้คะแนน 7 หมวดของ Thailand Liveability Index
+        จากจังหวัด{province.name_th} ในขณะนี้ คะแนนระดับโซนจะมาในรุ่น TLI v1.2 (มิถุนายน 2026)
+      </p>
       <p class="zone-page__sub" lang="th">
         {zone.aliases.length > 0 && (
           <>เป็นที่รู้จักในชื่อ: {zone.aliases.map((a) => a.replace(/-/g, ' ')).join(', ')}</>
@@ -156,7 +159,13 @@ const datasetSchema = {
   .breadcrumb__sep { color: var(--ink-3); }
   .zone-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
   .zone-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
-  .zone-page__sub { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .zone-page__lede {
+    font: var(--fw-regular) var(--fs-18)/var(--lh-loose) var(--font-sans);
+    color: var(--ink-2);
+    margin: var(--sp-3) 0;
+    text-wrap: pretty;
+  }
+  .zone-page__sub { color: var(--ink-3); font-size: var(--fs-14); margin-bottom: var(--sp-3); }
   .zone-page__inheritance { display: flex; gap: var(--sp-3); align-items: flex-start; padding: var(--sp-3) var(--sp-4); margin-top: var(--sp-3); background: var(--paper-2); border: 1px solid var(--rule); border-radius: var(--r-2); font-size: var(--fs-13); color: var(--ink-2); line-height: var(--lh-base); }
   .zone-page__inheritance-icon { flex-shrink: 0; color: var(--ink-3); margin-top: 2px; }
   .zone-page__inheritance p { margin: 0; }

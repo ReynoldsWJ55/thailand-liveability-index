@@ -1,0 +1,150 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Breadcrumbs — shared component used at the top of every interior page so
+ * the user always has a clear path back. Renders a microformats-friendly
+ * BreadcrumbList JSON-LD alongside the visual list so search engines and AI
+ * scrapers can lift the path structure.
+ *
+ * Usage:
+ *   <Breadcrumbs locale="en" items={[
+ *     { label: 'Indicators', href: '/en/indicators/' },
+ *     { label: 'PM2.5 annual mean' },  // last item, no href = current page
+ *   ]} />
+ *
+ * Home is prepended automatically. The current page (last item) renders as
+ * non-link text with aria-current="page".
+ */
+import Lucide from './Lucide.astro';
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  /** Optional category-style chip (icon + cssClass) for the indicator-detail
+   *  case where the breadcrumb wants a coloured category badge. */
+  chip?: { icon: string; cssClass: string };
+  /** Optional lang attribute when the label is in the non-default locale. */
+  lang?: 'en' | 'th';
+}
+
+interface Props {
+  locale: 'en' | 'th';
+  items: BreadcrumbItem[];
+}
+const { locale, items } = Astro.props;
+const homeLabel = locale === 'th' ? 'หน้าหลัก' : 'Home';
+const homeHref = `/${locale}/`;
+const ariaLabel = locale === 'th' ? 'เส้นทาง' : 'Breadcrumb';
+
+// Prepend home so every page ends up with the same top-level anchor.
+const fullItems: BreadcrumbItem[] = [
+  { label: homeLabel, href: homeHref, lang: locale },
+  ...items,
+];
+
+// JSON-LD BreadcrumbList — search-engine readable trail.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: fullItems.map((it, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: it.label,
+    ...(it.href ? { item: `https://thailandliveabilityindex.com${it.href}` } : {}),
+  })),
+};
+---
+<nav class="tli-breadcrumb" aria-label={ariaLabel}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <ol class="tli-breadcrumb__list">
+    {fullItems.map((it, i) => {
+      const isLast = i === fullItems.length - 1;
+      const langAttr = it.lang && it.lang !== locale ? { lang: it.lang } : {};
+      return (
+        <li class="tli-breadcrumb__item">
+          {it.href && !isLast ? (
+            <a href={it.href} class="tli-breadcrumb__link" {...langAttr}>
+              {it.chip ? (
+                <span class={`tli-cat-chip ${it.chip.cssClass}`}>
+                  <Lucide name={it.chip.icon} size={14} />
+                  {it.label}
+                </span>
+              ) : (
+                it.label
+              )}
+            </a>
+          ) : (
+            <span
+              class="tli-breadcrumb__current"
+              aria-current={isLast ? 'page' : undefined}
+              {...langAttr}
+            >
+              {it.chip ? (
+                <span class={`tli-cat-chip ${it.chip.cssClass}`}>
+                  <Lucide name={it.chip.icon} size={14} />
+                  {it.label}
+                </span>
+              ) : (
+                it.label
+              )}
+            </span>
+          )}
+          {!isLast && <span class="tli-breadcrumb__sep" aria-hidden="true">/</span>}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<style>
+  .tli-breadcrumb {
+    margin: 0 0 var(--sp-4) 0;
+    font-size: var(--fs-14);
+    color: var(--ink-2);
+  }
+  .tli-breadcrumb__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+  .tli-breadcrumb__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-width: 0;
+  }
+  /* Underlined breadcrumb links — gives them visual affordance against the
+     paper background and keeps contrast strong (--ink-2 vs --paper ≈ 9:1).
+     Chips inside a link suppress the underline (chip is its own visual
+     primitive — already has tinted background + border). */
+  .tli-breadcrumb__link {
+    color: var(--ink-2);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--ink-3) 50%, transparent);
+    transition: color var(--dur-2) var(--ease-standard), text-decoration-color var(--dur-2) var(--ease-standard);
+  }
+  .tli-breadcrumb__link:has(.tli-cat-chip) { text-decoration: none; }
+  .tli-breadcrumb__link:hover {
+    color: var(--brand);
+    text-decoration-color: currentColor;
+  }
+  .tli-breadcrumb__link:has(.tli-cat-chip):hover { text-decoration: none; }
+  .tli-breadcrumb__link:has(.tli-cat-chip):hover .tli-cat-chip {
+    border-color: var(--cat-color, var(--brand));
+  }
+  .tli-breadcrumb__current { color: var(--ink); font-weight: var(--fw-semibold); }
+  /* When the current item is a chip, drop the bold/ink overrides so the
+     chip's own typography wins. */
+  .tli-breadcrumb__current:has(.tli-cat-chip) { color: inherit; font-weight: inherit; }
+  .tli-breadcrumb__sep {
+    color: var(--ink-3);
+    user-select: none;
+  }
+</style>

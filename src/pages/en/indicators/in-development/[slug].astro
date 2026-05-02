@@ -1,0 +1,181 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * In-development indicator detail page.
+ *
+ * Mirrors the layout of the main indicator detail page, but renders an
+ * "in development" state — no per-province distribution, no scoring band.
+ * Carries the JSON-LD Dataset schema with `creativeWorkStatus: "Draft"` so
+ * AI search engines understand this is a roadmap entry, not live data.
+ */
+import Site from '../../../../layouts/Site.astro';
+import Lucide from '../../../../components/Lucide.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import ProvenanceChip from '../../../../components/ProvenanceChip.astro';
+import { CATEGORIES } from '../../../../data/lookups';
+import { IN_DEVELOPMENT_INDICATORS, type InDevelopmentIndicator } from '../../../../data/in-development-indicators';
+
+export function getStaticPaths() {
+  return IN_DEVELOPMENT_INDICATORS.map((m) => ({
+    params: { slug: m.slug },
+    props: { m },
+  }));
+}
+
+const { m } = Astro.props as { m: InDevelopmentIndicator };
+const cat = CATEGORIES[m.category];
+const description = `${m.label_en} — in development for v1.2 (target ${m.target_eta}). Source: ${m.source}.`;
+
+const datasetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: m.label_en,
+  alternateName: m.label_th,
+  description: m.source_description,
+  url: `https://thailandliveabilityindex.com/en/indicators/in-development/${m.slug}/`,
+  isPartOf: {
+    '@type': 'Dataset',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  creativeWorkStatus: 'Draft',
+  measurementTechnique: m.source_description,
+  variableMeasured: {
+    '@type': 'PropertyValue',
+    name: m.label_en,
+    unitText: m.unit,
+  },
+  spatialCoverage: {
+    '@type': 'Place',
+    name: 'Thailand (77 provinces)',
+  },
+  temporalCoverage: m.target_eta,
+  creator: {
+    '@type': 'Person',
+    name: 'William J. Reynolds',
+    sameAs: 'https://orcid.org/0009-0005-1217-7465',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Thailand Liveability Index',
+    url: 'https://thailandliveabilityindex.com/',
+  },
+  license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+  citation: m.source,
+  isBasedOn: m.source_url,
+  keywords: ['Thailand', 'liveability', 'province', 'in development', cat.label_en, m.label_en],
+};
+---
+<Site
+  title={`${m.label_en} · TLI Indicator (in development)`}
+  description={description}
+  locale="en"
+  canonicalPath={`/en/indicators/in-development/${m.slug}/`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
+
+  <main class="container indicator-page indicator-page--dev">
+    <Breadcrumbs locale="en" items={[
+      { label: 'Indicators', href: '/en/indicators/' },
+      { label: 'In development', href: '/en/indicators/#in-development' },
+      { label: cat.label_en, href: `/en/indicators/#${m.category}`, chip: { icon: cat.icon, cssClass: cat.cssClass } },
+      { label: m.label_en },
+    ]} />
+
+    <header class="indicator-page__head">
+      <p class="tli-eyebrow">Indicator · in development · {m.target_version}</p>
+      <h1>{m.label_en}</h1>
+      <p class="indicator-page__th" lang="th">{m.label_th}</p>
+      <div class="indicator-page__meta">
+        <ProvenanceChip variant="stale" icon="clock-alert">
+          {`TARGET ${m.target_eta.toUpperCase()}`}
+        </ProvenanceChip>
+        <ProvenanceChip icon="book-open">{m.unit}</ProvenanceChip>
+        <ProvenanceChip icon="badge-check">{`Weight ${m.weight}`}</ProvenanceChip>
+      </div>
+    </header>
+
+    <section class="indicator-page__dev-banner" role="note">
+      <Lucide name="info" size={16} />
+      <div>
+        <strong>Not yet wired into the live composite.</strong> This indicator is scoped, the
+        source is onboarded, and the methodology v1.2 spike is targeted for {m.target_eta}.
+        It's listed here so the roadmap is concrete and the URL is stable for citation.
+      </div>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>What it will measure</h2>
+      <p>{m.description_en}</p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>Source</h2>
+      <p>
+        <a href={m.source_url} target="_blank" rel="noopener noreferrer">
+          {m.source}
+          <Lucide name="external-link" size={14} class="tli-citations__icon" />
+        </a>
+      </p>
+      <p class="indicator-page__source-desc">{m.source_description}</p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>Direction</h2>
+      <p>
+        <strong>
+          {m.direction === 'higher' ? 'Higher is better' : m.direction === 'lower' ? 'Lower is better' : 'Mid-range is best'}
+        </strong>
+        {' — '}
+        scored 0–100 against fixed methodology goalposts. The exact thresholds will be
+        published with the v1.2 release; see the <a href="/en/methodology/">methodology page</a>
+        for the scoring approach.
+      </p>
+    </section>
+
+    <section class="indicator-page__source">
+      <h2>Status</h2>
+      <p>{m.status_note_en}</p>
+    </section>
+
+    <section class="indicator-page__methodology">
+      <h2>Roadmap context</h2>
+      <p>
+        See the full <a href="/en/indicators/#in-development">in-development list</a> on the
+        indicators index, or the <a href="/en/developers/#changelog">developers changelog</a>
+        to track when this lands.
+      </p>
+      <p class="indicator-page__cite">
+        Cite as: <em>"{m.label_en}." Thailand Liveability Index roadmap, 2026 ({m.target_version}, {m.target_eta}). CC BY-NC 4.0.</em>
+      </p>
+    </section>
+  </main>
+</Site>
+
+<style>
+  .indicator-page { max-width: 760px; padding-block: var(--sp-7); }
+  .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); margin-bottom: var(--sp-5); color: var(--ink-3); flex-wrap: wrap; }
+  .breadcrumb a { color: var(--ink-2); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--brand); }
+  .breadcrumb__sep { color: var(--ink-3); }
+  .indicator-page__head { margin-bottom: var(--sp-7); padding-bottom: var(--sp-5); border-bottom: 1px solid var(--rule); }
+  .indicator-page__head h1 { line-height: var(--lh-tight); margin-bottom: var(--sp-2); }
+  .indicator-page__th { color: var(--ink-2); font-size: var(--fs-15); margin-bottom: var(--sp-3); }
+  .indicator-page__meta { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  .indicator-page__dev-banner {
+    display: flex; gap: var(--sp-3); align-items: flex-start;
+    padding: var(--sp-4);
+    background: var(--warning-tint, var(--paper-2));
+    border: 1px dashed var(--warning, var(--rule-strong, var(--rule)));
+    border-radius: var(--r-2);
+    margin-bottom: var(--sp-7);
+    color: var(--ink);
+    font-size: var(--fs-14);
+    line-height: var(--lh-base);
+  }
+  .indicator-page__dev-banner svg { flex: 0 0 auto; color: var(--warning, var(--brand)); margin-top: 2px; }
+  .indicator-page__source, .indicator-page__methodology { margin-bottom: var(--sp-7); }
+  .indicator-page__source-desc { color: var(--ink-2); font-size: var(--fs-15); margin-top: var(--sp-2); }
+  .indicator-page__cite { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px dashed var(--rule); }
+</style>

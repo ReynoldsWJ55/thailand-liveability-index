@@ -287,6 +287,40 @@
 .cat-culture      { background: var(--cat-culture); }
 .cat-economy      { background: var(--cat-economy); }
 
+/* ---------- Category chip (icon + label, used in breadcrumbs etc.) ----------
+   Uses the category color as a tinted background + colored stripe, with dark
+   ink text so the label stays AA-readable on the tint. The cat-* classes
+   above are background-only and double-purpose (used both for dots and the
+   chip's color token); the chip overrides background to the tinted variant
+   via background-color-mix. */
+.tli-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: var(--r-pill);
+  font: var(--fw-medium) var(--fs-13)/1.2 var(--font-sans);
+  color: var(--ink);
+  border: 1px solid color-mix(in srgb, currentColor 0%, var(--cat-color, var(--ink-3)) 30%);
+  background: color-mix(in srgb, var(--cat-color, var(--ink-3)) 12%, var(--paper));
+  white-space: nowrap;
+  /* Default cat-color used by the chip — overridden by per-category .cat-*
+     classes below which set --cat-color and reset background to the tinted
+     mix. */
+}
+.tli-cat-chip svg { color: var(--cat-color, var(--ink-3)); flex: 0 0 auto; }
+/* Per-category bindings — set --cat-color so the chip's background mix and
+   border use the right hue. The base .cat-* classes (dots) still set
+   `background` directly; the chip rule above wins via .tli-cat-chip
+   specificity. */
+.tli-cat-chip.cat-climate      { --cat-color: var(--cat-climate);      background: color-mix(in srgb, var(--cat-climate)      14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-climate)      35%, var(--paper)); }
+.tli-cat-chip.cat-cost         { --cat-color: var(--cat-cost);         background: color-mix(in srgb, var(--cat-cost)         14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-cost)         35%, var(--paper)); }
+.tli-cat-chip.cat-safety       { --cat-color: var(--cat-safety);       background: color-mix(in srgb, var(--cat-safety)       14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-safety)       35%, var(--paper)); }
+.tli-cat-chip.cat-healthcare   { --cat-color: var(--cat-healthcare);   background: color-mix(in srgb, var(--cat-healthcare)   14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-healthcare)   35%, var(--paper)); }
+.tli-cat-chip.cat-connectivity { --cat-color: var(--cat-connectivity); background: color-mix(in srgb, var(--cat-connectivity) 14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-connectivity) 35%, var(--paper)); }
+.tli-cat-chip.cat-culture      { --cat-color: var(--cat-culture);      background: color-mix(in srgb, var(--cat-culture)      14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-culture)      35%, var(--paper)); }
+.tli-cat-chip.cat-economy      { --cat-color: var(--cat-economy);      background: color-mix(in srgb, var(--cat-economy)      14%, var(--paper)); border-color: color-mix(in srgb, var(--cat-economy)      35%, var(--paper)); }
+
 /* ---------- Score band gauge (horizontal bar with marker) ---------- */
 .tli-gauge {
   position: relative;

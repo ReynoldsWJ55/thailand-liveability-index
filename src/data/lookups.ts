@@ -211,7 +211,11 @@ const REGION_LABELS_TH: Record<Region, string> = {
 };
 
 const REGION_LABELS_EN_SHORT: Record<Region, string> = {
-  'Bangkok and Vicinities': 'Bangkok & Vicinities',
+  // "Bangkok & Vicinities" reads awkwardly in EN; "Greater Bangkok" is the
+  // standard English term for the BMA metro area (Bangkok + 5 vicinities:
+  // Nakhon Pathom, Nonthaburi, Pathum Thani, Samut Prakan, Samut Sakhon).
+  // The Thai label remains the canonical กรุงเทพและปริมณฑล.
+  'Bangkok and Vicinities': 'Greater Bangkok',
   Central: 'Central Thailand',
   Eastern: 'Eastern Thailand',
   Western: 'Western Thailand',
@@ -290,6 +294,12 @@ export interface ChromeLabels {
   naTooltipFallback: string;
   /** Methodology-honest note above categories with overridden indicators on a province page. `provinceName` is interpolated; `indicatorList` is a comma-joined list of indicator labels. */
   urbanNaNote: (provinceName: string, indicatorList: string) => string;
+  /** Indicator-table column header tooltips and how-to-read explainer. */
+  howToRead: string;
+  howToReadValueHeader: string;
+  howToReadScoreHeader: string;
+  howToReadValueBody: string;
+  howToReadScoreBody: string;
 }
 
 export const CHROME: Record<Locale, ChromeLabels> = {
@@ -354,6 +364,11 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     naTooltipFallback: 'This indicator is structurally inappropriate to this province type. See methodology.',
     urbanNaNote: (provinceName, indicatorList) =>
       `${provinceName} scores low on some indicators (${indicatorList}) that don't fit a fully urban province. The proper methodology fix is queued for v1.2 — see the smell-test review queue.`,
+    howToRead: 'How to read this table',
+    howToReadValueHeader: 'Value',
+    howToReadScoreHeader: 'Score 0–100',
+    howToReadValueBody: 'The raw measurement in the indicator\'s natural units (e.g. µg/m³ for PM2.5, beds per 1,000 residents for hospital capacity). Units are shown under the indicator name. Click any indicator to expand for the per-province distribution and rank.',
+    howToReadScoreBody: 'A 0–100 normalisation of the raw value against fixed methodology goalposts (not a percentile). Higher is always better. Bands: 0–19 poor, 20–39 weak, 40–59 mixed, 60–79 good, 80–100 strong. Click any indicator to expand for full per-province distribution and source.',
   },
   th: {
     province: 'จังหวัด',
@@ -416,6 +431,11 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     naTooltipFallback: 'ตัวชี้วัดนี้ไม่เหมาะกับจังหวัดประเภทนี้โดยโครงสร้าง ดูระเบียบวิธี',
     urbanNaNote: (provinceName, indicatorList) =>
       `${provinceName}ได้คะแนนต่ำในตัวชี้วัดบางตัว (${indicatorList}) ที่ไม่เหมาะกับจังหวัดที่เป็นเขตเมืองทั้งหมด การแก้ไขระเบียบวิธีที่เหมาะสมจะอยู่ในรุ่น v1.2 — ดูคิวตรวจสอบ smell-test`,
+    howToRead: 'วิธีอ่านตารางนี้',
+    howToReadValueHeader: 'ค่า',
+    howToReadScoreHeader: 'คะแนน 0–100',
+    howToReadValueBody: 'ค่าวัดดิบในหน่วยจริงของตัวชี้วัด (เช่น µg/m³ สำหรับ PM2.5 หรือเตียงต่อ 1,000 คน สำหรับโรงพยาบาล) หน่วยจะแสดงไว้ใต้ชื่อตัวชี้วัด คลิกที่ตัวชี้วัดเพื่อดูอันดับและการกระจายค่ารายจังหวัด',
+    howToReadScoreBody: 'การปรับค่าดิบให้อยู่ในช่วง 0–100 เทียบกับเกณฑ์มาตรฐานคงที่ (ไม่ใช่เปอร์เซ็นไทล์) ค่าสูงดีกว่าเสมอ ช่วงคะแนน: 0–19 ต่ำ, 20–39 อ่อน, 40–59 ปานกลาง, 60–79 ดี, 80–100 แข็งแกร่ง คลิกที่ตัวชี้วัดใดๆ เพื่อดูการกระจายและแหล่งข้อมูลแบบเต็ม',
   },
 };
 
@@ -541,4 +561,95 @@ export function indicatorDescription(id: string, locale: Locale): string {
   const desc = INDICATOR_PLAIN_DESCRIPTIONS[id];
   if (!desc) return '';
   return locale === 'th' ? desc.th : desc.en;
+}
+
+/**
+ * Dynamic home-page lede — auto-updates when indicator count or category
+ * structure changes. Pulls from CATEGORY_ORDER + CATEGORIES so adding /
+ * removing a category, or wiring a new live indicator, requires zero edits
+ * to the lede string itself.
+ *
+ * The static `homeLede` strings in CHROME are kept as fallbacks for early
+ * rendering paths but the home pages should call this function with the
+ * live indicator count from scores.json.
+ */
+export function dynamicHomeLede(indicatorCount: number, locale: Locale): string {
+  const categoryNames = CATEGORY_ORDER.map((id) =>
+    locale === 'th' ? CATEGORIES[id].label_th.toLowerCase() : CATEGORIES[id].label_en.toLowerCase(),
+  );
+  const catCount = categoryNames.length;
+
+  // Locale-aware list join. EN: "a, b, and c". TH: " a b และ c" (Thai
+  // doesn't use serial commas; spaces + และ before the last item is natural).
+  let categoryList: string;
+  if (locale === 'th') {
+    if (categoryNames.length <= 1) categoryList = categoryNames.join('');
+    else categoryList = categoryNames.slice(0, -1).join(' ') + ' และ' + categoryNames[categoryNames.length - 1];
+  } else {
+    if (categoryNames.length <= 1) categoryList = categoryNames.join('');
+    else if (categoryNames.length === 2) categoryList = categoryNames.join(' and ');
+    else categoryList = categoryNames.slice(0, -1).join(', ') + ', and ' + categoryNames[categoryNames.length - 1];
+  }
+
+  if (locale === 'th') {
+    return `Thailand Liveability Index จัดอันดับ 77 จังหวัดของประเทศไทยด้วยคะแนนรวมคุณภาพการอยู่อาศัย 0–100 สร้างจาก ${indicatorCount} ตัวชี้วัดใน ${catCount} หมวด ได้แก่ ${categoryList} คะแนนรวมของแต่ละจังหวัดคำนวณด้วยค่าเฉลี่ยเรขาคณิต ดังนั้นหมวดใดได้ 0 จะตรึงคะแนนรวมที่ 0 หมวดที่แข็งจะไม่กลบหมวดที่อ่อน`;
+  }
+  return `The Thailand Liveability Index ranks all 77 Thai provinces on a 0–100 composite liveability score, built from ${indicatorCount} indicators across ${catCount} categories: ${categoryList}. Each province's composite is a geometric mean, so a single category at zero floors the composite at zero. Strong categories never mask weak ones.`;
+}
+
+/**
+ * Per-indicator direction — used to render plain-language nuance in the
+ * expanded "How to read this score" block on province pages.
+ *
+ * - 'higher' = raw value higher → score higher (e.g. hospital beds, GPP)
+ * - 'lower'  = raw value lower → score higher (e.g. PM2.5, conflict events)
+ * - 'parabolic' = mid is best (e.g. rainfall days, population density)
+ *
+ * Goalposts are NOT captured here — those live in the methodology page
+ * (and the per-indicator dataset JSON-LD on /en/indicators/[id]/). This map
+ * just answers "which direction is better" in one word.
+ */
+export type IndicatorDirection = 'higher' | 'lower' | 'parabolic';
+
+export const INDICATOR_DIRECTION: Record<string, IndicatorDirection> = {
+  ind_acled_events_per_100k_5yr: 'lower',
+  ind_acled_fatalities_per_100k_5yr: 'lower',
+  ind_airport_intl_drive_min: 'lower',
+  ind_flood_frequency: 'lower',
+  ind_forest_cover_pct: 'higher',
+  ind_gpp_per_capita: 'higher',
+  ind_heat_days_35c: 'lower',
+  ind_hospital_beds_per_1k: 'higher',
+  ind_hospitals_per_100k: 'higher',
+  ind_internet_fixed_mbps: 'higher',
+  ind_internet_mobile_mbps: 'higher',
+  ind_jci_accredited_count: 'higher',
+  ind_piped_water_pct: 'higher',
+  ind_pm25_annual_mean: 'lower',
+  ind_pm25_days_exceeding_who: 'lower',
+  ind_population_density: 'parabolic',
+  ind_public_transport_access: 'higher',
+  ind_rail_access: 'higher',
+  ind_rainfall_days_per_year: 'parabolic',
+  ind_rpsto_per_10k_total: 'higher',
+  ind_tat_events_per_100k: 'higher',
+  ind_tree_canopy_pct: 'higher',
+  ind_unesco_whs_count: 'higher',
+  ind_walkability_score: 'higher',
+  ind_waste_management_score: 'higher',
+};
+
+export function indicatorDirection(id: string): IndicatorDirection | undefined {
+  return INDICATOR_DIRECTION[id];
+}
+
+export function directionPhrase(dir: IndicatorDirection, locale: Locale): string {
+  if (locale === 'th') {
+    return dir === 'higher' ? 'ค่าสูงดีกว่า'
+      : dir === 'lower' ? 'ค่าต่ำดีกว่า'
+      : 'ค่ากลางดีที่สุด (เกณฑ์โค้งพาราโบลา)';
+  }
+  return dir === 'higher' ? 'Higher is better'
+    : dir === 'lower' ? 'Lower is better'
+    : 'Mid-range is best (parabolic curve)';
 }

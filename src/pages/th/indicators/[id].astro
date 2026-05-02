@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: MIT
 import Site from '../../../layouts/Site.astro';
 import Lucide from '../../../components/Lucide.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ProvenanceChip from '../../../components/ProvenanceChip.astro';
 import indicatorMeta from '../../../data/indicator-meta.json';
 import scoresData from '../../../data/scores.json';
-import { CATEGORIES, SLUG_MAP } from '../../../data/lookups';
+import { CATEGORIES, SLUG_MAP, indicatorDirection, directionPhrase } from '../../../data/lookups';
 import type { CategoryId, ScoresFile, Indicator } from '../../../data/types';
 
 interface IndicatorMetaShape {
@@ -42,6 +43,12 @@ export function getStaticPaths() {
 const { m, slug } = Astro.props as { m: IndicatorMetaShape; slug: string };
 const data = scoresData as ScoresFile;
 
+// Sibling indicators in the same category — hub-and-spoke linking.
+const allMeta = indicatorMeta as Record<string, IndicatorMetaShape>;
+const siblings = Object.values(allMeta)
+  .filter((x) => x.category === m.category && x.id !== m.id)
+  .sort((a, b) => a.label_th.localeCompare(b.label_th, 'th'));
+
 const rows: ProvinceRow[] = [];
 let freshestAsOf = '';
 for (const p of data.provinces) {
@@ -67,7 +74,34 @@ const bottom = sorted.slice(-5).reverse();
 const hasData = rows.length > 0;
 const median = sorted.length > 0 ? sorted[Math.floor(sorted.length / 2)].score : null;
 
+const ceilingCount = sorted.filter((r) => r.score === 100).length;
+const floorCount = sorted.filter((r) => r.score === 0).length;
+
+const dir = indicatorDirection(m.id);
 const cat = CATEGORIES[m.category];
+
+function fmtRaw(v: number): string {
+  return Number.isInteger(v) ? v.toLocaleString('en-US') : v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+let leaderProse = '';
+if (rows.length > 0) {
+  const ceilingProvinces = sorted.filter((r) => r.score === 100);
+  const sortByRaw = (a: typeof sorted[0], b: typeof sorted[0]) =>
+    dir === 'lower' ? a.raw - b.raw : b.raw - a.raw;
+  const tiedTop = [...ceilingProvinces].sort(sortByRaw).slice(0, 3);
+  const bottomRow = sorted[sorted.length - 1];
+  const lastRow = sorted[0];
+
+  if (ceilingCount === 0) {
+    leaderProse = `${lastRow.name_th}เป็นจังหวัดที่ได้คะแนนสูงสุดในประเทศไทยสำหรับ${m.label_th} ด้วยค่า ${fmtRaw(lastRow.raw)} ${m.unit} คะแนน TLI ${lastRow.score}/100 ส่วนจังหวัดที่ได้คะแนนต่ำสุดคือ${bottomRow.name_th} (${fmtRaw(bottomRow.raw)} ${m.unit} คะแนน ${bottomRow.score}/100)`;
+  } else if (ceilingCount === 1) {
+    leaderProse = `${tiedTop[0].name_th}เป็นจังหวัดที่ได้คะแนนสูงสุดในประเทศไทยสำหรับ${m.label_th} ด้วยค่า ${fmtRaw(tiedTop[0].raw)} ${m.unit} คะแนน TLI สูงสุดที่ 100/100 ส่วนจังหวัดที่ได้คะแนนต่ำสุดคือ${bottomRow.name_th} (${fmtRaw(bottomRow.raw)} ${m.unit} คะแนน ${bottomRow.score}/100)`;
+  } else {
+    const names = tiedTop.map((r) => r.name_th);
+    const list = names.length === 2 ? `${names[0]} และ ${names[1]}` : `${names[0]} ${names[1]} และ ${names[2]}`;
+    leaderProse = `${ceilingCount} จังหวัดของไทยได้คะแนน TLI สูงสุดที่ 100/100 สำหรับ${m.label_th} จังหวัดที่ค่าดิบดีที่สุดคือ ${list} (ค่าดิบ ${fmtRaw(tiedTop[tiedTop.length - 1].raw)} ถึง ${fmtRaw(tiedTop[0].raw)} ${m.unit}) ส่วนจังหวัดที่ได้คะแนนต่ำสุดคือ${bottomRow.name_th} (${fmtRaw(bottomRow.raw)} ${m.unit} คะแนน ${bottomRow.score}/100)`;
+  }
+}
 const description = `${m.label_th} แหล่งข้อมูล: ${m.source} ครอบคลุม ${rows.length} จาก 77 จังหวัดของไทย`;
 
 const datasetSchema = {
@@ -118,23 +152,24 @@ const datasetSchema = {
   <script type="application/ld+json" set:html={JSON.stringify(datasetSchema)} />
 
   <main class="container indicator-page">
-    <nav class="breadcrumb" aria-label="เส้นทาง">
-      <a href="/th/indicators/">ตัวชี้วัด</a>
-      <span class="breadcrumb__sep">/</span>
-      <span class={`tli-cat-chip ${cat.cssClass}`}>
-        <Lucide name={cat.icon} size={14} />
-        {cat.label_th}
-      </span>
-    </nav>
+    <Breadcrumbs locale="th" items={[
+      { label: 'ตัวชี้วัด', href: '/th/indicators/' },
+      { label: cat.label_th, href: `/th/indicators/#${m.category}`, chip: { icon: cat.icon, cssClass: cat.cssClass } },
+      { label: m.label_th },
+    ]} />
 
     <header class="indicator-page__head">
       <p class="tli-eyebrow">ตัวชี้วัด · TLI {m.id}</p>
       <h1>{m.label_th}</h1>
       <p class="indicator-page__th" lang="en">{m.label_en}</p>
       <div class="indicator-page__meta">
-        {freshestAsOf && (
+        {freshestAsOf ? (
           <ProvenanceChip variant="fresh" icon="calendar">
             {`ณ ${freshestAsOf}`}
+          </ProvenanceChip>
+        ) : (
+          <ProvenanceChip variant="stale" icon="clock-alert">
+            ณ — รอเติมข้อมูล
           </ProvenanceChip>
         )}
         <ProvenanceChip icon="book-open">{m.unit}</ProvenanceChip>
@@ -153,6 +188,13 @@ const datasetSchema = {
       {m.source_description && <p class="indicator-page__source-desc">{m.source_description}</p>}
     </section>
 
+    {hasData && (
+      <section class="indicator-page__leader" aria-labelledby="indicator-leader-h">
+        <h2 id="indicator-leader-h">จังหวัดใดในประเทศไทยที่ได้คะแนนสูงสุดสำหรับ{m.label_th}?</h2>
+        <p lang="th">{leaderProse}</p>
+      </section>
+    )}
+
     <section class="indicator-page__coverage">
       <h2>ความครอบคลุม</h2>
       <p>
@@ -168,10 +210,42 @@ const datasetSchema = {
 
     {hasData && (
       <section class="indicator-page__distribution">
+        <div class="indicator-page__columns-explainer" role="note" lang="th">
+          <p>
+            <strong>วิธีอ่านคอลัมน์</strong>
+            <span class="indicator-page__columns-row">
+              <span class="indicator-page__columns-key">ค่าดิบ</span>
+              <span class="indicator-page__columns-val">ค่าวัดจริงในหน่วย {m.unit}</span>
+            </span>
+            <span class="indicator-page__columns-row">
+              <span class="indicator-page__columns-key">คะแนน</span>
+              <span class="indicator-page__columns-val">
+                ปรับให้อยู่ในช่วง 0–100 เทียบกับเกณฑ์มาตรฐานคงที่ (ไม่ใช่เปอร์เซ็นไทล์)
+                {dir && <> <strong>{directionPhrase(dir, 'th')}</strong></>}
+              </span>
+            </span>
+            {(ceilingCount > 1 || floorCount > 1) && (
+              <span class="indicator-page__columns-row">
+                <span class="indicator-page__columns-key">เหตุที่เสมอกัน</span>
+                <span class="indicator-page__columns-val">
+                  {ceilingCount > 1 && <>{ceilingCount} จังหวัดได้คะแนนเพดาน 100 เท่ากันเพราะค่าดิบสูงกว่าหรือเท่ากับเกณฑ์บน </>}
+                  {floorCount > 1 && <>{floorCount} จังหวัดได้คะแนนพื้น 0 เท่ากันที่เกณฑ์ล่าง </>}
+                  จังหวัดที่เกินเกณฑ์ไม่ถูกแยกแยะต่อ — เป็นการแลกเพื่อให้คะแนนเทียบกันได้ปีต่อปีแทนที่จะใช้เปอร์เซ็นไทล์
+                </span>
+              </span>
+            )}
+          </p>
+        </div>
+
         <h2>จังหวัดคะแนนสูงสุด</h2>
         <table class="indicator-table">
           <thead>
-            <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+            <tr>
+              <th>อันดับ</th>
+              <th>จังหวัด</th>
+              <th title={`ค่าวัดจริงในหน่วย ${m.unit}`}>ค่าดิบ <span class="indicator-table__unit">({m.unit})</span></th>
+              <th title="ปรับ 0–100 เทียบเกณฑ์มาตรฐานคงที่ ค่าสูงดีกว่า">คะแนน</th>
+            </tr>
           </thead>
           <tbody>
             {top.map((row, i) => (
@@ -188,7 +262,12 @@ const datasetSchema = {
         <h2>จังหวัดคะแนนต่ำสุด</h2>
         <table class="indicator-table">
           <thead>
-            <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+            <tr>
+              <th>อันดับ</th>
+              <th>จังหวัด</th>
+              <th title={`ค่าวัดจริงในหน่วย ${m.unit}`}>ค่าดิบ <span class="indicator-table__unit">({m.unit})</span></th>
+              <th title="ปรับ 0–100 เทียบเกณฑ์มาตรฐานคงที่ ค่าสูงดีกว่า">คะแนน</th>
+            </tr>
           </thead>
           <tbody>
             {bottom.map((row, i) => (
@@ -209,7 +288,12 @@ const datasetSchema = {
           </summary>
           <table class="indicator-table indicator-page__all-table">
             <thead>
-              <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+              <tr>
+                <th>อันดับ</th>
+                <th>จังหวัด</th>
+                <th title={`ค่าวัดจริงในหน่วย ${m.unit}`}>ค่าดิบ <span class="indicator-table__unit">({m.unit})</span></th>
+                <th title="ปรับ 0–100 เทียบเกณฑ์มาตรฐานคงที่ ค่าสูงดีกว่า">คะแนน</th>
+              </tr>
             </thead>
             <tbody>
               {sorted.map((row, i) => (
@@ -237,6 +321,28 @@ const datasetSchema = {
         อ้างอิง: <em>"{m.label_th}" Thailand Liveability Index, 2026 CC BY-NC 4.0</em>
       </p>
     </section>
+
+    {siblings.length > 0 && (
+      <section class="indicator-page__siblings" aria-labelledby="siblings-h">
+        <h2 id="siblings-h">ตัวชี้วัดอื่นในหมวด{cat.label_th}</h2>
+        <ul class="indicator-page__siblings-list">
+          {siblings.map((s) => (
+            <li>
+              <a href={`/th/indicators/${SLUG_MAP[s.id] ?? s.id}/`}>
+                <span class="indicator-page__siblings-name">{s.label_th}</span>
+                <span class="indicator-page__siblings-meta">
+                  <span class="indicator-page__siblings-unit">{s.unit}</span>
+                  <span class="indicator-page__siblings-source">{s.source}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="indicator-page__siblings-more">
+          <a href="/th/indicators/">ดูตัวชี้วัดทั้งหมด →</a>
+        </p>
+      </section>
+    )}
   </main>
 </Site>
 
@@ -266,4 +372,78 @@ const datasetSchema = {
   .indicator-page__all[open] > summary .indicator-page__all-label::before { content: "▾ "; }
   .indicator-page__all-hint { font-size: var(--fs-12); color: var(--ink-3); }
   .indicator-page__all-table { margin-top: var(--sp-3); }
+
+  .indicator-page__siblings { margin-top: var(--sp-7); padding-top: var(--sp-6); border-top: 1px solid var(--rule); }
+  .indicator-page__siblings h2 { margin-bottom: var(--sp-4); font-size: var(--fs-18); }
+  .indicator-page__siblings-list { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--sp-2); grid-template-columns: 1fr; }
+  @media (min-width: 600px) { .indicator-page__siblings-list { grid-template-columns: 1fr 1fr; } }
+  .indicator-page__siblings-list a {
+    display: flex; flex-direction: column; gap: 2px;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 120ms ease, transform 120ms ease;
+  }
+  .indicator-page__siblings-list a:hover { border-color: var(--brand); transform: translateY(-1px); }
+  .indicator-page__siblings-name { font-weight: var(--fw-medium); line-height: var(--lh-tight); }
+  .indicator-page__siblings-meta { display: flex; gap: var(--sp-3); font-size: var(--fs-12); color: var(--ink-3); flex-wrap: wrap; }
+  .indicator-page__siblings-more { margin-top: var(--sp-4); font-size: var(--fs-14); }
+  .indicator-page__siblings-more a { color: var(--brand); text-decoration: none; }
+  .indicator-page__siblings-more a:hover { text-decoration: underline; }
+
+  .indicator-page__columns-explainer {
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-5);
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    font-size: var(--fs-13);
+    line-height: var(--lh-base);
+    color: var(--ink-2);
+  }
+  .indicator-page__columns-explainer p { margin: 0; }
+  .indicator-page__columns-explainer strong { color: var(--ink); }
+  .indicator-page__columns-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--sp-3);
+    margin-top: var(--sp-2);
+    align-items: start;
+  }
+  .indicator-page__columns-key {
+    font: var(--fw-semibold) var(--fs-12)/1.2 var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--ink-3);
+  }
+  @media (max-width: 600px) {
+    .indicator-page__columns-row { grid-template-columns: 1fr; gap: 2px; }
+  }
+  .indicator-table__unit {
+    display: inline-block;
+    margin-left: 4px;
+    font-weight: var(--fw-regular);
+    color: var(--ink-3);
+    font-size: var(--fs-12);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .indicator-page__leader {
+    margin-bottom: var(--sp-7);
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--brand-tint);
+    border-left: 3px solid var(--brand);
+    border-radius: var(--r-2);
+  }
+  .indicator-page__leader h2 {
+    margin: 0 0 var(--sp-2) 0;
+    font-size: var(--fs-18);
+    line-height: var(--lh-tight);
+    color: var(--ink);
+  }
+  .indicator-page__leader p { margin: 0; color: var(--ink-2); line-height: var(--lh-base); }
 </style>

@@ -38,7 +38,18 @@ const flooredCategoryLabel = floored && province.floored_by
   ? categoryLabel(province.floored_by, locale)
   : null;
 
-// Plain, data-derived lede. Hand-authored editorial ledes land in PR 5+.
+// Data-derived lede — AI/SEO-optimised prose.
+//
+// Why prose, not a label dump: AI search engines (Perplexity, ChatGPT,
+// Claude, Gemini) cite the sentence they can lift verbatim. A label-style
+// "Composite 49.6 of 100. Strongest: …" reads as a stat sheet and gets
+// reformatted, losing attribution; full-sentence prose with the province
+// name, the phrase "liveability score", "Thailand", and the category names
+// inline gets cited as-written and links back to the canonical page.
+//
+// Keyword density targets (per sentence): {province name}, "liveability
+// score", "Thailand" or "Thai province", category name, "TLI" implicit via
+// page title. Numbers stay so the answer is informative.
 const cats = Object.values(province.categories);
 const sortedByScore = [...cats].sort((a, b) => b.score - a.score);
 const strongest = sortedByScore[0];
@@ -47,14 +58,14 @@ const weakest = sortedByScore[sortedByScore.length - 1];
 let lede: string;
 if (floored && flooredCategoryLabel) {
   lede = locale === 'th'
-    ? `คะแนนรวมติดเพดานที่ 0 เพราะหมวด${flooredCategoryLabel}แตะระดับ 0 ภายใต้กฎไม่อนุญาตให้ทดแทนกัน หมวดอื่นยังมีค่าจริงและแสดงด้านล่าง`
-    : `Composite floors at 0 because ${flooredCategoryLabel} reaches 0 — non-substitutability locks the geometric mean to its lowest input. Other categories carry real values and are shown below.`;
+    ? `${name}เป็นจังหวัดในประเทศไทยที่คะแนนรวมคุณภาพการอยู่อาศัยติดเพดานที่ 0 เพราะคะแนนหมวด${flooredCategoryLabel}แตะระดับ 0 ภายใต้กฎไม่ทดแทนกันของค่าเฉลี่ยเรขาคณิต หมวดอื่นยังมีค่าจริงและแสดงด้านล่าง`
+    : `${name} is a Thai province whose Thailand Liveability Index composite score floors at 0 because the ${flooredCategoryLabel.toLowerCase()} category reaches 0 — non-substitutability locks the geometric mean to its lowest input. The remaining six categories carry real values and are detailed below.`;
 } else if (strongest && weakest) {
   const sLabel = categoryLabel(strongest.id, locale);
   const wLabel = categoryLabel(weakest.id, locale);
   lede = locale === 'th'
-    ? `คะแนนรวม ${province.composite} จาก 100 หมวดเด่น: ${sLabel} (${strongest.score}) หมวดอ่อน: ${wLabel} (${weakest.score})`
-    : `Composite ${province.composite} of 100. Strongest: ${sLabel} (${strongest.score}). Weakest: ${wLabel} (${weakest.score}).`;
+    ? `${name}ได้คะแนนรวมคุณภาพการอยู่อาศัย ${province.composite} จาก 100 อันดับ ${province.rank} จาก 77 จังหวัดของไทย จุดแข็งคือหมวด${sLabel} (${strongest.score}/100) จุดอ่อนคือหมวด${wLabel} (${weakest.score}/100)`
+    : `${name} scores ${province.composite} of 100 on the Thailand Liveability Index, ranking ${province.rank} of 77 Thai provinces. ${name}'s strongest category is ${sLabel} (${strongest.score}/100); its weakest is ${wLabel} (${weakest.score}/100).`;
 } else {
   lede = '';
 }
