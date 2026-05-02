@@ -1,0 +1,73 @@
+---
+// Copyright (c) 2026 Will Reynolds
+// SPDX-License-Identifier: MIT
+/**
+ * Methodology-honest note shown above the indicator-detail blocks on a
+ * province page that has applicability-override entries (per Block 3 tactical
+ * pre-v1.2 fix).
+ *
+ * Composes `lookups.urbanNaNote(provinceName, indicatorList)` with the actual
+ * names of the affected indicators. Renders only when the province has
+ * overrides; otherwise null.
+ *
+ * Visual treatment: paper-2 surface, info icon, rule border, modest margins.
+ * Does not interrupt the indicator-detail flow — sits as a quiet aside.
+ */
+import { CHROME } from '../data/lookups';
+import { getOverriddenIndicatorIds } from '../data/applicability_overrides';
+import type { Locale, Province, Indicator } from '../data/types';
+import Lucide from './Lucide.astro';
+
+interface Props {
+  province: Province;
+  locale: Locale;
+}
+const { province, locale } = Astro.props;
+const C = CHROME[locale];
+
+const overriddenIds = getOverriddenIndicatorIds(province.id);
+let affectedLabels: string[] = [];
+if (overriddenIds.length > 0) {
+  // Walk the province's indicators to collect localized labels for the overridden ids.
+  for (const cat of Object.values(province.categories)) {
+    for (const ind of cat.indicators as Indicator[]) {
+      if (overriddenIds.includes(ind.id)) {
+        affectedLabels.push(locale === 'th' ? ind.label_th : ind.label_en);
+      }
+    }
+  }
+}
+const provinceName = locale === 'th' ? province.name_th : province.name_en;
+const indicatorList = affectedLabels.join(locale === 'th' ? ', ' : ', ');
+const noteText = affectedLabels.length > 0 ? C.urbanNaNote(provinceName, indicatorList) : '';
+---
+{affectedLabels.length > 0 && (
+  <aside class="urban-na-note" {...locale === 'th' ? { lang: 'th' } : {}}>
+    <Lucide name="info" size={16} class="urban-na-note__icon" />
+    <p>{noteText}</p>
+  </aside>
+)}
+
+<style>
+  .urban-na-note {
+    display: flex;
+    gap: var(--sp-3);
+    align-items: flex-start;
+    padding: var(--sp-3) var(--sp-4);
+    margin: var(--sp-6) 0 var(--sp-4) 0;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: var(--r-2);
+    font-size: var(--fs-13);
+    color: var(--ink-2);
+    line-height: var(--lh-base);
+  }
+  .urban-na-note__icon {
+    flex-shrink: 0;
+    color: var(--ink-3);
+    margin-top: 2px;
+  }
+  .urban-na-note p {
+    margin: 0;
+  }
+</style>

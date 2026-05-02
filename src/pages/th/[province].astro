@@ -6,6 +6,7 @@ import Hero from '../../components/Hero.astro';
 import CategoryCard from '../../components/CategoryCard.astro';
 import IndicatorTable from '../../components/IndicatorTable.astro';
 import EditorialBanner from '../../components/EditorialBanner.astro';
+import UrbanNaNote from '../../components/UrbanNaNote.astro';
 import { CATEGORY_ORDER, CHROME } from '../../data/lookups';
 import scoresData from '../../data/scores.json';
 import type { Province, ScoresFile } from '../../data/types';
@@ -63,11 +64,14 @@ const description = province.floored
     </div>
   </section>
 
+  <UrbanNaNote province={province} locale={locale} />
+
   {cats.map((cat) => (
     <IndicatorTable
       category={cat}
       locale={locale}
       isFloor={province.floored && province.floored_by === cat.id}
+      provinceId={province.id}
     />
   ))}
 </Site>

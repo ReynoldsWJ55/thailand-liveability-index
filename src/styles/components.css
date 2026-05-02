@@ -108,6 +108,7 @@
 .tli-prov-inherit  { background: var(--inherited-tint); color: var(--inherited); border-color: transparent; }
 .tli-prov-stale    { background: var(--warning-tint); color: var(--warning); border-color: transparent; }
 .tli-prov-missing  { background: var(--paper-2); color: var(--ink-4); border-style: dashed; }
+.tli-prov-na       { background: var(--paper-2); color: var(--ink-3); border-color: var(--rule); cursor: help; }
 
 /* ---------- THE SCORE PRIMITIVE ---------- */
 
