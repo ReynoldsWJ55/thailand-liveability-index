@@ -201,6 +201,28 @@ const datasetSchema = {
             ))}
           </tbody>
         </table>
+
+        <details class="indicator-page__all">
+          <summary>
+            <span class="indicator-page__all-label">แสดงทั้ง {sorted.length} จังหวัด</span>
+            <span class="indicator-page__all-hint">เรียงคะแนนจากสูงไปต่ำ</span>
+          </summary>
+          <table class="indicator-table indicator-page__all-table">
+            <thead>
+              <tr><th>อันดับ</th><th>จังหวัด</th><th>ค่าดิบ</th><th>คะแนน</th></tr>
+            </thead>
+            <tbody>
+              {sorted.map((row, i) => (
+                <tr>
+                  <td>{i + 1}</td>
+                  <td><a href={`/th/${row.id}/`}>{row.name_th}</a></td>
+                  <td>{row.raw}</td>
+                  <td><strong>{row.score}</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </details>
       </section>
     )}
 
@@ -236,4 +258,12 @@ const datasetSchema = {
   .indicator-table tbody a { color: var(--brand); text-decoration: none; }
   .indicator-table tbody a:hover { text-decoration: underline; }
   .indicator-page__cite { font-size: var(--fs-13); color: var(--ink-3); margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px dashed var(--rule); }
+  .indicator-page__all { margin-top: var(--sp-6); border-top: 1px solid var(--rule); padding-top: var(--sp-4); }
+  .indicator-page__all > summary { cursor: pointer; padding: var(--sp-3) 0; display: flex; flex-direction: column; gap: var(--sp-1); list-style: none; user-select: none; }
+  .indicator-page__all > summary::-webkit-details-marker { display: none; }
+  .indicator-page__all-label { font: var(--fw-semibold) var(--fs-14)/1 var(--font-sans); color: var(--brand); }
+  .indicator-page__all-label::before { content: "▸ "; transition: transform var(--dur-2); display: inline-block; }
+  .indicator-page__all[open] > summary .indicator-page__all-label::before { content: "▾ "; }
+  .indicator-page__all-hint { font-size: var(--fs-12); color: var(--ink-3); }
+  .indicator-page__all-table { margin-top: var(--sp-3); }
 </style>

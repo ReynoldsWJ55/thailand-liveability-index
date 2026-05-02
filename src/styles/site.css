@@ -745,7 +745,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 200px;
+  min-width: 230px;
   pointer-events: none;
   z-index: 1;
 }
@@ -757,7 +757,7 @@ main {
 }
 .tli-map__legend__strip {
   display: grid;
-  grid-template-columns: repeat(5, 1fr) 18px;
+  grid-template-columns: repeat(5, 1fr) 24px;
   gap: 1px;
   height: 10px;
   border-radius: 2px;
@@ -771,19 +771,21 @@ main {
 }
 .tli-map__legend__scale {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 22px;
+  grid-template-columns: 1fr 1fr 1fr 60px;
   font: var(--fw-medium) 10px/1 var(--font-mono);
   color: var(--ink-3);
   letter-spacing: var(--tracking-wide);
+  align-items: center;
 }
 .tli-map__legend__scale > :nth-child(1) { text-align: left; }
 .tli-map__legend__scale > :nth-child(2) { text-align: center; }
-.tli-map__legend__scale > :nth-child(3) { text-align: right; padding-right: 4px; }
+.tli-map__legend__scale > :nth-child(3) { text-align: right; padding-right: 8px; }
 .tli-map__legend__floor {
   text-align: right;
   font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 .tli-map__legend__coverage {
   margin-top: 2px;
@@ -793,9 +795,9 @@ main {
   color: var(--ink-3);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+}
+.tli-map__legend__coverage-line {
+  display: inline;
 }
 .tli-map__legend__coverage .tli-num {
   color: var(--ink);
@@ -803,6 +805,7 @@ main {
 }
 .tli-map__legend__floored-count {
   display: block;
+  margin-top: 2px;
   font-size: 9px;
   color: var(--ink-3);
   letter-spacing: 0.04em;
