@@ -81,7 +81,7 @@ const heroPanelClass = ['hero-score', heroBandCls, floored ? 'hero-score--floore
       {heroBandWord}{!floored && ` · ${C.rankOf77(province.rank)}`}
     </span>
     <div class="hero-score__meta">
-      <ProvenanceChip variant="fresh">{C.asOf} {asOf}</ProvenanceChip>
+      <ProvenanceChip variant="fresh">{`${C.asOf} ${asOf}`}</ProvenanceChip>
       <ProvenanceChip>{C.fullCoverage(province.category_count_full, 7)}</ProvenanceChip>
       {floored && flooredCategoryLabel && (
         <ProvenanceChip variant="missing">

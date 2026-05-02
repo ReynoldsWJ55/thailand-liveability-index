@@ -34,8 +34,17 @@ const display =
   score === null || floored ? '0' : String(Math.round(score));
 const bandCls = bandClass(score, floored);
 const label = bandLabel(score, floored, locale).toLowerCase();
+// Accessible label combines numeric score + band word so screen readers
+// announce both ("Score 65 of 100, good") rather than just the number.
+const ariaLabel = locale === 'th'
+  ? `คะแนน ${display} จาก 100, ${label}`
+  : `Score ${display} of 100, ${label}`;
 ---
-<span class:list={['tli-score-chip', bandCls, extra]}>
-  <span class="tli-score-chip__num">{display}</span>
-  {bandLabelVisible && <span class="tli-score-chip__band">{label}</span>}
+<span
+  class:list={['tli-score-chip', bandCls, extra]}
+  role="img"
+  aria-label={ariaLabel}
+>
+  <span class="tli-score-chip__num" aria-hidden="true">{display}</span>
+  {bandLabelVisible && <span class="tli-score-chip__band" aria-hidden="true">{label}</span>}
 </span>
