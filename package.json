@@ -37,9 +37,10 @@
     "fetch-scores": "python3 scripts/fetch-scores.py",
     "gen-og": "node scripts/gen-og.mjs",
     "gen-redirects": "node scripts/generate-redirects.mjs",
-    "predev": "npm run fetch-scores",
+    "gen-widget-data": "node scripts/gen-widget-data.mjs",
+    "predev": "npm run fetch-scores && npm run gen-widget-data",
     "dev": "astro dev",
-    "prebuild": "npm run fetch-scores && npm run gen-og && npm run gen-redirects",
+    "prebuild": "npm run fetch-scores && npm run gen-og && npm run gen-redirects && npm run gen-widget-data",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -51,5 +52,12 @@
     "@resvg/resvg-js": "^2.6.2",
     "astro": "^5.18.1",
     "lucide-static": "^1.14.0"
+  },
+  "//optionalDependencies": "Pinned platform bindings work around https://github.com/npm/cli/issues/4828 — npm sometimes drops these on incremental installs. Listing them explicitly forces re-resolution per platform. Safe on non-matching platforms (npm treats them as no-ops). Update the version pins when bumping the parent packages.",
+  "optionalDependencies": {
+    "@resvg/resvg-js-darwin-arm64": "^2.6.2",
+    "@resvg/resvg-js-linux-x64-gnu": "^2.6.2",
+    "@rollup/rollup-darwin-arm64": "^4.0.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.0.0"
   }
 }

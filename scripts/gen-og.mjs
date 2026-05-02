@@ -17,10 +17,28 @@
  * SVG generation is hand-rolled; PNG conversion is via @resvg/resvg-js.
  * Fonts: only IBM Plex Sans (already vendored at public/fonts/).
  */
-import { Resvg } from '@resvg/resvg-js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+// @resvg/resvg-js relies on a platform-specific native binding that npm's
+// optional-deps install sometimes drops (e.g. @resvg/resvg-js-darwin-arm64).
+// Catch that case here so a missing binding doesn't fail the whole build —
+// OG cards are nice-to-have, the site itself is fine without them. If you
+// want OG generation, run: npm i @resvg/resvg-js-darwin-arm64 --no-save
+// (swap the platform suffix as needed).
+let Resvg;
+try {
+  ({ Resvg } = await import('@resvg/resvg-js'));
+} catch (err) {
+  if (err && err.code === 'MODULE_NOT_FOUND') {
+    console.warn('gen-og: @resvg/resvg-js native binding missing — skipping OG generation.');
+    console.warn('         Existing public/og/*.png (if any) are preserved. Re-install with:');
+    console.warn(`         npm i @resvg/resvg-js-${process.platform}-${process.arch === 'arm64' ? 'arm64' : 'x64'} --no-save`);
+    process.exit(0);
+  }
+  throw err;
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
