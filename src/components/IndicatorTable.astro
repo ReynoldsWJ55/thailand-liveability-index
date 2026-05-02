@@ -254,10 +254,10 @@ const labels = locale === 'th'
                         if (override) {
                           return (
                             <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                              <strong>{provinceName}</strong>{' '}
+                              {indicatorLabel(ind)}{' '}
                               {locale === 'th'
-                                ? `ไม่มีคะแนนสำหรับ ${indicatorLabel(ind)} — ดูเหตุผล N/A ด้านล่าง.`
-                                : `does not score on ${indicatorLabel(ind)} — see the N/A rationale below.`}
+                                ? `ไม่ใช้กับ${provinceName} — ดูเหตุผล N/A ด้านล่าง.`
+                                : `is not applicable to ${provinceName} — see the N/A rationale below.`}
                               {desc && <> {desc}</>}
                             </p>
                           );
@@ -265,20 +265,24 @@ const labels = locale === 'th'
                         if (isMissing) {
                           return (
                             <p {...locale === 'th' ? { lang: 'th' } : {}}>
+                              {indicatorLabel(ind)}{' '}
                               {locale === 'th'
-                                ? `ข้อมูล ${indicatorLabel(ind)} ของ ${provinceName} ยังไม่มี.`
-                                : `${indicatorLabel(ind)} data for ${provinceName} is not yet available.`}
+                                ? `ของ${provinceName} ยังไม่มีข้อมูล.`
+                                : `for ${provinceName} is not yet available.`}
                               {desc && <> {desc}</>}
                             </p>
                           );
                         }
                         const valueStr = fmtValue(ind);
+                        // Possessive + colon pattern reads naturally for ALL indicator label
+                        // shapes — singular nouns ("PM2.5 annual mean concentration"), counts
+                        // ("Annual count of days..."), and plurals ("Wet days per year").
+                        const lede = locale === 'th'
+                          ? `${provinceName}: ${valueStr} ${ind.unit} — ${indicatorLabel(ind)}`
+                          : `${provinceName}'s ${indicatorLabel(ind)}: ${valueStr} ${ind.unit}.`;
                         return (
                           <p {...locale === 'th' ? { lang: 'th' } : {}}>
-                            <strong>{provinceName}</strong>{' '}
-                            {locale === 'th'
-                              ? `มี ${indicatorLabel(ind)} เท่ากับ ${valueStr} ${ind.unit}.`
-                              : `has a ${indicatorLabel(ind)} of ${valueStr} ${ind.unit}.`}
+                            <strong>{lede}</strong>
                             {desc && <> {desc}</>}
                           </p>
                         );

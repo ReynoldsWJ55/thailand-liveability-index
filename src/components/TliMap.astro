@@ -218,14 +218,16 @@ const flooredCount = features.filter((f) => f.hasData && f.province && f.provinc
         <span class="tli-map__legend__floor">{locale === 'th' ? 'ติดเพดาน' : 'floored'}</span>
       </div>
       <div class="tli-map__legend__coverage">
-        <span class="tli-num">{withData}</span> / {totalRendered}{' '}
-        <span>{locale === 'th' ? 'จังหวัด' : 'provinces'}</span>
+        <div class="tli-map__legend__coverage-line">
+          <span class="tli-num">{withData}</span> / {totalRendered}{' '}
+          <span>{locale === 'th' ? 'จังหวัด' : 'provinces'}</span>
+        </div>
         {flooredCount > 0 && (
-          <span class="tli-map__legend__floored-count">
+          <div class="tli-map__legend__floored-count">
             {locale === 'th'
               ? `${flooredCount} ติดเพดาน`
               : `${flooredCount} floored at 0`}
-          </span>
+          </div>
         )}
       </div>
     </aside>
