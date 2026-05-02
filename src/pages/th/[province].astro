@@ -5,7 +5,6 @@ import Site from '../../layouts/Site.astro';
 import Hero from '../../components/Hero.astro';
 import CategoryCard from '../../components/CategoryCard.astro';
 import IndicatorTable from '../../components/IndicatorTable.astro';
-import EditorialBanner from '../../components/EditorialBanner.astro';
 import UrbanNaNote from '../../components/UrbanNaNote.astro';
 import { CATEGORY_ORDER, CHROME } from '../../data/lookups';
 import scoresData from '../../data/scores.json';
@@ -43,8 +42,6 @@ const description = province.floored
   ogImage={`/og/${province.id}.png`}
 >
   <Hero province={province} locale={locale} asOf={freshestAsOf} />
-
-  <EditorialBanner provinceSlug={province.id} locale={locale} />
 
   <section class="section" aria-labelledby="cat-title">
     <div class="section__head">

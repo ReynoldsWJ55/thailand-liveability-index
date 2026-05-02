@@ -1947,3 +1947,29 @@ main {
   color: var(--ink-3);
   line-height: var(--lh-normal);
 }
+
+/* ============================================================================
+   Block 1 polish-pass (2026-05-02): locked indicator-table column widths +
+   AS OF nowrap. Per `99-meta/action-plan-2026-05-02.md` Block 1 items 6+8.
+
+   The vendored .tli-table has flexible widths that produce different score-
+   column horizontal positions across the 7 category sections — your eye has
+   to re-find the score column on every category. Locking widths here keeps
+   the score column in one place across all categories.
+
+   AS OF cells get `white-space: nowrap` so the date doesn't wrap to two lines
+   in narrow viewports.
+   ============================================================================ */
+.ind-block .tli-table {
+  table-layout: fixed;
+}
+.ind-block .tli-table th:nth-child(1),
+.ind-block .tli-table td:nth-child(1) { width: 42%; }
+.ind-block .tli-table th:nth-child(2),
+.ind-block .tli-table td:nth-child(2) { width: 10%; }
+.ind-block .tli-table th:nth-child(3),
+.ind-block .tli-table td:nth-child(3) { width: 14%; }
+.ind-block .tli-table th:nth-child(4),
+.ind-block .tli-table td:nth-child(4) { width: 22%; }
+.ind-block .tli-table th:nth-child(5),
+.ind-block .tli-table td:nth-child(5) { width: 12%; white-space: nowrap; }
