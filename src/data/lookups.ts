@@ -231,6 +231,12 @@ export interface ChromeLabels {
   howCompositeBuilt: string;
   /** Shown when a category card has zero indicators in this build (R2 wiring lands category scores first; per-indicator detail follows). */
   indicatorsComingSoon: string;
+  /** N/A pill text — applicability-override display for indicators structurally inappropriate to the province type. */
+  naLabel: string;
+  /** Generic title fallback when an N/A pill has no per-indicator rationale. Per-indicator rationale comes from `applicability_overrides.ts`. */
+  naTooltipFallback: string;
+  /** Methodology-honest note above categories with overridden indicators on a province page. `provinceName` is interpolated; `indicatorList` is a comma-joined list of indicator labels. */
+  urbanNaNote: (provinceName: string, indicatorList: string) => string;
 }
 
 export const CHROME: Record<Locale, ChromeLabels> = {
@@ -291,6 +297,10 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsScale: 'Scale · 0–100 (normalized)',
     howCompositeBuilt: 'How the composite is built →',
     indicatorsComingSoon: 'Indicator-level detail lands in a follow-up release.',
+    naLabel: 'N/A',
+    naTooltipFallback: 'This indicator is structurally inappropriate to this province type. See methodology.',
+    urbanNaNote: (provinceName, indicatorList) =>
+      `${provinceName} scores low on some indicators (${indicatorList}) that don't fit a fully urban province. The proper methodology fix is queued for v1.2 — see the smell-test review queue.`,
   },
   th: {
     province: 'จังหวัด',
@@ -349,5 +359,9 @@ export const CHROME: Record<Locale, ChromeLabels> = {
     citationsScale: 'ช่วง · 0–100 (ปรับมาตรฐาน)',
     howCompositeBuilt: 'การคำนวณคะแนนรวม →',
     indicatorsComingSoon: 'รายละเอียดระดับตัวชี้วัดจะมาในรุ่นถัดไป',
+    naLabel: 'N/A',
+    naTooltipFallback: 'ตัวชี้วัดนี้ไม่เหมาะกับจังหวัดประเภทนี้โดยโครงสร้าง ดูระเบียบวิธี',
+    urbanNaNote: (provinceName, indicatorList) =>
+      `${provinceName}ได้คะแนนต่ำในตัวชี้วัดบางตัว (${indicatorList}) ที่ไม่เหมาะกับจังหวัดที่เป็นเขตเมืองทั้งหมด การแก้ไขระเบียบวิธีที่เหมาะสมจะอยู่ในรุ่น v1.2 — ดูคิวตรวจสอบ smell-test`,
   },
 };

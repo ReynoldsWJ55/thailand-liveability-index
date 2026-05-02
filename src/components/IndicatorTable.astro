@@ -11,6 +11,7 @@
  * instead of a number — exercises the contract end-to-end.
  */
 import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME } from '../data/lookups';
+import { getApplicabilityOverride } from '../data/applicability_overrides';
 import type { CategoryScore, Indicator, Locale } from '../data/types';
 import Lucide from './Lucide.astro';
 import ScorePrimitive from './ScorePrimitive.astro';
@@ -22,8 +23,10 @@ interface Props {
   locale: Locale;
   /** When true, the category itself reaches 0 and floors the composite. */
   isFloor?: boolean;
+  /** Province ID for applicability-override lookup (Block 3 tactical N/A display). */
+  provinceId: string;
 }
-const { category, locale, isFloor = false } = Astro.props;
+const { category, locale, isFloor = false, provinceId } = Astro.props;
 const meta = CATEGORIES[category.id];
 const label = categoryLabel(category.id, locale);
 const C = CHROME[locale];
@@ -86,21 +89,38 @@ const sources = Array.from(new Set(category.indicators.map((i) => i.source)));
               {ind.quality_flag === 'missing' ? '—' : fmtValue(ind)}
             </td>
             <td class="num">
-              {ind.quality_flag === 'missing' ? (
-                <ProvenanceChip variant="missing">{C.noData}</ProvenanceChip>
-              ) : ind.quality_flag === 'inherited' && ind.inherited_from ? (
-                <ProvenanceChip variant="inherit" icon="corner-down-right">
-                  {C.inheritedFrom(ind.inherited_from)}
-                </ProvenanceChip>
-              ) : (
-                <ScorePrimitive
-                  score={ind.raw_score}
-                  scale="chip"
-                  floored={ind.raw_score === 0 && isFloor}
-                  locale={locale}
-                  bandLabelVisible={false}
-                />
-              )}
+              {(() => {
+                const override = getApplicabilityOverride(provinceId, ind.id);
+                if (override) {
+                  return (
+                    <ProvenanceChip
+                      variant="na"
+                      title={locale === 'th' ? override.rationale_th : override.rationale_en}
+                    >
+                      {C.naLabel}
+                    </ProvenanceChip>
+                  );
+                }
+                if (ind.quality_flag === 'missing') {
+                  return <ProvenanceChip variant="missing">{C.noData}</ProvenanceChip>;
+                }
+                if (ind.quality_flag === 'inherited' && ind.inherited_from) {
+                  return (
+                    <ProvenanceChip variant="inherit" icon="corner-down-right">
+                      {C.inheritedFrom(ind.inherited_from)}
+                    </ProvenanceChip>
+                  );
+                }
+                return (
+                  <ScorePrimitive
+                    score={ind.raw_score}
+                    scale="chip"
+                    floored={ind.raw_score === 0 && isFloor}
+                    locale={locale}
+                    bandLabelVisible={false}
+                  />
+                );
+              })()}
             </td>
             <td>
               <a href={ind.source_url} class="tli-link" target="_blank" rel="noopener">
