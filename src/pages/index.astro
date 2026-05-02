@@ -1,36 +1,56 @@
 ---
 /**
- * Coming-soon teaser. Self-contained — no Site.astro layout, no Nav, no
- * scores.json dependency. The teaser shows real Bangkok data hardcoded
- * from the latest R2 build (ymd-2026-04-30-sha-2f2eec6). Numbers don't
- * need to live-update during the coming-soon window; once the apex
- * flips to `main`, this branch stops getting visits and the hardcode
- * becomes a frozen-in-time artifact, which is fine.
+ * Coming-soon teaser v0.2 — 2026-05-02 EOD-very-late refresh.
+ *
+ * What changed vs. v0.1:
+ *   - Data refreshed to the 2026-05-02 R2 ingestion (Bangkok 50 / rank 31 /
+ *     MIXED band, not the v0.1 64.9 / rank 7 / GOOD that was from before
+ *     the population-density parabolic switch + UNESCO weight + JCI).
+ *   - License footer: CC BY 4.0 → CC BY-NC 4.0 per dm-20260501-licensing-strategy.
+ *   - Added author identity line with ORCID (E-E-A-T anchor).
+ *   - Added "Press · for journalists" mailto link (press page lives on main;
+ *     this teaser stays on the coming-soon branch which only ships index.astro,
+ *     so direct mailto avoids a /press 404 from this branch).
+ *   - Added small "Stay in the loop" link to info@ for early-interest signal.
+ *   - Region label updated: "Bangkok and Vicinities" → "Greater Bangkok"
+ *     (matches the Apr 2026 lookups.ts change).
+ *   - Preserved: noindex/nofollow (apex SEO ground belongs to the eventual
+ *     full site once Cloudflare Pages flips production branch to `main`).
+ *
+ * Self-contained — no Site.astro layout, no Nav, no scores.json dependency.
+ * Bangkok data is hardcoded from R2 ingestion ymd-2026-05-02-sha-713c11a.
  *
  * To launch: change Cloudflare Pages production branch from `coming-soon`
- * to `main` in the dashboard. Coming-soon stays around as a rollback
- * target indefinitely.
+ * to `main` in the dashboard. Coming-soon stays around as a rollback target
+ * indefinitely.
  */
 const launchWindow = 'July 2026';
 const description = "A composite 0–100 liveability score for each of Thailand's 77 provinces — seven categories, transparent methodology, full provenance. Soft launching July 2026.";
 const url = 'https://thailandliveabilityindex.com';
 
-// Frozen Bangkok teaser data — pulled from R2 ingestion ymd-2026-04-30-sha-2f2eec6.
+// Frozen Chiang Mai teaser data — ingestion ymd-2026-05-02-sha-713c11a.
+// Methodology v1.0 with all 25 wired indicators. Chiang Mai chosen for the
+// teaser over Bangkok because: (a) internationally recognizable name with
+// expat-decision audience overlap, (b) GOOD-band composite (67/100) makes
+// the teaser more inviting, (c) the breakdown tells a richer story than
+// "Bangkok is mid" — connectivity + safety + demographics 78–100, but
+// burning-season PM2.5 and lower per-capita GPP pull the rank to 7.
 const teaser = {
-  name: 'Bangkok',
-  region: 'Central Thailand',
+  name: 'Chiang Mai',
+  nameTh: 'จังหวัดเชียงใหม่',
+  region: 'Northern Thailand',
   rank: 7,
-  composite: 64.9,
+  composite: 67,            // 67.1 rounded
   band: 'GOOD',
-  asOf: 'March 2026',
+  asOf: 'April 2026',
   categories: [
-    { name: 'Climate & Environment', score: 59.7, sample: 'PM2.5: 26.6 µg/m³' },
-    { name: 'Healthcare',            score: 57.9, sample: '6.3 hospital beds / 1k' },
-    { name: 'Connectivity',          score: 99.6, sample: '359 Mbps median fixed' },
-    { name: 'Cost & Economy',        score: 100,  sample: 'GPP ฿447k / capita' },
-    { name: 'Safety & Governance',   score: 69.7, sample: 'ACLED: 0.06 fatalities / 100k' },
-    { name: 'Lifestyle & Culture',   score: 20.2, sample: 'TAT: 1.0 events / 100k' },
-    { name: 'Demographics & Scale',  score: 100,  sample: '3,467 persons / km²' },
+    { name: 'Environment & Climate', score: 61,  sample: 'Tree canopy 73% · PM2.5 53 µg/m³ (burning season)' },
+    { name: 'Healthcare',            score: 67,  sample: '4.2 hospital beds / 1k · 3 JCI-accredited hospitals' },
+    { name: 'Connectivity & Transport', score: 88, sample: '303 Mbps median fixed broadband · int. airport 35 min' },
+    { name: 'Cost & Economy',        score: 33,  sample: 'GPP ฿86k / capita / yr' },
+    { name: 'Safety & Governance',   score: 78,  sample: 'ACLED: 0.22 fatalities / 100k (5yr)' },
+    { name: 'Lifestyle & Culture',   score: 67,  sample: 'TAT: 10.1 cultural events / 100k / yr' },
+    { name: 'Demographics & Scale',  score: 100, sample: '81 persons / km² (near parabolic optimum)' },
   ],
 };
 ---
@@ -81,8 +101,9 @@ const teaser = {
       --ink-3:   #888;
       --brand:   #1F5F6B;
       --rule:    #E2DFD8;
-      --score-2: #D9A441; /* mixed — for 20.2 */
-      --score-3: #7BA481; /* good   — for 57-79 */
+      --score-0: #B0413E; /* poor   — for 0-19 */
+      --score-2: #D9A441; /* mixed  — for 40-59 */
+      --score-3: #7BA481; /* good   — for 60-79 */
       --score-4: #2E7D5B; /* strong — for 80-100 */
     }
 
@@ -134,7 +155,7 @@ const teaser = {
       font-size: clamp(15px, 2.2vw, 18px);
       line-height: 1.55;
       color: var(--ink-2);
-      margin: 0 0 36px;
+      margin: 0 0 28px;
       max-width: 580px;
     }
 
@@ -173,6 +194,12 @@ const teaser = {
       letter-spacing: -0.01em;
       color: var(--ink);
     }
+    .teaser__name-th {
+      font-weight: 400;
+      font-size: 13px;
+      color: var(--ink-3);
+      margin-left: 8px;
+    }
     .teaser__composite {
       display: flex;
       align-items: baseline;
@@ -183,6 +210,7 @@ const teaser = {
       font-size: 44px;
       line-height: 1;
       letter-spacing: -0.02em;
+      /* Composite color matches the band — sage for GOOD (60–79). */
       color: var(--score-3);
       font-variant-numeric: tabular-nums;
     }
@@ -232,6 +260,8 @@ const teaser = {
       color: var(--ink);
       font-variant-numeric: tabular-nums;
     }
+    .teaser__cat-score.is-poor { color: var(--score-0); }
+    .teaser__cat-score.is-weak { color: #C28B47; } /* terracotta — weak 20-39 */
     .teaser__cat-score.is-mid { color: var(--score-2); }
     .teaser__cat-score.is-good { color: var(--score-3); }
     .teaser__cat-score.is-strong { color: var(--score-4); }
@@ -256,7 +286,20 @@ const teaser = {
       font-weight: 500;
     }
 
-    /* --- Launch pill + footer ------------------------------------------- */
+    /* "Honest over clean" callout — explains why Bangkok scores mid-range */
+    .teaser__honest {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: var(--paper-2);
+      border-left: 2px solid var(--brand);
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink-2);
+    }
+    .teaser__honest strong { color: var(--ink); font-weight: 600; }
+
+    /* --- Launch pill + actions row ------------------------------------- */
     .splash__eta {
       display: inline-flex;
       align-items: center;
@@ -266,7 +309,7 @@ const teaser = {
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--brand);
-      margin: 0 0 36px;
+      margin: 0 0 20px;
       padding: 10px 14px 10px 12px;
       border: 1px solid var(--rule);
       border-radius: 6px;
@@ -281,6 +324,32 @@ const teaser = {
       flex-shrink: 0;
     }
 
+    .splash__contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin: 0 0 24px;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+    .splash__contact a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid color-mix(in srgb, var(--brand) 30%, transparent);
+      padding-bottom: 1px;
+      transition: border-color 120ms ease;
+    }
+    .splash__contact a:hover { border-bottom-color: var(--brand); }
+    .splash__contact-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-right: 4px;
+    }
+
     .splash__rule {
       border: 0;
       border-top: 1px solid var(--rule);
@@ -289,7 +358,7 @@ const teaser = {
 
     .splash__credit {
       font-size: 13px;
-      line-height: 1.55;
+      line-height: 1.6;
       color: var(--ink-3);
       margin: 0;
     }
@@ -317,6 +386,7 @@ const teaser = {
         grid-row: 2;
         font-size: 12px;
       }
+      .teaser__name-th { display: block; margin-left: 0; margin-top: 2px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -341,7 +411,10 @@ const teaser = {
       <div class="teaser__head">
         <div class="teaser__head-left">
           <span class="teaser__eyebrow">A peek at the data · {teaser.region}</span>
-          <span class="teaser__name">{teaser.name}</span>
+          <span class="teaser__name">
+            {teaser.name}
+            <span class="teaser__name-th" lang="th">{teaser.nameTh}</span>
+          </span>
         </div>
         <div class="teaser__composite">
           <span class="teaser__composite-num">{teaser.composite}</span>
@@ -354,7 +427,12 @@ const teaser = {
 
       <ul class="teaser__cats">
         {teaser.categories.map((c) => {
-          const tone = c.score >= 80 ? 'is-strong' : c.score >= 60 ? 'is-good' : 'is-mid';
+          const tone =
+            c.score >= 80 ? 'is-strong' :
+            c.score >= 60 ? 'is-good' :
+            c.score >= 40 ? 'is-mid' :
+            c.score >= 20 ? 'is-weak' :
+            'is-poor';
           return (
             <li class="teaser__cat">
               <span class="teaser__cat-name">{c.name}</span>
@@ -365,10 +443,20 @@ const teaser = {
         })}
       </ul>
 
+      <p class="teaser__honest">
+        <strong>Why Chiang Mai ranks 7, not 1.</strong> The composite uses a
+        geometric mean across seven categories, so weak categories aren't masked
+        by strong ones. Chiang Mai scores 100 on Demographics &amp; Scale, 88 on
+        Connectivity, and 78 on Safety — but burning-season PM2.5 (53 µg/m³,
+        ten times the WHO guideline) pulls Climate to 61, and a per-capita GPP
+        of ฿86k pulls Cost &amp; Economy to 33. The math reflects those
+        trade-offs honestly rather than averaging them away.
+      </p>
+
       <div class="teaser__foot">
         <span>As of {teaser.asOf}</span>
         <span>·</span>
-        <span>NSO · PCD · MoPH · NESDC · ACLED · TAT · DOPA</span>
+        <span>NSO · PCD · MoPH · NESDC · ACLED · TAT · DOPA · NASA POWER · OpenAQ · Hansen GFC</span>
       </div>
     </section>
 
@@ -376,13 +464,25 @@ const teaser = {
       Soft launch · {launchWindow}
     </p>
 
+    <p class="splash__contact">
+      <span class="splash__contact-label">Press</span>
+      <a href="mailto:press@thailandliveabilityindex.com">press@thailandliveabilityindex.com</a>
+      <span aria-hidden="true">·</span>
+      <span class="splash__contact-label">General</span>
+      <a href="mailto:info@thailandliveabilityindex.com">info@thailandliveabilityindex.com</a>
+    </p>
+
     <hr class="splash__rule" />
 
     <p class="splash__credit">
-      <strong>By Will Reynolds.</strong> Methodology and category dictionary
-      published under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>;
+      <strong>By William J. Reynolds</strong>
+      (<a href="https://orcid.org/0009-0005-1217-7465" rel="me noopener" target="_blank">ORCID 0009-0005-1217-7465</a>).
+      Methodology and dataset published under
+      <a href="https://creativecommons.org/licenses/by-nc/4.0/" rel="license">CC BY-NC 4.0</a>;
       site code under <a href="https://opensource.org/licenses/MIT" rel="license">MIT</a>.
-      Sourced from open Thai government data.
+      Sourced from open Thai government data and openly-licensed scientific datasets.
+      Commercial-use licensing inquiries:
+      <a href="mailto:licensing@thailandliveabilityindex.com">licensing@thailandliveabilityindex.com</a>.
     </p>
   </main>
 </body>
