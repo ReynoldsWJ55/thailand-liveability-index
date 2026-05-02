@@ -39,7 +39,7 @@
     "id": "ind_flood_frequency",
     "label_en": "Provincial Cabinet-Resolution Flood-Aid Requests Per 100k Population (Annual)",
     "label_th": "ความถี่ของน้ำท่วม (เหตุการณ์ภัยพิบัติที่คณะรัฐมนตรีรับรอง ต่อประชากร 100,000 คน)",
-    "unit": "events/5yr",
+    "unit": "events/yr",
     "source": "Department of Disaster Prevention and Mitigation (DDPM)",
     "source_url": "https://www.disaster.go.th/",
     "category_phase2": "Environment & Climate",

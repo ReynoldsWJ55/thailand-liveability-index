@@ -100,6 +100,59 @@ export const CATEGORY_ANCHOR: Record<CategoryId, string> = {
 };
 
 /**
+ * Indicator display order within categories.
+ *
+ * Sort key for the indicator-detail tables on province pages. Within each
+ * category, indicators render in the order listed below — keeps topically-
+ * paired indicators adjacent (PM2.5 mean + days-exceeding-WHO; forest cover
+ * + tree canopy; fixed broadband + mobile broadband; etc.) instead of
+ * the upstream-order which scatters them. Indicators NOT listed fall back
+ * to the end via Number.MAX_SAFE_INTEGER rank.
+ *
+ * Per Block 1 polish-pass item 7.
+ */
+export const INDICATOR_DISPLAY_ORDER: string[] = [
+  // Environment & Climate
+  'ind_pm25_annual_mean',
+  'ind_pm25_days_exceeding_who',
+  'ind_forest_cover_pct',
+  'ind_tree_canopy_pct',
+  'ind_heat_days_35c',
+  'ind_rainfall_days_per_year',
+  'ind_flood_frequency',
+  'ind_piped_water_pct',
+  'ind_waste_management_score',
+  // Healthcare
+  'ind_hospital_beds_per_1k',
+  'ind_hospitals_per_100k',
+  'ind_jci_accredited_count',
+  'ind_rpsto_per_10k_total',
+  // Connectivity & Transport
+  'ind_internet_fixed_mbps',
+  'ind_internet_mobile_mbps',
+  'ind_walkability_score',
+  'ind_public_transport_access',
+  'ind_rail_access',
+  'ind_airport_intl_drive_min',
+  // Cost & Economy
+  'ind_gpp_per_capita',
+  // Safety & Governance
+  'ind_acled_events_per_100k_5yr',
+  'ind_acled_fatalities_per_100k_5yr',
+  // Lifestyle & Culture
+  'ind_tat_events_per_100k',
+  'ind_unesco_whs_count',
+  // Demographics & Scale
+  'ind_population_density',
+];
+
+/** Lookup helper: rank for sort. Returns Number.MAX_SAFE_INTEGER for unlisted indicators (fallback to end). */
+export function indicatorDisplayRank(id: string): number {
+  const idx = INDICATOR_DISPLAY_ORDER.indexOf(id);
+  return idx === -1 ? Number.MAX_SAFE_INTEGER : idx;
+}
+
+/**
  * Indicator URL slug map.
  *
  * Internal `ind_*` IDs are preserved for the data pipeline (R2 parquets,

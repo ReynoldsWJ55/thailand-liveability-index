@@ -10,7 +10,7 @@
  * Inherited values render as `↳ INHERITED FROM YALA` in the Score column
  * instead of a number — exercises the contract end-to-end.
  */
-import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME } from '../data/lookups';
+import { CATEGORIES, CATEGORY_ANCHOR, categoryLabel, CHROME, indicatorDisplayRank } from '../data/lookups';
 import { getApplicabilityOverride } from '../data/applicability_overrides';
 import type { CategoryScore, Indicator, Locale } from '../data/types';
 import Lucide from './Lucide.astro';
@@ -42,7 +42,14 @@ function fmtValue(ind: Indicator): string {
   return ind.value.toLocaleString('en-US', { maximumFractionDigits: 2 });
 }
 
-const sources = Array.from(new Set(category.indicators.map((i) => i.source)));
+// Sort indicators by canonical display rank so topically-paired ones sit
+// adjacent (forest+canopy, PM2.5 pair, fixed+mobile broadband, etc.) per
+// Block 1 polish-pass item 7. Stable sort preserves upstream order within
+// equal ranks (defensive fallback for unlisted indicators).
+const sortedIndicators = [...category.indicators].sort(
+  (a, b) => indicatorDisplayRank(a.id) - indicatorDisplayRank(b.id),
+);
+const sources = Array.from(new Set(sortedIndicators.map((i) => i.source)));
 ---
 <section class="section" id={CATEGORY_ANCHOR[category.id]}>
   <div class="section__head">
@@ -76,7 +83,7 @@ const sources = Array.from(new Set(category.indicators.map((i) => i.source)));
         </tr>
       </thead>
       <tbody>
-        {category.indicators.map((ind) => (
+        {sortedIndicators.map((ind) => (
           <tr>
             <td>
               <span {...locale === 'th' ? { lang: 'th' } : {}}>
